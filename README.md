@@ -98,4 +98,4 @@ npx -y skills add dennydkt/xbskill -g --all
 
 ## 许可证
 
-[CC BY-NC 4.0](LICENSE)：个人学习与使用自由，禁止商用，需保留署名。
+[CC BY-NC 4.0](LICENSE)：以非商业目的自由使用、修改与分发；须署名并标明修改；禁止商业使用。具体以许可证全文为准。
