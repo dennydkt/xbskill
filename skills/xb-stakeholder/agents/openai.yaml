@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 利益相关者推进"
+  short_description: "梳理多方利益、权力和支持阻力，设计对象明确的跨部门推进序列"
+  default_prompt: "使用 $xb-stakeholder 画出相关方、利益与权力，并设计下一轮推进顺序。"

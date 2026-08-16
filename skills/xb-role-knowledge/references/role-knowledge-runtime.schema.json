@@ -1,0 +1,450 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xbskill.local/schemas/role-knowledge-runtime-v1.3.json",
+  "title": "xbskill RoleKnowledgePacket 1.3 and ApplicationTrace",
+  "oneOf": [
+    {"$ref": "#/$defs/RoleKnowledgePacket"},
+    {"$ref": "#/$defs/ApplicationTrace"}
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"},
+    "semanticVersion": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "scopeDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "stringList": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/nonEmptyString"},
+      "uniqueItems": true
+    },
+    "idList": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/id"},
+      "uniqueItems": true
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "conditions", "source_refs", "disconfirming_signals", "unit_id"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "statement": {"$ref": "#/$defs/nonEmptyString"},
+        "conditions": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "source_refs": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "disconfirming_signals": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "unit_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "requestConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "evidence_date", "evidence_ref"],
+      "properties": {
+        "kind": {"enum": ["legal_entity", "jurisdiction", "system_version", "rule_scope"]},
+        "value": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "evidence_ref": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "current_specialist", "job_family", "role", "task_family",
+        "lifecycle_stage", "proficiency_mode", "problem", "signals", "actual_constraints",
+        "knowledge_requirement", "required_unit_ids", "max_units"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "current_specialist": {"type": "string", "pattern": "^xb-[a-z0-9-]+$"},
+        "job_family": {"enum": ["data", "product_rd", "function", "finance", "marketing"]},
+        "role": {"$ref": "#/$defs/nonEmptyString"},
+        "task_family": {"$ref": "#/$defs/nonEmptyString"},
+        "lifecycle_stage": {"type": "string"},
+        "proficiency_mode": {"enum": ["S0_new", "S1_working", "S2_system"]},
+        "problem": {"$ref": "#/$defs/nonEmptyString"},
+        "signals": {"$ref": "#/$defs/stringList"},
+        "actual_constraints": {"type": "array", "items": {"$ref": "#/$defs/requestConstraint"}},
+        "knowledge_requirement": {"enum": ["required", "optional"]},
+        "required_unit_ids": {"$ref": "#/$defs/idList"},
+        "max_units": {"type": "integer", "minimum": 1, "maximum": 2}
+      }
+    },
+    "sourceCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_ref", "registry", "coordinate_key"],
+      "properties": {
+        "source_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "registry": {"$ref": "#/$defs/nonEmptyString"},
+        "coordinate_key": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "effect": {
+      "type": "object",
+      "required": ["effect_id", "unit_id", "slot", "content", "authority_effect"],
+      "properties": {
+        "effect_id": {"$ref": "#/$defs/nonEmptyString"},
+        "unit_id": {"$ref": "#/$defs/id"},
+        "slot": {"enum": [
+          "observe", "competing_explanations", "distinguish", "branches", "actions",
+          "artifacts", "validation", "boundaries", "reality_feedback", "permissions",
+          "risk_gates", "stage_adaptation"
+        ]},
+        "content": {"$ref": "#/$defs/nonEmptyString"},
+        "authority_effect": {"const": false}
+      }
+    },
+    "activeInjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observe", "competing_explanations", "distinguish", "branches", "actions",
+        "artifacts", "validation", "boundaries", "reality_feedback", "permissions",
+        "risk_gates", "stage_adaptation"
+      ],
+      "properties": {
+        "observe": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "competing_explanations": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "distinguish": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "branches": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "actions": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "artifacts": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "validation": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "boundaries": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "reality_feedback": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "permissions": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "risk_gates": {"type": "array", "items": {"$ref": "#/$defs/effect"}},
+        "stage_adaptation": {"type": "array", "items": {"$ref": "#/$defs/effect"}}
+      }
+    },
+    "evidenceModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confidence", "observation_window", "limitations"],
+      "properties": {
+        "confidence": {"enum": ["low", "medium", "high"]},
+        "observation_window": {"$ref": "#/$defs/nonEmptyString"},
+        "limitations": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "permissionModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["propose", "decide", "authorize", "execute", "verify", "accept_risk"],
+      "properties": {
+        "propose": {"$ref": "#/$defs/nonEmptyString"},
+        "decide": {"$ref": "#/$defs/nonEmptyString"},
+        "authorize": {"$ref": "#/$defs/nonEmptyString"},
+        "execute": {"$ref": "#/$defs/nonEmptyString"},
+        "verify": {"$ref": "#/$defs/nonEmptyString"},
+        "accept_risk": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "riskGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stop", "escalate", "calibrate"],
+      "properties": {
+        "stop": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "escalate": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "calibrate": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "scopeBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_version", "scope_kind", "project_scope_id", "packet_file", "packet_sha256",
+        "authority_decision_sha256", "claim_ids", "claims_sha256", "job_family", "roles",
+        "task_families", "lifecycle_stages"
+      ],
+      "properties": {
+        "binding_version": {"const": 1},
+        "scope_kind": {"const": "project_rule"},
+        "project_scope_id": {"$ref": "#/$defs/id"},
+        "packet_file": {"type": "string", "pattern": "^knowledge/packets/[a-z0-9][a-z0-9-]{2,63}\\.json$"},
+        "packet_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_decision_sha256": {"$ref": "#/$defs/sha256"},
+        "claim_ids": {"$ref": "#/$defs/idList", "minItems": 1},
+        "claims_sha256": {"$ref": "#/$defs/sha256"},
+        "job_family": {"enum": ["data", "product_rd", "function", "finance", "marketing"]},
+        "roles": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "task_families": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "lifecycle_stages": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "authorityBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_binding", "rule_scope_digest", "packet_file", "packet_sha256", "authority_decided_at"],
+      "properties": {
+        "scope_binding": {"$ref": "#/$defs/scopeBinding"},
+        "rule_scope_digest": {"$ref": "#/$defs/scopeDigest"},
+        "packet_file": {"type": "string", "pattern": "^knowledge/packets/[a-z0-9][a-z0-9-]{2,63}\\.json$"},
+        "packet_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_decided_at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"}
+      }
+    },
+    "matchedUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "version", "origin", "name", "score", "match_reasons", "professional_problem",
+        "claims", "decision_graph", "evidence_model", "permission_model", "risk_gates",
+        "stage_adaptation", "authority_scope", "authority_binding", "refresh_triggers"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "version": {"$ref": "#/$defs/semanticVersion"},
+        "origin": {"enum": ["builtin", "project"]},
+        "name": {"$ref": "#/$defs/nonEmptyString"},
+        "score": {"type": "integer"},
+        "match_reasons": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "professional_problem": {"$ref": "#/$defs/nonEmptyString"},
+        "claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/claim"}},
+        "decision_graph": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+        "evidence_model": {"$ref": "#/$defs/evidenceModel"},
+        "permission_model": {"$ref": "#/$defs/permissionModel"},
+        "risk_gates": {"$ref": "#/$defs/riskGates"},
+        "stage_adaptation": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/effect"}},
+        "authority_scope": {"$ref": "#/$defs/nonEmptyString"},
+        "authority_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/authorityBinding"}]},
+        "refresh_triggers": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "routingUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit_id", "match_reasons"],
+      "properties": {
+        "unit_id": {"$ref": "#/$defs/id"},
+        "match_reasons": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current_specialist", "task_family", "problem", "lifecycle_stage", "selected_units"],
+      "properties": {
+        "current_specialist": {"type": "string", "pattern": "^xb-[a-z0-9-]+$"},
+        "task_family": {"$ref": "#/$defs/nonEmptyString"},
+        "problem": {"$ref": "#/$defs/nonEmptyString"},
+        "lifecycle_stage": {"type": "string"},
+        "selected_units": {"type": "array", "items": {"$ref": "#/$defs/routingUnit"}}
+      }
+    },
+    "sourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_ref", "registry", "coordinate_key"],
+      "properties": {
+        "source_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "registry": {"$ref": "#/$defs/nonEmptyString"},
+        "coordinate_key": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "deliveryClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "statement", "source_bindings"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/id"},
+        "statement": {"$ref": "#/$defs/nonEmptyString"},
+        "source_bindings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceBinding"}}
+      }
+    },
+    "deliveryEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit_id", "claims", "limitations", "refresh_triggers"],
+      "properties": {
+        "unit_id": {"$ref": "#/$defs/id"},
+        "claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/deliveryClaim"}},
+        "limitations": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "refresh_triggers": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "responsibilityBranch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hypothesis", "discriminator", "next_action"],
+      "properties": {
+        "hypothesis": {"$ref": "#/$defs/nonEmptyString"},
+        "discriminator": {"$ref": "#/$defs/nonEmptyString"},
+        "next_action": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "feedbackPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer", "observable", "when"],
+      "properties": {
+        "observer": {"$ref": "#/$defs/nonEmptyString"},
+        "observable": {"$ref": "#/$defs/nonEmptyString"},
+        "when": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "deliveryActive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "routing", "evidence", "artifact_locator", "completion_boundary"],
+      "properties": {
+        "mode": {"const": "active"},
+        "routing": {"$ref": "#/$defs/routing"},
+        "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/deliveryEvidence"}},
+        "artifact_locator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["marker_syntax", "rule"],
+          "properties": {
+            "marker_syntax": {"const": "[[field:<artifact_field>]]"},
+            "rule": {"$ref": "#/$defs/nonEmptyString"}
+          }
+        },
+        "completion_boundary": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "deliveryNoMatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "routing", "status_statement", "responsibility_branches", "reality_feedback", "completion_boundary"],
+      "properties": {
+        "mode": {"const": "no_match"},
+        "routing": {"$ref": "#/$defs/routing"},
+        "status_statement": {"$ref": "#/$defs/nonEmptyString"},
+        "responsibility_branches": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/responsibilityBranch"}},
+        "reality_feedback": {"$ref": "#/$defs/feedbackPoint"},
+        "completion_boundary": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "validationPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checker", "observable", "acceptance_condition"],
+      "properties": {
+        "checker": {"$ref": "#/$defs/nonEmptyString"},
+        "observable": {"$ref": "#/$defs/nonEmptyString"},
+        "acceptance_condition": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "traceEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect_id", "artifact_field", "artifact_excerpt", "validation_point"],
+      "properties": {
+        "effect_id": {"$ref": "#/$defs/nonEmptyString"},
+        "artifact_field": {"type": "string", "pattern": "^[^\\s.<>]{1,80}(?:\\.[^\\s.<>]{1,80})+$"},
+        "artifact_excerpt": {"$ref": "#/$defs/nonEmptyString"},
+        "validation_point": {"$ref": "#/$defs/validationPoint"}
+      }
+    },
+    "traceControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect_ids", "artifact_excerpts"],
+      "properties": {
+        "effect_ids": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "artifact_excerpts": {"$ref": "#/$defs/stringList", "minItems": 1}
+      }
+    },
+    "traceControls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["permissions", "risk_gates", "stage_adaptation"],
+      "properties": {
+        "permissions": {"$ref": "#/$defs/traceControl"},
+        "risk_gates": {"$ref": "#/$defs/traceControl"},
+        "stage_adaptation": {"$ref": "#/$defs/traceControl"}
+      }
+    },
+    "traceApplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit_id", "unit_version", "claim_ids", "effects", "controls"],
+      "properties": {
+        "unit_id": {"$ref": "#/$defs/id"},
+        "unit_version": {"$ref": "#/$defs/semanticVersion"},
+        "claim_ids": {"$ref": "#/$defs/idList", "minItems": 1},
+        "effects": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/traceEffect"}},
+        "controls": {"$ref": "#/$defs/traceControls"}
+      }
+    },
+    "ApplicationTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type", "schema_version", "context_digest", "current_specialist",
+        "artifact_sha256", "applications", "reality_feedback_point", "completion_claim"
+      ],
+      "properties": {
+        "record_type": {"const": "RoleKnowledgeApplicationTrace"},
+        "schema_version": {"const": 1},
+        "context_digest": {"$ref": "#/$defs/sha256"},
+        "current_specialist": {"type": "string", "pattern": "^xb-[a-z0-9-]+$"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "applications": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/traceApplication"}},
+        "reality_feedback_point": {"$ref": "#/$defs/feedbackPoint"},
+        "completion_claim": {"const": "packet_applied_not_reality_solved"}
+      }
+    },
+    "ApplicationTraceTemplate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type", "schema_version", "context_digest", "current_specialist",
+        "artifact_sha256", "applications", "reality_feedback_point", "completion_claim"
+      ],
+      "properties": {
+        "record_type": {"const": "RoleKnowledgeApplicationTrace"},
+        "schema_version": {"const": 1},
+        "context_digest": {"$ref": "#/$defs/sha256"},
+        "current_specialist": {"type": "string", "pattern": "^xb-[a-z0-9-]+$"},
+        "artifact_sha256": {"const": "<sha256-of-delivered-artifact-utf8>"},
+        "applications": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/traceApplication"}},
+        "reality_feedback_point": {"$ref": "#/$defs/feedbackPoint"},
+        "completion_claim": {"const": "packet_applied_not_reality_solved"}
+      }
+    },
+    "RoleKnowledgePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type", "schema_version", "id", "packet_version", "generated_at", "context_digest",
+        "request", "status", "used_unit_ids", "matched_units", "active_injection", "claims",
+        "source_refs", "source_coordinates", "supersession_notices", "unknowns", "omissions",
+        "generic_fallback_allowed", "model_prior_fallback", "execution_authorized",
+        "participation_contract", "delivery_requirements", "completion_boundary"
+      ],
+      "properties": {
+        "record_type": {"const": "RoleKnowledgePacket"},
+        "schema_version": {"const": 1},
+        "id": {"type": "string", "pattern": "^rkp-[a-f0-9]{16}$"},
+        "packet_version": {"const": "1.3.0"},
+        "generated_at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"},
+        "context_digest": {"$ref": "#/$defs/sha256"},
+        "request": {"$ref": "#/$defs/request"},
+        "status": {"enum": ["active", "no_match"]},
+        "used_unit_ids": {"$ref": "#/$defs/idList"},
+        "matched_units": {"type": "array", "items": {"$ref": "#/$defs/matchedUnit"}},
+        "active_injection": {"$ref": "#/$defs/activeInjection"},
+        "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
+        "source_refs": {"$ref": "#/$defs/stringList"},
+        "source_coordinates": {"type": "array", "items": {"$ref": "#/$defs/sourceCoordinate"}},
+        "supersession_notices": {"type": "array", "items": {"type": "object"}},
+        "unknowns": {"$ref": "#/$defs/stringList"},
+        "omissions": {"$ref": "#/$defs/stringList"},
+        "generic_fallback_allowed": {"type": "boolean"},
+        "model_prior_fallback": {"const": false},
+        "execution_authorized": {"const": false},
+        "participation_contract": {"$ref": "#/$defs/nonEmptyString"},
+        "delivery_requirements": {"oneOf": [
+          {"$ref": "#/$defs/deliveryActive"},
+          {"$ref": "#/$defs/deliveryNoMatch"}
+        ]},
+        "application_trace_template": {"$ref": "#/$defs/ApplicationTraceTemplate"},
+        "completion_boundary": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    }
+  }
+}

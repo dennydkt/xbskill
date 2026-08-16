@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 系统审计"
+  short_description: "审查 xbskill 的路由、契约、安全与漂移，输出带位置的缺陷清单"
+  default_prompt: "使用 $xb-audit 审查这套 xbskill 的覆盖、契约和安全问题，并给出源码证据。"

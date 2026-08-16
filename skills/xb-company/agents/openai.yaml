@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 公司环境判断"
+  short_description: "逐轮了解真实组织环境，建立可证伪策略基因并适配工作解法"
+  default_prompt: "使用 $xb-company 围绕我当前的真实任务逐轮了解组织环境；公司类别只作提问种子，用实际规则和案例形成可纠正的策略基因。"

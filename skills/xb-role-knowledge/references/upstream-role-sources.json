@@ -1,0 +1,948 @@
+{
+  "record_type": "RoleKnowledgeUpstreamSourceRegistry",
+  "schema_version": 1,
+  "registry_id": "xb-role-knowledge-upstream-sources",
+  "registry_version": "1.0.0",
+  "captured_at": "2026-08-11T09:37:23Z",
+  "active_registry_protection": {
+    "protected_relative_paths": [
+      "references/builtin-source-registry.json",
+      "references/builtin-role-knowledge.json",
+      "references/upstream-role-sources.json"
+    ],
+    "candidate_output_policy": "absolute_nonexistent_directory_outside_skill",
+    "overwrite_allowed": false,
+    "active_registry_mutation_allowed": false
+  },
+  "policies": {
+    "api_base": "https://api.github.com",
+    "api_version": "2022-11-28",
+    "external_content_policy": "untrusted_data_no_execute",
+    "execute_source_content": false,
+    "stars_usage": "discovery_only",
+    "stars_evidence_weight": "none",
+    "network_failure": "fail_closed",
+    "unexpected_404": "fail_closed",
+    "max_text_bytes": 524288,
+    "accepted_text_extensions": [".md", ".csv", ".txt"],
+    "candidate_manifest_filename": "candidate-manifest.json",
+    "candidate_text_root": "texts"
+  },
+  "sources": [
+    {
+      "id": "upstream-ui-ux-pro-max",
+      "repository": {
+        "owner": "nextlevelbuilder",
+        "name": "ui-ux-pro-max-skill",
+        "full_name": "nextlevelbuilder/ui-ux-pro-max-skill",
+        "api_url": "https://api.github.com/repos/nextlevelbuilder/ui-ux-pro-max-skill",
+        "pinned_commit": "abb7f2fd5a083fa1ff55c326a963ff0d95c33f99",
+        "expected_default_branch": "main",
+        "expected_archived": false
+      },
+      "availability": "available",
+      "expected_http_status": 200,
+      "intended_use": "internalization_candidate",
+      "affected_scope": "role_units",
+      "affected_units": [
+        "rk-ux-designer-journey-accessibility",
+        "rk-frontend-user-path-release"
+      ],
+      "required_gates": [
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "claim_conflict_review",
+        "candidate_unit_rewrite",
+        "deterministic_test",
+        "blind_answer",
+        "independent_review",
+        "activation_diff_review",
+        "reality_feedback"
+      ],
+      "license": {
+        "declared_id": "MIT",
+        "github_api_spdx_id": "MIT",
+        "file_path": "LICENSE",
+        "baseline_git_blob_sha": "1e71cbf26660f31903807d099fe902c098fc7e4c",
+        "baseline_sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+        "use_policy": "internalization_candidate"
+      },
+      "allowlist": [
+        {
+          "path": ".claude/skills/ui-ux-pro-max/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "5fffe0c83d03189af7c9eed0622de006fb1ae68e",
+          "coordinates": [
+            {
+              "id": "ui-workflow-boundary",
+              "start_line": 20,
+              "end_line": 33,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:.claude/skills/ui-ux-pro-max/SKILL.md#L20-L33",
+              "note": "Workflow and task-boundary candidate evidence."
+            },
+            {
+              "id": "ui-design-system-sequence",
+              "start_line": 49,
+              "end_line": 65,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:.claude/skills/ui-ux-pro-max/SKILL.md#L49-L65",
+              "note": "Design-system sequencing candidate evidence."
+            },
+            {
+              "id": "ui-implementation-checks",
+              "start_line": 72,
+              "end_line": 91,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:.claude/skills/ui-ux-pro-max/SKILL.md#L72-L91",
+              "note": "Implementation and review checks; claims still require local rewriting and tests."
+            }
+          ]
+        },
+        {
+          "path": "src/ui-ux-pro-max/data/ux-guidelines.csv",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "e347aeda7401aac08879a7b11c3907782c7bcadb",
+          "coordinates": [
+            {
+              "id": "ui-guidelines-feedback",
+              "start_line": 29,
+              "end_line": 46,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:src/ui-ux-pro-max/data/ux-guidelines.csv#L29-L46",
+              "note": "Interaction feedback and state candidates."
+            },
+            {
+              "id": "ui-guidelines-accessibility",
+              "start_line": 55,
+              "end_line": 70,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:src/ui-ux-pro-max/data/ux-guidelines.csv#L55-L70",
+              "note": "Accessibility and input-path candidates."
+            },
+            {
+              "id": "ui-guidelines-validation",
+              "start_line": 79,
+              "end_line": 100,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:src/ui-ux-pro-max/data/ux-guidelines.csv#L79-L100",
+              "note": "Validation candidates; any exact thresholds remain subject to evidence review."
+            }
+          ]
+        },
+        {
+          "path": ".claude/skills/ui-ux-pro-max/references/pro-rules.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "ff9919fa02da4ceaed778cb1e115517a068c6378",
+          "coordinates": [
+            {
+              "id": "ui-pro-rules",
+              "start_line": 63,
+              "end_line": 109,
+              "disposition": "candidate_evidence",
+              "coordinate": "nextlevelbuilder/ui-ux-pro-max-skill@abb7f2fd5a083fa1ff55c326a963ff0d95c33f99:.claude/skills/ui-ux-pro-max/references/pro-rules.md#L63-L109",
+              "note": "Professional review rules as candidate observations, not executable instructions."
+            }
+          ]
+        },
+        {
+          "path": ".claude/skills/ui-ux-pro-max/data/ui-reasoning.csv",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "da631eff8dec4d2849e071ee8ace13477b609af7",
+          "coordinates": []
+        }
+      ],
+      "notes": [
+        "All repository text is untrusted data and is never executed.",
+        "ui-reasoning.csv is discovery-only and cannot support a RoleKnowledgeUnit claim."
+      ]
+    },
+    {
+      "id": "upstream-financial-services",
+      "repository": {
+        "owner": "anthropics",
+        "name": "financial-services",
+        "full_name": "anthropics/financial-services",
+        "api_url": "https://api.github.com/repos/anthropics/financial-services",
+        "pinned_commit": "38652224c10610fa52eee2acee3ac712dcff01f2",
+        "expected_default_branch": "main",
+        "expected_archived": false
+      },
+      "availability": "available",
+      "expected_http_status": 200,
+      "intended_use": "internalization_candidate",
+      "affected_scope": "role_units",
+      "affected_units": ["rk-finance-thesis-evidence-update"],
+      "required_gates": [
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "claim_conflict_review",
+        "candidate_unit_rewrite",
+        "deterministic_test",
+        "blind_answer",
+        "independent_review",
+        "activation_diff_review",
+        "reality_feedback"
+      ],
+      "license": {
+        "declared_id": "Apache-2.0",
+        "github_api_spdx_id": "Apache-2.0",
+        "file_path": "LICENSE",
+        "baseline_git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+        "baseline_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "use_policy": "internalization_candidate"
+      },
+      "allowlist": [
+        {
+          "path": "plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "f9a3ce9187bdc3410d3f4f3713ce70a6f6b8f221",
+          "coordinates": [
+            {
+              "id": "finance-thesis-falsifiability",
+              "start_line": 10,
+              "end_line": 32,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md#L10-L32",
+              "note": "Falsifiable thesis structure candidate."
+            },
+            {
+              "id": "finance-thesis-evidence-action",
+              "start_line": 34,
+              "end_line": 65,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md#L34-L65",
+              "note": "Evidence-to-confidence-to-action mapping candidate."
+            }
+          ]
+        },
+        {
+          "path": "plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "447de2f9ec277f976eb2b52501465250c80e1adf",
+          "coordinates": [
+            {
+              "id": "finance-earnings-beat-miss",
+              "start_line": 35,
+              "end_line": 52,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md#L35-L52",
+              "note": "Quantify before explaining; only when a reliable comparison baseline exists."
+            },
+            {
+              "id": "finance-earnings-revision",
+              "start_line": 108,
+              "end_line": 142,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md#L108-L142",
+              "note": "Old/new forecast and change-reason trace candidate."
+            }
+          ]
+        },
+        {
+          "path": "plugins/vertical-plugins/equity-research/skills/catalyst-calendar/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "af2ccb6bf1733c9a6d8df01e05a2b5805ed35000",
+          "coordinates": [
+            {
+              "id": "finance-catalyst-map",
+              "start_line": 10,
+              "end_line": 52,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/catalyst-calendar/SKILL.md#L10-L52",
+              "note": "Event, date, impact, exposure and response mapping candidate."
+            },
+            {
+              "id": "finance-catalyst-refresh",
+              "start_line": 54,
+              "end_line": 82,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/catalyst-calendar/SKILL.md#L54-L82",
+              "note": "Rolling review and date-reverification candidate."
+            }
+          ]
+        },
+        {
+          "path": "plugins/vertical-plugins/equity-research/skills/idea-generation/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "2dc90ce59e15cce9a811ef22ac2484a391c1f63e",
+          "coordinates": [
+            {
+              "id": "finance-idea-parameters",
+              "start_line": 10,
+              "end_line": 18,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/idea-generation/SKILL.md#L10-L18",
+              "note": "Parameterize the search before screening."
+            },
+            {
+              "id": "finance-idea-screening",
+              "start_line": 64,
+              "end_line": 72,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/idea-generation/SKILL.md#L64-L72",
+              "note": "Screening produces candidates rather than conclusions."
+            },
+            {
+              "id": "finance-idea-output",
+              "start_line": 74,
+              "end_line": 109,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/idea-generation/SKILL.md#L74-L109",
+              "note": "Mispricing, catalyst, risk and diligence-output candidate."
+            }
+          ]
+        },
+        {
+          "path": "plugins/vertical-plugins/equity-research/skills/initiating-coverage/references/valuation-methodologies.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "3bccca44d9e5347ead89db76a79d14b4354bf70e",
+          "coordinates": [
+            {
+              "id": "finance-valuation-sensitivity",
+              "start_line": 131,
+              "end_line": 155,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/initiating-coverage/references/valuation-methodologies.md#L131-L155",
+              "note": "Sensitivity and scenario-range candidate."
+            },
+            {
+              "id": "finance-valuation-cross-check",
+              "start_line": 356,
+              "end_line": 408,
+              "disposition": "candidate_evidence",
+              "coordinate": "anthropics/financial-services@38652224c10610fa52eee2acee3ac712dcff01f2:plugins/vertical-plugins/equity-research/skills/initiating-coverage/references/valuation-methodologies.md#L356-L408",
+              "note": "Cross-method and implied-assumption checks; example weights are not adopted."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Root Apache-2.0 does not automatically license separately licensed partner-built subtrees; those subtrees are not allowlisted.",
+        "Numerical weights and thresholds are examples unless separately evidenced and calibrated."
+      ]
+    },
+    {
+      "id": "upstream-marketing-skills",
+      "repository": {
+        "owner": "coreyhaines31",
+        "name": "marketingskills",
+        "full_name": "coreyhaines31/marketingskills",
+        "api_url": "https://api.github.com/repos/coreyhaines31/marketingskills",
+        "pinned_commit": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+        "expected_default_branch": "main",
+        "expected_archived": false
+      },
+      "availability": "available",
+      "expected_http_status": 200,
+      "intended_use": "internalization_candidate",
+      "affected_scope": "role_units",
+      "affected_units": [
+        "rk-marketing-evidence-experiment",
+        "rk-product-manager-result-experiment"
+      ],
+      "required_gates": [
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "claim_conflict_review",
+        "candidate_unit_rewrite",
+        "deterministic_test",
+        "blind_answer",
+        "independent_review",
+        "activation_diff_review",
+        "reality_feedback"
+      ],
+      "license": {
+        "declared_id": "MIT",
+        "github_api_spdx_id": "MIT",
+        "file_path": "LICENSE",
+        "baseline_git_blob_sha": "7c48dd638a9ebed49a8ef0c0c4eea90105381cdf",
+        "baseline_sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+        "use_policy": "internalization_candidate"
+      },
+      "allowlist": [
+        {
+          "path": "skills/customer-research/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "90e3f1745dbd2827c28f2f03c774f0b5f51a02c6",
+          "coordinates": [
+            {
+              "id": "marketing-research-extraction",
+              "start_line": 31,
+              "end_line": 110,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/customer-research/SKILL.md#L31-L110",
+              "note": "JTBD, pain, trigger, outcome, language, alternative and source/date extraction candidate."
+            },
+            {
+              "id": "marketing-research-confidence",
+              "start_line": 137,
+              "end_line": 148,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/customer-research/SKILL.md#L137-L148",
+              "note": "Confidence and segmentation boundary candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/product-marketing/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "622eab19e823a131fe8b9d500aa53143604fad8a",
+          "coordinates": [
+            {
+              "id": "marketing-context-versioning",
+              "start_line": 16,
+              "end_line": 51,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/product-marketing/SKILL.md#L16-L51",
+              "note": "Versioned marketing-context candidate."
+            },
+            {
+              "id": "marketing-switching-evidence",
+              "start_line": 76,
+              "end_line": 121,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/product-marketing/SKILL.md#L76-L121",
+              "note": "Alternatives, switching forces, objections and proof candidate."
+            },
+            {
+              "id": "marketing-context-change-log",
+              "start_line": 232,
+              "end_line": 243,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/product-marketing/SKILL.md#L232-L243",
+              "note": "What-changed and why trace candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/marketing-plan/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "a647a520f6981032a3174dc988f75c9a71558831",
+          "coordinates": [
+            {
+              "id": "marketing-plan-priorities",
+              "start_line": 41,
+              "end_line": 79,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/marketing-plan/SKILL.md#L41-L79",
+              "note": "Lifecycle-priority candidate."
+            },
+            {
+              "id": "marketing-plan-constraints",
+              "start_line": 81,
+              "end_line": 99,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/marketing-plan/SKILL.md#L81-L99",
+              "note": "Budget, team and baseline constraints candidate."
+            },
+            {
+              "id": "marketing-plan-ownership",
+              "start_line": 157,
+              "end_line": 164,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/marketing-plan/SKILL.md#L157-L164",
+              "note": "Owner and metric binding candidate."
+            },
+            {
+              "id": "marketing-plan-not-doing",
+              "start_line": 184,
+              "end_line": 205,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/marketing-plan/SKILL.md#L184-L205",
+              "note": "Explicit non-priorities and review cadence candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/copywriting/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "0793e62270e203de1b2e2ff591a56015e4cf0075",
+          "coordinates": [
+            {
+              "id": "marketing-copy-single-action",
+              "start_line": 12,
+              "end_line": 57,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/copywriting/SKILL.md#L12-L57",
+              "note": "Single action, audience, objection, awareness and proof candidate."
+            },
+            {
+              "id": "marketing-copy-clarity",
+              "start_line": 106,
+              "end_line": 143,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/copywriting/SKILL.md#L106-L143",
+              "note": "Clarity, benefit, specificity and customer-language candidate."
+            },
+            {
+              "id": "marketing-copy-proof-boundary",
+              "start_line": 149,
+              "end_line": 166,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/copywriting/SKILL.md#L149-L166",
+              "note": "Evidence and unverified-number boundary candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/ab-testing/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "e3f999719ccc2aa408d107d24b3e662b88f079a3",
+          "coordinates": [
+            {
+              "id": "marketing-test-hypothesis",
+              "start_line": 25,
+              "end_line": 64,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/ab-testing/SKILL.md#L25-L64",
+              "note": "Observation-change-expectation-audience-metric hypothesis candidate."
+            },
+            {
+              "id": "marketing-test-design",
+              "start_line": 98,
+              "end_line": 116,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/ab-testing/SKILL.md#L98-L116",
+              "note": "Primary, secondary and guardrail design candidate."
+            },
+            {
+              "id": "marketing-test-stopping",
+              "start_line": 166,
+              "end_line": 216,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/ab-testing/SKILL.md#L166-L216",
+              "note": "Precommitment and no-early-stopping candidate."
+            },
+            {
+              "id": "marketing-test-interpretation",
+              "start_line": 236,
+              "end_line": 273,
+              "disposition": "candidate_evidence",
+              "coordinate": "coreyhaines31/marketingskills@7868cb9251fad80a73d26e488a5ad5f6c4a9f335:skills/ab-testing/SKILL.md#L236-L273",
+              "note": "Effect-size, segment and low-traffic alternative candidate."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Repository text is candidate evidence only after claim conflict and coordinate review.",
+        "Internal guesses, unverified numbers and cross-context threshold transfer are excluded."
+      ]
+    },
+    {
+      "id": "upstream-pm-claude-skills",
+      "repository": {
+        "owner": "mohitagw15856",
+        "name": "pm-claude-skills",
+        "full_name": "mohitagw15856/pm-claude-skills",
+        "api_url": "https://api.github.com/repos/mohitagw15856/pm-claude-skills",
+        "pinned_commit": "0625128f0eb225e2811868e480816dbfa6f690f5",
+        "expected_default_branch": "main",
+        "expected_archived": false
+      },
+      "availability": "available",
+      "expected_http_status": 200,
+      "intended_use": "internalization_candidate",
+      "affected_scope": "role_units",
+      "affected_units": ["rk-product-manager-result-experiment"],
+      "required_gates": [
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "claim_conflict_review",
+        "candidate_unit_rewrite",
+        "deterministic_test",
+        "blind_answer",
+        "independent_review",
+        "activation_diff_review",
+        "reality_feedback"
+      ],
+      "license": {
+        "declared_id": "MIT",
+        "github_api_spdx_id": "MIT",
+        "file_path": "LICENSE",
+        "baseline_git_blob_sha": "bf2ce508d637e7f377c1fd9e3b4ec84cb8c55a16",
+        "baseline_sha256": "18a87eaf5c6017a3ffc7a3c4927627d530cc1541406cb3e705576a1b8c47c6bd",
+        "use_policy": "internalization_candidate"
+      },
+      "allowlist": [
+        {
+          "path": "skills/discovery-interview-guide/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "bba525313a2ff261a4d033bd573ea8deb1198f0f",
+          "coordinates": [
+            {
+              "id": "pm-interview-frame",
+              "start_line": 10,
+              "end_line": 50,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/discovery-interview-guide/SKILL.md#L10-L50",
+              "note": "Discovery interview framing candidate."
+            },
+            {
+              "id": "pm-interview-question-flow",
+              "start_line": 54,
+              "end_line": 80,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/discovery-interview-guide/SKILL.md#L54-L80",
+              "note": "Question-flow and anti-leading candidate."
+            },
+            {
+              "id": "pm-interview-output",
+              "start_line": 100,
+              "end_line": 133,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/discovery-interview-guide/SKILL.md#L100-L133",
+              "note": "Evidence and follow-up output candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/user-research-synthesis/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "90735ec2e6a50e06c1514261a067391b548ee560",
+          "coordinates": [
+            {
+              "id": "pm-synthesis-method",
+              "start_line": 25,
+              "end_line": 119,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/user-research-synthesis/SKILL.md#L25-L119",
+              "note": "Evidence-preserving synthesis candidate."
+            },
+            {
+              "id": "pm-synthesis-boundary",
+              "start_line": 140,
+              "end_line": 165,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/user-research-synthesis/SKILL.md#L140-L165",
+              "note": "Contradiction and confidence boundary candidate."
+            },
+            {
+              "id": "pm-synthesis-thresholds-excluded",
+              "start_line": 167,
+              "end_line": 187,
+              "disposition": "excluded",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/user-research-synthesis/SKILL.md#L167-L187",
+              "note": "Example numbers and absolute sample thresholds are explicitly excluded."
+            }
+          ]
+        },
+        {
+          "path": "skills/competitive-analysis/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "3b5ebacd1170eb22d27b75492b7e01d031398ab5",
+          "coordinates": [
+            {
+              "id": "pm-competitive-scope",
+              "start_line": 17,
+              "end_line": 32,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/competitive-analysis/SKILL.md#L17-L32",
+              "note": "Competitive question and scope candidate."
+            },
+            {
+              "id": "pm-competitive-evidence",
+              "start_line": 50,
+              "end_line": 99,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/competitive-analysis/SKILL.md#L50-L99",
+              "note": "Evidence collection and comparison candidate."
+            },
+            {
+              "id": "pm-competitive-output",
+              "start_line": 108,
+              "end_line": 125,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/competitive-analysis/SKILL.md#L108-L125",
+              "note": "Decision-relevant output candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/assumption-mapper/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "f5f8c5652d96e8264ca3c51d4bc3d8f6bb8c2690",
+          "coordinates": [
+            {
+              "id": "pm-assumption-inventory",
+              "start_line": 16,
+              "end_line": 53,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/assumption-mapper/SKILL.md#L16-L53",
+              "note": "Assumption inventory and classification candidate."
+            },
+            {
+              "id": "pm-assumption-priority",
+              "start_line": 55,
+              "end_line": 84,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/assumption-mapper/SKILL.md#L55-L84",
+              "note": "Risk/uncertainty prioritization candidate without importing example numbers."
+            },
+            {
+              "id": "pm-assumption-test",
+              "start_line": 93,
+              "end_line": 109,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/assumption-mapper/SKILL.md#L93-L109",
+              "note": "Cheap-test mapping candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/experiment-designer/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "b64efc71fc22467d0af0b0aef9d018d40fd53097",
+          "coordinates": [
+            {
+              "id": "pm-experiment-question",
+              "start_line": 10,
+              "end_line": 42,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/experiment-designer/SKILL.md#L10-L42",
+              "note": "Experiment question and falsifiability candidate."
+            },
+            {
+              "id": "pm-experiment-decision",
+              "start_line": 44,
+              "end_line": 77,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/experiment-designer/SKILL.md#L44-L77",
+              "note": "Evidence-to-decision branch candidate."
+            }
+          ]
+        },
+        {
+          "path": "skills/metric-tree-builder/SKILL.md",
+          "content_use": "candidate_evidence",
+          "baseline_git_blob_sha": "8e69675379c355f5f491d4b23eb5f1bbab7f943b",
+          "coordinates": [
+            {
+              "id": "pm-metric-tree-model",
+              "start_line": 10,
+              "end_line": 44,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/metric-tree-builder/SKILL.md#L10-L44",
+              "note": "Metric-tree relationship candidate."
+            },
+            {
+              "id": "pm-metric-tree-validation",
+              "start_line": 58,
+              "end_line": 71,
+              "disposition": "candidate_evidence",
+              "coordinate": "mohitagw15856/pm-claude-skills@0625128f0eb225e2811868e480816dbfa6f690f5:skills/metric-tree-builder/SKILL.md#L58-L71",
+              "note": "Ownership and validation candidate."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Reject unsupported example numbers and absolute sample-size thresholds.",
+        "A successful refresh produces evidence candidates, never an activated product-management unit."
+      ]
+    },
+    {
+      "id": "upstream-product-manager-skills-dean",
+      "repository": {
+        "owner": "deanpeters",
+        "name": "Product-Manager-Skills",
+        "full_name": "deanpeters/Product-Manager-Skills",
+        "api_url": "https://api.github.com/repos/deanpeters/Product-Manager-Skills",
+        "pinned_commit": "e58cff6818f50142bcd64558bfad5bf7a99c6f9b",
+        "expected_default_branch": "main",
+        "expected_archived": false
+      },
+      "availability": "available",
+      "expected_http_status": 200,
+      "intended_use": "discovery_only",
+      "affected_scope": "role_units",
+      "affected_units": ["rk-product-manager-result-experiment"],
+      "required_gates": [
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "discovery_scope_review"
+      ],
+      "license": {
+        "declared_id": "CC-BY-NC-SA-4.0",
+        "github_api_spdx_id": "NOASSERTION",
+        "file_path": "LICENSE",
+        "baseline_git_blob_sha": "7cdbe0b482f604a06a0988dad8877ae8d9257f7d",
+        "baseline_sha256": "e66c269d4819aaab34b49ef5220c4ddab6756f21bb5180761a4eb8561f2b7bbd",
+        "use_policy": "discovery_only"
+      },
+      "allowlist": [
+        {
+          "path": "skills/discovery-process/SKILL.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "82b81ccad6466a68a63362ff2f2af261fd40f781",
+          "coordinates": [
+            {"id":"dean-discovery-1","start_line":36,"end_line":58,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/discovery-process/SKILL.md#L36-L58","note":"Discovery-only candidate locator."},
+            {"id":"dean-discovery-2","start_line":184,"end_line":223,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/discovery-process/SKILL.md#L184-L223","note":"Discovery-only candidate locator."},
+            {"id":"dean-discovery-3","start_line":247,"end_line":265,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/discovery-process/SKILL.md#L247-L265","note":"Discovery-only candidate locator."},
+            {"id":"dean-discovery-4","start_line":287,"end_line":315,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/discovery-process/SKILL.md#L287-L315","note":"Discovery-only candidate locator."},
+            {"id":"dean-discovery-5","start_line":324,"end_line":360,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/discovery-process/SKILL.md#L324-L360","note":"Discovery-only candidate locator."}
+          ]
+        },
+        {
+          "path": "skills/competitive-analysis-process/SKILL.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "72e98629fde6893420b115c6f3fdc4c4b189a219",
+          "coordinates": [
+            {"id":"dean-competitive-1","start_line":35,"end_line":66,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/competitive-analysis-process/SKILL.md#L35-L66","note":"Discovery-only candidate locator."},
+            {"id":"dean-competitive-2","start_line":84,"end_line":144,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/competitive-analysis-process/SKILL.md#L84-L144","note":"Discovery-only candidate locator."},
+            {"id":"dean-competitive-3","start_line":146,"end_line":157,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/competitive-analysis-process/SKILL.md#L146-L157","note":"Discovery-only candidate locator."},
+            {"id":"dean-competitive-4","start_line":184,"end_line":195,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/competitive-analysis-process/SKILL.md#L184-L195","note":"Discovery-only candidate locator."}
+          ]
+        },
+        {
+          "path": "skills/opportunity-solution-tree/SKILL.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "2d281121ffa8930907322f30afbfaa57349a5364",
+          "coordinates": [
+            {"id":"dean-ost-1","start_line":38,"end_line":70,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/opportunity-solution-tree/SKILL.md#L38-L70","note":"Discovery-only candidate locator."},
+            {"id":"dean-ost-2","start_line":155,"end_line":200,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/opportunity-solution-tree/SKILL.md#L155-L200","note":"Discovery-only candidate locator."},
+            {"id":"dean-ost-3","start_line":214,"end_line":264,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/opportunity-solution-tree/SKILL.md#L214-L264","note":"Discovery-only candidate locator."},
+            {"id":"dean-ost-4","start_line":270,"end_line":350,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/opportunity-solution-tree/SKILL.md#L270-L350","note":"Discovery-only candidate locator."},
+            {"id":"dean-ost-5","start_line":371,"end_line":415,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/opportunity-solution-tree/SKILL.md#L371-L415","note":"Discovery-only candidate locator."}
+          ]
+        },
+        {
+          "path": "skills/prioritization-advisor/SKILL.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "f0e934f686c13fc751bac761071c2872c0c53798",
+          "coordinates": [
+            {"id":"dean-priority-1","start_line":39,"end_line":78,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/prioritization-advisor/SKILL.md#L39-L78","note":"Discovery-only candidate locator."},
+            {"id":"dean-priority-placeholder-excluded","start_line":203,"end_line":255,"disposition":"excluded","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/prioritization-advisor/SKILL.md#L203-L255","note":"Placeholder/example material is explicitly excluded."},
+            {"id":"dean-priority-2","start_line":275,"end_line":327,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/prioritization-advisor/SKILL.md#L275-L327","note":"Discovery-only candidate locator."},
+            {"id":"dean-priority-3","start_line":394,"end_line":428,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/prioritization-advisor/SKILL.md#L394-L428","note":"Discovery-only candidate locator."}
+          ]
+        },
+        {
+          "path": "skills/epic-hypothesis/SKILL.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "8490f0196f716d57d8b87fbe0dc5a195b8c1cfd3",
+          "coordinates": [
+            {"id":"dean-epic-1","start_line":38,"end_line":70,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/epic-hypothesis/SKILL.md#L38-L70","note":"Discovery-only candidate locator."},
+            {"id":"dean-epic-2","start_line":89,"end_line":191,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/epic-hypothesis/SKILL.md#L89-L191","note":"Discovery-only candidate locator."},
+            {"id":"dean-epic-3","start_line":224,"end_line":267,"disposition":"discovery_only","coordinate":"deanpeters/Product-Manager-Skills@e58cff6818f50142bcd64558bfad5bf7a99c6f9b:skills/epic-hypothesis/SKILL.md#L224-L267","note":"Discovery-only candidate locator."}
+          ]
+        }
+      ],
+      "notes": [
+        "CC BY-NC-SA 4.0 is intentionally constrained to discovery-only use.",
+        "GitHub reports SPDX NOASSERTION; the pinned LICENSE blob and SHA-256 are therefore mandatory drift checks.",
+        "No text from this source may become RoleKnowledgeUnit evidence without a separate explicit license decision and full gates."
+      ]
+    },
+    {
+      "id": "upstream-awesome-agent-skills",
+      "repository": {
+        "owner": "VoltAgent",
+        "name": "awesome-agent-skills",
+        "full_name": "VoltAgent/awesome-agent-skills",
+        "api_url": "https://api.github.com/repos/VoltAgent/awesome-agent-skills",
+        "pinned_commit": "63097f81f4d00d5e13ffad8b3ad371a2d46f1afa",
+        "expected_default_branch": "main",
+        "expected_archived": false
+      },
+      "availability": "available",
+      "expected_http_status": 200,
+      "intended_use": "discovery_only",
+      "affected_scope": "discovery_index_only",
+      "affected_units": [],
+      "required_gates": [
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "discovery_scope_review"
+      ],
+      "license": {
+        "declared_id": "MIT",
+        "github_api_spdx_id": "MIT",
+        "file_path": "LICENSE",
+        "baseline_git_blob_sha": "a0d0a9bbe350d5c6f22a61ca408364e1c36c964d",
+        "baseline_sha256": "17a5b3b9a701b28197b4f921c363d0eba6d7a77f8289fa1aa34df572be7ce5b6",
+        "use_policy": "discovery_only"
+      },
+      "allowlist": [
+        {
+          "path": "README.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "7afb8310601776903ddf32a5e322e9201514d07e",
+          "coordinates": [
+            {"id":"volt-index-structure","start_line":58,"end_line":77,"disposition":"discovery_only","coordinate":"VoltAgent/awesome-agent-skills@63097f81f4d00d5e13ffad8b3ad371a2d46f1afa:README.md#L58-L77","note":"Discovery index structure only."},
+            {"id":"volt-not-audited","start_line":1897,"end_line":1908,"disposition":"discovery_only","coordinate":"VoltAgent/awesome-agent-skills@63097f81f4d00d5e13ffad8b3ad371a2d46f1afa:README.md#L1897-L1908","note":"Explicit curated-not-audited limitation."},
+            {"id":"volt-discovery-metadata","start_line":1930,"end_line":1937,"disposition":"discovery_only","coordinate":"VoltAgent/awesome-agent-skills@63097f81f4d00d5e13ffad8b3ad371a2d46f1afa:README.md#L1930-L1937","note":"Discovery metadata convention only."},
+            {"id":"volt-upstream-change-warning","start_line":1952,"end_line":1956,"disposition":"discovery_only","coordinate":"VoltAgent/awesome-agent-skills@63097f81f4d00d5e13ffad8b3ad371a2d46f1afa:README.md#L1952-L1956","note":"Upstream-change and no-guarantee warning."}
+          ]
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "content_use": "discovery_only",
+          "baseline_git_blob_sha": "147fef3f85df2e6cd4af84476a8e3e066591bbec",
+          "coordinates": [
+            {"id":"volt-listing-criteria","start_line":15,"end_line":27,"disposition":"discovery_only","coordinate":"VoltAgent/awesome-agent-skills@63097f81f4d00d5e13ffad8b3ad371a2d46f1afa:CONTRIBUTING.md#L15-L27","note":"Listing criteria are discovery signals, not quality evidence."}
+          ]
+        }
+      ],
+      "notes": [
+        "Stars, list placement and curation are discovery-only signals with zero evidence weight.",
+        "Any listed repository must be independently pinned, licensed, security-reviewed and evidenced before use."
+      ]
+    },
+    {
+      "id": "upstream-k-dense-admin-skills",
+      "repository": {
+        "owner": "K-Dense-AI",
+        "name": "claude-admin-skills",
+        "full_name": "K-Dense-AI/claude-admin-skills",
+        "api_url": "https://api.github.com/repos/K-Dense-AI/claude-admin-skills",
+        "pinned_commit": null,
+        "expected_default_branch": null,
+        "expected_archived": null
+      },
+      "availability": "expected_unavailable",
+      "expected_http_status": 404,
+      "intended_use": "unavailable",
+      "affected_scope": "unavailable_gap",
+      "affected_units": [
+        "rk-admin-service-resource",
+        "rk-secretary-decision-authorization",
+        "rk-office-formal-record-flow"
+      ],
+      "required_gates": [
+        "availability_recheck",
+        "license_review",
+        "security_review",
+        "allowlist_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "discovery_scope_review"
+      ],
+      "license": null,
+      "allowlist": [],
+      "notes": [
+        "GitHub official API returned 404 at capture time; no repository content was fetched.",
+        "A continuing 404 is a stable unavailable state. Unexpected recovery is a blocking candidate change requiring manual license, security and allowlist review."
+      ]
+    }
+  ]
+}

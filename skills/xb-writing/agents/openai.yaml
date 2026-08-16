@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作写作"
+  short_description: "把邮件、方案、通知与制度写成读者能行动、证据和边界清楚的成稿"
+  default_prompt: "使用 $xb-writing 根据读者、目的、证据和边界，直接写成可用工作文稿。"

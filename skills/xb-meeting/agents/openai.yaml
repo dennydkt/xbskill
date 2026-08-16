@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 高效会议"
+  short_description: "把会前议题、会上决定与会后行动项连成可追踪的会议闭环"
+  default_prompt: "使用 $xb-meeting 帮我准备或整理这场会议，锁定决定、责任人和后续行动。"

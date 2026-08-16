@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作状态保存"
+  short_description: "保存当前目标、事实、结论、未决项和下一步，生成可恢复工作快照"
+  default_prompt: "使用 $xb-save 把当前工作状态保存成可恢复快照，并标出未决项和下一步。"

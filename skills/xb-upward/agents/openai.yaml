@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 向上协作"
+  short_description: "把进度、风险与资源请求整理成领导可决定的信息包和向上话术"
+  default_prompt: "使用 $xb-upward 帮我准备这次汇报或请示，让领导能明确作出决定。"

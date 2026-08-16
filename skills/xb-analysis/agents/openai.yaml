@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 证据化分析"
+  short_description: "拆开现象、约束与竞争解释，用证据定位工作问题的真实原因"
+  default_prompt: "使用 $xb-analysis 分析这件事的事实、可能原因和最值得验证的解释。"

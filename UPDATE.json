@@ -1,0 +1,5 @@
+{
+  "version": "1.3.0",
+  "notice": "首个公开发布版本：1 个主入口 + 34 个专科，含新增的 xb-decode（潜台词解码）。",
+  "details_url": "https://github.com/dennydkt/xbskill"
+}

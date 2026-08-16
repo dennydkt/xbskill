@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作能力评估"
+  short_description: "按岗位任务与真实证据评估能力、阶段、差距和下一挑战"
+  default_prompt: "使用 $xb-capability 按我的实际岗位任务和生命周期评估能力证据，区分本轮新手/入门/老手帮助阶段与 L0–L4 长期等级，并找下一项真实挑战。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 潜台词解码"
+  short_description: "解码职场与权力环境中话里的话：候选解码、辨别动作、回应方向与验证窗口，含《人民的名义》案例自测"
+  default_prompt: "使用 $xb-decode 帮我解码这条信号，给出候选解读和验证动作。"

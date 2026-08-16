@@ -1,0 +1,152 @@
+{
+  "record_type": "RoleKnowledgeBlindReviews",
+  "schema_version": 1,
+  "reviewer_id": "rk-blind-reviewer-round9-n",
+  "reviewed_at": "2026-08-11T10:25:41.279Z",
+  "cases": [
+    {
+      "case_id": "blind-05-positive-s0",
+      "case_kind": "positive_s0",
+      "unit_id": "rk-product-manager-result-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案把功能请求转成可证伪结果假设和最小可逆实验，完整列出六类竞争解释、六权、五个风险门、S0单问题/单行为/单实验/单回滚适配，并给产品/业务owner的验收条件和现实反馈时点；但packet当前execution_authorized=false未在答案或trace中明确保留，通用的‘获批后执行’策略不能证明本次已处于未授权状态，故S仅1。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-05-positive-s2",
+      "case_kind": "positive_s2",
+      "unit_id": "rk-product-manager-result-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案应用结果假设/风险假设/可逆验证专业动作，覆盖六类分支、六权、全部风险门和S2组合取舍、二阶效应、机会成本、停止机制；验收owner、条件、现实信号与时点齐全，且明确未声称现实完成。但没有把packet的当前execution_authorized=false写入答案或trace，只有一般性授权规则，故S缺当前授权边界字段。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-05-negative",
+      "case_kind": "negative",
+      "unit_id": "rk-product-manager-result-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "明确no_match且trace=null，没有把邮件润色编造成产品发现；给出当前责任、其他具名责任人与通用协作三条竞争分支，逐项核提出/决定/授权/执行/复核/风险，并由事项责任人确认是否仍含未决产品判断。observer、observable、when和现实未完成边界均可执行。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-05-overturn",
+      "case_kind": "overturn",
+      "unit_id": "rk-product-manager-result-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "明确no_match、trace=null并撤回岗位知识已应用的声称；把产品责任、配置/教育owner与通用协作作为竞争责任分支，以同一真实任务在正确配置/指导后能否稳定完成为下一辨别动作，具名owner、观察信号、取证时点和未完成边界完整。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-06-positive-s0",
+      "case_kind": "positive_s0",
+      "unit_id": "rk-ux-designer-journey-accessibility",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案真正应用按任务影响补全旅程/状态并用最小研究区分体验、技术、内容、流程的专业动作，覆盖六类解释、六权、全部风险门及S0一条清单/一个任务样例/资深复核适配；验收者、条件和生产反馈点明确。但未显式保留packet当前execution_authorized=false，故S仍缺关键当前授权字段。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-06-positive-s2",
+      "case_kind": "positive_s2",
+      "unit_id": "rk-ux-designer-journey-accessibility",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "完整应用旅程/状态/最小研究effect，建立MASTER/override、持续研究、设计系统治理、代表性与排除风险的S2机制；六权、五个风险门、独立无障碍验收条件、现实观察者/信号/时点均齐全，并分离包完成与现实体验。但答案未声明当前execution_authorized=false，只说明通过条件后方可发布，故S为1。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-06-negative",
+      "case_kind": "negative",
+      "unit_id": "rk-ux-designer-journey-accessibility",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "对无用户界面的数据库索引维护明确no_match且trace=null，未编造UX事实；责任名称待证、数据库/工程责任和通用协作三分支可辨别，下一动作由事项owner确认是否存在界面、用户任务或无障碍验收，并给出观察者、信号、取证时点与未完成声明。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-06-overturn",
+      "case_kind": "overturn",
+      "unit_id": "rk-ux-designer-journey-accessibility",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "明确no_match、trace=null并保留原因未知，没有把网络性能失败继续解释为纯交互问题；UX、工程性能与通用协作责任分支清晰，由工程owner和体验owner跨网络/设备复测同一任务，观察信号、责任交接、反馈时点和现实未完成边界完整。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-14-positive-s0",
+      "case_kind": "positive_s0",
+      "unit_id": "rk-finance-thesis-evidence-update",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案应用固定主体/期间/披露/基准后更新论点证据账、财报桥和估值情景的专业effect，覆盖竞争解释、独立复算、六权、全部交易/信息/模型风险门及S0单支柱单来源单桥适配；独立模型复核验收和后续披露反馈明确。但未明确保留当前execution_authorized=false，故S为1。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-14-positive-s2",
+      "case_kind": "positive_s2",
+      "unit_id": "rk-finance-thesis-evidence-update",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案将论点账、旧新桥、估值情景用于S2多论点版本、复核、催化剂组合、预期差、指标游戏和失效退出治理，列全六权与五个风险门，给独立复核者验收条件及研究负责人现实反馈，并明确非交易与非现实完成。但没有显式承接packet当前execution_authorized=false，故S缺一项关键边界。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-14-negative",
+      "case_kind": "negative",
+      "unit_id": "rk-finance-thesis-evidence-update",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "仅把已确认财务数字排表被正确判为no_match，trace=null且不编造研究结论；研究责任待证、财务运营/文档责任和通用排版三分支均有辨别与交接动作，由事项owner确认授权及是否仍需口径/模型/投资判断，反馈字段和未完成边界齐全。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-14-overturn",
+      "case_kind": "overturn",
+      "unit_id": "rk-finance-thesis-evidence-update",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "明确no_match、trace=null并撤回原金融单元适用声称，保留重述/复算未知；研究、会计/模型/合规和通用资料三条责任分支清楚，下一步由研究负责人和独立模型复核者以重述后同一官方口径重算关键行，观察信号、时点和现实未完成边界完整。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-15-positive-s0",
+      "case_kind": "positive_s0",
+      "unit_id": "rk-marketing-evidence-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案应用客户证据/冲突分账后按目标、资源、机会成本排优先和不做项的effect，含证据、信息、产品价值、实验漂移与低流量分支，六权、全部风险门和S0单主张/单取舍/单验证适配完整；营销/业务owner验收及扩大后反馈可复核。但未显式保留当前execution_authorized=false，故S为1。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-15-positive-s2",
+      "case_kind": "positive_s2",
+      "unit_id": "rk-marketing-evidence-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 1, "E": 2, "R": 2, "V": 2},
+      "rationale": "答案将专业effect用于S2跨细分证据、营销组合、实验平台、归因漂移、指标游戏、预算重配和停止治理；竞争分支、六权、五个风险门、owner验收条件及每轮实验/预算/扩停反馈均完整，并分离交付物与现实结果。但当前execution_authorized=false没有被明确写回答案或trace，故S不完整。",
+      "verdict": "fail"
+    },
+    {
+      "case_id": "blind-15-negative",
+      "case_kind": "negative",
+      "unit_id": "rk-marketing-evidence-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "已授权三句活动文案排版被明确判为no_match，trace=null且不编造营销实验事实；营销责任待证、内容/设计责任与通用排版三分支均有辨别及交接动作，由品牌/内容owner确认内容、授权和发布决定已冻结，反馈点和现实未完成边界完整。",
+      "verdict": "pass"
+    },
+    {
+      "case_id": "blind-15-overturn",
+      "case_kind": "overturn",
+      "unit_id": "rk-marketing-evidence-experiment",
+      "answerer_id": "rk-blind-answerer-round9-m",
+      "scores": {"G": 2, "C": 2, "A": 2, "P": 2, "S": 2, "E": 2, "R": 2, "V": 2},
+      "rationale": "明确no_match、trace=null并因埋点/流量漂移、护栏或细分行为反证而撤回扩大结论，未编造营销事实；营销、数据/实验/产品/合规与通用协作三分支可辨别，由数据/实验owner冻结版本复核测量，具备观察信号、时点和现实未完成声明。",
+      "verdict": "pass"
+    }
+  ]
+}

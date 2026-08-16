@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 快点下班"
+  short_description: "工作问题唯一入口：按岗位、阶段和组织环境纵深解决并导航现实反馈"
+  default_prompt: "使用 $xbskill 接住我当前的工作问题；按我的实际岗位责任、熟练阶段和组织环境适配解法，一次只推进当前瓶颈并导航到现实反馈。"

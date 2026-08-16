@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 系统更新"
+  short_description: "安全比较、备份和更新 xbskill 技能族，验证失败时可完整回滚"
+  default_prompt: "使用 $xb-update 比较 xbskill 来源与目标，先预览差异，再安全更新和验证。"

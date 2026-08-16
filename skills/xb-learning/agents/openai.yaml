@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 任务驱动学习"
+  short_description: "围绕真实工作任务设计练习、反馈和迁移，形成稳定能力证据"
+  default_prompt: "使用 $xb-learning 围绕这项真实任务安排练习、反馈、核验和迁移。"

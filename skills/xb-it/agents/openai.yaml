@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill IT 问题解决"
+  short_description: "诊断软件、系统、权限与代码故障，执行可逆修复并分层验证"
+  default_prompt: "使用 $xb-it 根据报错和环境定位故障，给出可逆修复、验证步骤和回滚办法。"

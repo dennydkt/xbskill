@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill AI原生武装"
+  short_description: "把 AI 原生岗位画像转成多周期能力发展编排：四维证据与周期验收；含 C 端 60 分钟快通道"
+  default_prompt: "使用 $xb-ai-native 按 AI 原生岗位画像盘点我的四维证据，编排当前训练周期。"

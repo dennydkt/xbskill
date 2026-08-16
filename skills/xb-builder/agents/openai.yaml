@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 专科孵化"
+  short_description: "把反复出现但未覆盖的工作问题，建设成经过真实样本试跑的 xb 专科"
+  default_prompt: "使用 $xb-builder 判断这个反复问题是否值得沉淀，并建设可试跑的专科 Skill。"

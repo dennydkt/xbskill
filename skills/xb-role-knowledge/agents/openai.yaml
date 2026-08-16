@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 岗位知识补充"
+  short_description: "治理、更新并让岗位专业知识参与 xbskill 当前任务"
+  default_prompt: "使用 $xb-role-knowledge 匹配、补充或更新可验证的岗位知识，并证明它实际参与当前交付物。"

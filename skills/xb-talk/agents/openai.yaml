@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 职场话术"
+  short_description: "把催进度、拒绝、反馈、道歉等场景写成可直接发送的职场话术"
+  default_prompt: "使用 $xb-talk 根据对象、目的和边界，写一条我可以直接发送的话。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 项目计划"
+  short_description: "把目标拆成容量可行的工作包，明确依赖、责任、风险和决定门"
+  default_prompt: "使用 $xb-plan 把这个项目拆成工作包、依赖、责任人、风险和现实检查点。"

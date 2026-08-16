@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作状态恢复"
+  short_description: "恢复上次保存的目标、结论、未决项和证据，定位现在该继续的一步"
+  default_prompt: "使用 $xb-restore 读取已有工作快照，恢复上下文并定位当前下一步。"

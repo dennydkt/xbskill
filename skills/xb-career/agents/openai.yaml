@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 职业发展"
+  short_description: "比较晋升、转岗、跳槽与离职选项，用现实试验建立职业去留阈值"
+  default_prompt: "使用 $xb-career 帮我比较当前职业选项，并设计低风险试验和去留阈值。"

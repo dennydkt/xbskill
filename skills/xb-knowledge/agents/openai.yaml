@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作知识库"
+  short_description: "建立可追溯工作知识库，锁定真源、版本、证据坐标与维护机制"
+  default_prompt: "使用 $xb-knowledge 帮我整理这些资料，确定真源、导航、证据锁和更新规则。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 人物与协作"
+  short_description: "建立自己、同事和领导的可验证工作画像并设计现实协作策略"
+  default_prompt: "使用 $xb-people 帮我分析自己、同事或领导的工作方式。"

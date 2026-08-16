@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 数据工作"
+  short_description: "处理 Excel、SQL、指标与图表，交付口径清楚且可复核的数据结论"
+  default_prompt: "使用 $xb-data 检查这项数据任务的口径、质量和证据，并交付可复核结果。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作续航"
+  short_description: "处理压力、耗竭与功能下降，优先稳定当下并建立减负和求助边界"
+  default_prompt: "使用 $xb-wellbeing 帮我先稳住当前工作状态，再判断减负、求助或调整边界。"

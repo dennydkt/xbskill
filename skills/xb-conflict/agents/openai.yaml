@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 冲突处理"
+  short_description: "区分冲突中的事实、责任、利益与权力，设计沟通、留痕和升级条件"
+  default_prompt: "使用 $xb-conflict 帮我梳理这次冲突，并形成沟通方案、证据边界和升级条件。"

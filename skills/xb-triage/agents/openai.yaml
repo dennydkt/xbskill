@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作分诊"
+  short_description: "用五坐标与解决调整退出选择门定位复杂工作问题的真实瓶颈"
+  default_prompt: "使用 $xb-triage 帮我分清当前问题来自任务、状态、人物还是公司，并只推进一步。"

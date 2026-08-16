@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 启动与执行"
+  short_description: "识别拖延、过载与保护性不行动，把值得推进的任务缩成可开始的一步"
+  default_prompt: "使用 $xb-action 判断我为什么迟迟无法开始，并给出现在能做的最小动作。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 汇报与演示"
+  short_description: "围绕听众决定设计 PPT、述职与答辩，准备证据、质疑和会后动作"
+  default_prompt: "使用 $xb-presentation 把这些材料组织成面向听众决定的汇报或演示。"

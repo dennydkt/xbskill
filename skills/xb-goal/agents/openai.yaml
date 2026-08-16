@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 目标与帮助方式"
+  short_description: "把任务、项目、岗位、职业和组织目标拆清并匹配合适帮助能级"
+  default_prompt: "使用 $xb-goal 帮我拆解目标并决定你应该指导、共创、代做还是系统化。"

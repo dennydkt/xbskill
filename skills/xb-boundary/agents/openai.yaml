@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 职场边界"
+  short_description: "处理加活、越权、骚扰与不合理要求，形成表达、留痕和升级路径"
+  default_prompt: "使用 $xb-boundary 帮我判断这项要求的边界，并准备表达、留痕和升级方案。"

@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xbskill.local/schemas/role-knowledge-upstream-sources-v1.json",
+  "title": "xbskill Upstream Role Knowledge Source Registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "schema_version",
+    "registry_id",
+    "registry_version",
+    "captured_at",
+    "active_registry_protection",
+    "policies",
+    "sources"
+  ],
+  "properties": {
+    "record_type": {"const": "RoleKnowledgeUpstreamSourceRegistry"},
+    "schema_version": {"type": "integer", "const": 1},
+    "registry_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"},
+    "registry_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "active_registry_protection": {"$ref": "#/$defs/activeRegistryProtection"},
+    "policies": {"$ref": "#/$defs/policies"},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/source"}
+    }
+  },
+  "$defs": {
+    "sha1": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "semver": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "safeRelativePath": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+    },
+    "unitId": {"type": "string", "pattern": "^rk-[a-z0-9][a-z0-9-]{2,95}$"},
+    "gate": {
+      "enum": [
+        "availability_recheck",
+        "immutable_pin_review",
+        "license_review",
+        "security_review",
+        "allowlist_review",
+        "untrusted_text_review",
+        "evidence_coordinate_review",
+        "claim_conflict_review",
+        "candidate_unit_rewrite",
+        "deterministic_test",
+        "blind_answer",
+        "independent_review",
+        "activation_diff_review",
+        "discovery_scope_review",
+        "reality_feedback"
+      ]
+    },
+    "activeRegistryProtection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protected_relative_paths",
+        "candidate_output_policy",
+        "overwrite_allowed",
+        "active_registry_mutation_allowed"
+      ],
+      "properties": {
+        "protected_relative_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/safeRelativePath"}
+        },
+        "candidate_output_policy": {
+          "const": "absolute_nonexistent_directory_outside_skill"
+        },
+        "overwrite_allowed": {"const": false},
+        "active_registry_mutation_allowed": {"const": false}
+      }
+    },
+    "policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api_base",
+        "api_version",
+        "external_content_policy",
+        "execute_source_content",
+        "stars_usage",
+        "stars_evidence_weight",
+        "network_failure",
+        "unexpected_404",
+        "max_text_bytes",
+        "accepted_text_extensions",
+        "candidate_manifest_filename",
+        "candidate_text_root"
+      ],
+      "properties": {
+        "api_base": {"const": "https://api.github.com"},
+        "api_version": {"const": "2022-11-28"},
+        "external_content_policy": {"const": "untrusted_data_no_execute"},
+        "execute_source_content": {"const": false},
+        "stars_usage": {"const": "discovery_only"},
+        "stars_evidence_weight": {"const": "none"},
+        "network_failure": {"const": "fail_closed"},
+        "unexpected_404": {"const": "fail_closed"},
+        "max_text_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "accepted_text_extensions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": [".md", ".csv", ".txt"]}
+        },
+        "candidate_manifest_filename": {"const": "candidate-manifest.json"},
+        "candidate_text_root": {"const": "texts"}
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "name",
+        "full_name",
+        "api_url",
+        "pinned_commit",
+        "expected_default_branch",
+        "expected_archived"
+      ],
+      "properties": {
+        "owner": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,38}$"},
+        "name": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,100}$"},
+        "full_name": {"type": "string", "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$"},
+        "api_url": {"type": "string", "pattern": "^https://api\\.github\\.com/repos/[A-Za-z0-9-]+/[A-Za-z0-9._-]+$"},
+        "pinned_commit": {"oneOf": [{"$ref": "#/$defs/sha1"}, {"type": "null"}]},
+        "expected_default_branch": {"type": ["string", "null"], "minLength": 1},
+        "expected_archived": {"type": ["boolean", "null"]}
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "declared_id",
+        "github_api_spdx_id",
+        "file_path",
+        "baseline_git_blob_sha",
+        "baseline_sha256",
+        "use_policy"
+      ],
+      "properties": {
+        "declared_id": {"enum": ["MIT", "Apache-2.0", "CC-BY-NC-SA-4.0"]},
+        "github_api_spdx_id": {"enum": ["MIT", "Apache-2.0", "CC-BY-NC-SA-4.0", "NOASSERTION"]},
+        "file_path": {"$ref": "#/$defs/safeRelativePath"},
+        "baseline_git_blob_sha": {"$ref": "#/$defs/sha1"},
+        "baseline_sha256": {"$ref": "#/$defs/sha256"},
+        "use_policy": {"enum": ["internalization_candidate", "discovery_only"]}
+      }
+    },
+    "coordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start_line", "end_line", "disposition", "coordinate", "note"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,95}$"},
+        "start_line": {"type": "integer", "minimum": 1},
+        "end_line": {"type": "integer", "minimum": 1},
+        "disposition": {"enum": ["candidate_evidence", "discovery_only", "excluded"]},
+        "coordinate": {"type": "string", "minLength": 20},
+        "note": {"type": "string", "minLength": 1}
+      }
+    },
+    "allowlistEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "content_use", "baseline_git_blob_sha", "coordinates"],
+      "properties": {
+        "path": {"$ref": "#/$defs/safeRelativePath"},
+        "content_use": {"enum": ["candidate_evidence", "discovery_only"]},
+        "baseline_git_blob_sha": {"$ref": "#/$defs/sha1"},
+        "coordinates": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/coordinate"}
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "repository",
+        "availability",
+        "expected_http_status",
+        "intended_use",
+        "affected_scope",
+        "affected_units",
+        "required_gates",
+        "license",
+        "allowlist",
+        "notes"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^upstream-[a-z0-9][a-z0-9-]{2,63}$"},
+        "repository": {"$ref": "#/$defs/repository"},
+        "availability": {"enum": ["available", "expected_unavailable"]},
+        "expected_http_status": {"enum": [200, 404]},
+        "intended_use": {"enum": ["internalization_candidate", "discovery_only", "unavailable"]},
+        "affected_scope": {"enum": ["role_units", "discovery_index_only", "unavailable_gap"]},
+        "affected_units": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/unitId"}
+        },
+        "required_gates": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/gate"}
+        },
+        "license": {"oneOf": [{"$ref": "#/$defs/license"}, {"type": "null"}]},
+        "allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/allowlistEntry"}
+        },
+        "notes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"availability": {"const": "expected_unavailable"}}},
+          "then": {
+            "properties": {
+              "expected_http_status": {"const": 404},
+              "intended_use": {"const": "unavailable"},
+              "affected_scope": {"const": "unavailable_gap"},
+              "license": {"type": "null"},
+              "allowlist": {"maxItems": 0},
+              "repository": {
+                "properties": {
+                  "pinned_commit": {"type": "null"},
+                  "expected_default_branch": {"type": "null"},
+                  "expected_archived": {"type": "null"}
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "expected_http_status": {"const": 200},
+              "license": {"$ref": "#/$defs/license"},
+              "allowlist": {"minItems": 1},
+              "repository": {
+                "properties": {
+                  "pinned_commit": {"$ref": "#/$defs/sha1"},
+                  "expected_default_branch": {"type": "string", "minLength": 1},
+                  "expected_archived": {"type": "boolean"}
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

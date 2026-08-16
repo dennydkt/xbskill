@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作决策"
+  short_description: "比较工作方案与停止选项，写清代价、关键未知、倾向和翻转条件"
+  default_prompt: "使用 $xb-decision 帮我比较这些选项，给出当前倾向、关键未知和翻转条件。"

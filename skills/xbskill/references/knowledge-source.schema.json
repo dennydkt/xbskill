@@ -1,0 +1,611 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xbskill.local/schemas/knowledge-source.schema.json",
+  "title": "xbskill knowledge source records",
+  "description": "Machine-readable contract for governed knowledge requirements, sources, locks, evidence and minimal packets.",
+  "oneOf": [
+    { "$ref": "#/$defs/KnowledgeRequirement" },
+    { "$ref": "#/$defs/SourceRecord" },
+    { "$ref": "#/$defs/SourceLock" },
+    { "$ref": "#/$defs/EvidenceRecord" },
+    { "$ref": "#/$defs/KnowledgePacket" },
+    { "$ref": "#/$defs/RegistryState" },
+    { "$ref": "#/$defs/JournalRecord" }
+  ],
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "GitCommit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "PermissionGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["discover", "read", "execute"],
+      "properties": {
+        "discover": { "type": "boolean" },
+        "read": { "type": "boolean" },
+        "execute": { "type": "boolean" }
+      }
+    },
+    "PinRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "captured_at", "verification_method"],
+      "properties": {
+        "kind": { "enum": ["sha256", "git_commit"] },
+        "value": { "type": "string" },
+        "captured_at": { "$ref": "#/$defs/Timestamp" },
+        "verification_method": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "sha256" } }, "required": ["kind"] },
+          "then": { "properties": { "value": { "$ref": "#/$defs/Sha256" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "git_commit" } }, "required": ["kind"] },
+          "then": { "properties": { "value": { "$ref": "#/$defs/GitCommit" } } }
+        }
+      ]
+    },
+    "LicenseRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "identifier", "usage_notes"],
+      "properties": {
+        "status": { "enum": ["approved", "internal_authorized", "unknown", "denied"] },
+        "identifier": { "type": ["string", "null"] },
+        "usage_notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "enum": ["approved", "internal_authorized"] } },
+            "required": ["status"]
+          },
+          "then": { "properties": { "identifier": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "SecurityReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewed_at", "reviewed_by", "notes"],
+      "properties": {
+        "status": { "enum": ["reviewed", "unreviewed", "blocked"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+        "reviewed_by": { "type": ["string", "null"] },
+        "notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "reviewed" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "reviewed_at": { "$ref": "#/$defs/Timestamp" },
+              "reviewed_by": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "ContextBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_sources", "max_evidence_records", "max_excerpt_chars", "minimum_evidence_per_required_source"],
+      "properties": {
+        "max_sources": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "max_evidence_records": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "max_excerpt_chars": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "minimum_evidence_per_required_source": { "type": "integer", "minimum": 1, "maximum": 100 }
+      }
+    },
+    "KnowledgeRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "schema_version",
+        "id",
+        "purpose",
+        "question",
+        "required_source_ids",
+        "optional_source_ids",
+        "critical_claims",
+        "permissions",
+        "context_budget",
+        "conflict_policy",
+        "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "KnowledgeRequirement" },
+        "schema_version": { "const": 1 },
+        "id": { "$ref": "#/$defs/Id" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "question": { "type": "string", "minLength": 1 },
+        "required_source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "optional_source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "critical_claims": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "permissions": { "$ref": "#/$defs/PermissionGate" },
+        "context_budget": { "$ref": "#/$defs/ContextBudget" },
+        "conflict_policy": { "const": "fail_on_critical" },
+        "created_at": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "GithubDiscoveryMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "stars", "captured_at", "stars_use", "license_spdx", "archived", "default_branch", "head_commit"],
+      "properties": {
+        "kind": { "const": "github" },
+        "stars": { "type": "integer", "minimum": 0 },
+        "captured_at": { "$ref": "#/$defs/Timestamp" },
+        "stars_use": { "const": "discovery_only" },
+        "license_spdx": { "type": ["string", "null"] },
+        "archived": { "type": "boolean" },
+        "default_branch": { "type": "string", "minLength": 1 },
+        "head_commit": { "$ref": "#/$defs/GitCommit" }
+      }
+    },
+    "SourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "schema_version",
+        "id",
+        "source_type",
+        "title",
+        "locator",
+        "discovered_at",
+        "permissions",
+        "license",
+        "security",
+        "pin",
+        "content_trust",
+        "status",
+        "notes"
+      ],
+      "properties": {
+        "record_type": { "const": "SourceRecord" },
+        "schema_version": { "const": 1 },
+        "id": { "$ref": "#/$defs/Id" },
+        "source_type": { "enum": ["local", "official", "paper", "github"] },
+        "title": { "type": "string", "minLength": 1 },
+        "locator": { "type": "string", "minLength": 1 },
+        "discovered_at": { "$ref": "#/$defs/Timestamp" },
+        "permissions": { "$ref": "#/$defs/PermissionGate" },
+        "license": { "$ref": "#/$defs/LicenseRecord" },
+        "security": { "$ref": "#/$defs/SecurityReview" },
+        "pin": {
+          "oneOf": [
+            { "$ref": "#/$defs/PinRecord" },
+            { "type": "null" }
+          ]
+        },
+        "content_trust": { "enum": ["local_controlled", "untrusted_data"] },
+        "status": { "enum": ["candidate", "approved", "rejected"] },
+        "discovery_metadata": { "$ref": "#/$defs/GithubDiscoveryMetadata" },
+        "notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "source_type": { "const": "github" } }, "required": ["source_type"] },
+          "then": {
+            "required": ["discovery_metadata"],
+            "properties": {
+              "content_trust": { "const": "untrusted_data" },
+              "pin": {
+                "type": "object",
+                "properties": { "kind": { "const": "git_commit" } },
+                "required": ["kind"]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "source_type": { "enum": ["official", "paper"] } }, "required": ["source_type"] },
+          "then": {
+            "properties": {
+              "content_trust": { "const": "untrusted_data" }
+            }
+          }
+        }
+      ]
+    },
+    "LocalLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "content_sha256"],
+      "properties": {
+        "kind": { "const": "local" },
+        "path": { "type": "string", "minLength": 1 },
+        "content_sha256": { "$ref": "#/$defs/Sha256" },
+        "line_start": { "type": "integer", "minimum": 1 },
+        "line_end": { "type": "integer", "minimum": 1 },
+        "page": { "type": "string", "minLength": 1 },
+        "section": { "type": "string", "minLength": 1 }
+      },
+      "anyOf": [
+        { "required": ["line_start", "line_end"] },
+        { "required": ["page"] },
+        { "required": ["section"] }
+      ]
+    },
+    "OfficialLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "url", "content_sha256", "published_version"],
+      "properties": {
+        "kind": { "const": "official" },
+        "url": { "type": "string", "format": "uri" },
+        "content_sha256": { "$ref": "#/$defs/Sha256" },
+        "published_version": { "type": "string", "minLength": 1 },
+        "page": { "type": "string", "minLength": 1 },
+        "section": { "type": "string", "minLength": 1 },
+        "fragment": { "type": "string", "minLength": 1 }
+      },
+      "anyOf": [
+        { "required": ["page"] },
+        { "required": ["section"] },
+        { "required": ["fragment"] }
+      ]
+    },
+    "PaperLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "identifier", "content_sha256"],
+      "properties": {
+        "kind": { "const": "paper" },
+        "identifier": { "type": "string", "minLength": 1 },
+        "content_sha256": { "$ref": "#/$defs/Sha256" },
+        "page": { "type": "string", "minLength": 1 },
+        "section": { "type": "string", "minLength": 1 },
+        "figure": { "type": "string", "minLength": 1 },
+        "table": { "type": "string", "minLength": 1 }
+      },
+      "anyOf": [
+        { "required": ["page"] },
+        { "required": ["section"] },
+        { "required": ["figure"] },
+        { "required": ["table"] }
+      ]
+    },
+    "GithubLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "repository", "commit", "path", "line_start", "line_end"],
+      "properties": {
+        "kind": { "const": "github" },
+        "repository": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "commit": { "$ref": "#/$defs/GitCommit" },
+        "path": { "type": "string", "minLength": 1 },
+        "line_start": { "type": "integer", "minimum": 1 },
+        "line_end": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "EvidenceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "schema_version",
+        "id",
+        "requirement_id",
+        "source_id",
+        "claim_id",
+        "claim",
+        "stance",
+        "captured_at",
+        "source_pin",
+        "locator",
+        "excerpt_sha256",
+        "notes"
+      ],
+      "properties": {
+        "record_type": { "const": "EvidenceRecord" },
+        "schema_version": { "const": 1 },
+        "id": { "$ref": "#/$defs/Id" },
+        "requirement_id": { "$ref": "#/$defs/Id" },
+        "source_id": { "$ref": "#/$defs/Id" },
+        "claim_id": { "$ref": "#/$defs/Id" },
+        "claim": { "type": "string", "minLength": 1 },
+        "stance": { "enum": ["supports", "contradicts", "context"] },
+        "captured_at": { "$ref": "#/$defs/Timestamp" },
+        "source_pin": { "$ref": "#/$defs/PinRecord" },
+        "locator": {
+          "oneOf": [
+            { "$ref": "#/$defs/LocalLocator" },
+            { "$ref": "#/$defs/OfficialLocator" },
+            { "$ref": "#/$defs/PaperLocator" },
+            { "$ref": "#/$defs/GithubLocator" }
+          ]
+        },
+        "excerpt": { "type": "string" },
+        "excerpt_sha256": { "$ref": "#/$defs/Sha256" },
+        "notes": { "type": "string" }
+      }
+    },
+    "PinBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source_type", "pin"],
+      "properties": {
+        "source_id": { "$ref": "#/$defs/Id" },
+        "source_type": { "enum": ["local", "official", "paper", "github"] },
+        "pin": { "$ref": "#/$defs/PinRecord" }
+      }
+    },
+    "ConflictRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "source_ids", "evidence_ids", "severity", "status", "resolution"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "claim": { "type": "string", "minLength": 1 },
+        "source_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "severity": { "enum": ["critical", "noncritical"] },
+        "status": { "enum": ["resolved", "unresolved"] },
+        "resolution": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "resolved" } }, "required": ["status"] },
+          "then": { "properties": { "resolution": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "ConflictReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewed_at", "reviewed_by", "notes"],
+      "properties": {
+        "status": { "enum": ["complete", "incomplete"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+        "reviewed_by": { "type": ["string", "null"] },
+        "notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "complete" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "reviewed_at": { "$ref": "#/$defs/Timestamp" },
+              "reviewed_by": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "AuthorityDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "decided_by", "authority_role", "scope", "decided_at", "supersedes", "basis"],
+      "properties": {
+        "status": { "enum": ["confirmed", "candidate_only"] },
+        "decided_by": { "type": ["string", "null"] },
+        "authority_role": { "type": ["string", "null"] },
+        "scope": { "type": "string", "minLength": 1 },
+        "decided_at": { "type": ["string", "null"], "format": "date-time" },
+        "supersedes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "basis": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "confirmed" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "decided_by": { "type": "string", "minLength": 1 },
+              "authority_role": { "type": "string", "minLength": 1 },
+              "decided_at": { "$ref": "#/$defs/Timestamp" }
+            }
+          }
+        }
+      ]
+    },
+    "SourceLock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "schema_version",
+        "id",
+        "requirement_id",
+        "created_at",
+        "source_pins",
+        "evidence_ids",
+        "conflicts",
+        "conflict_review",
+        "authority_decision",
+        "notes"
+      ],
+      "properties": {
+        "record_type": { "const": "SourceLock" },
+        "schema_version": { "const": 1 },
+        "id": { "$ref": "#/$defs/Id" },
+        "requirement_id": { "$ref": "#/$defs/Id" },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "source_pins": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/PinBinding" }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ConflictRecord" }
+        },
+        "conflict_review": { "$ref": "#/$defs/ConflictReview" },
+        "authority_decision": { "$ref": "#/$defs/AuthorityDecision" },
+        "notes": { "type": "string" }
+      }
+    },
+    "PacketSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source_type", "title", "locator", "pin", "license", "content_trust"],
+      "properties": {
+        "source_id": { "$ref": "#/$defs/Id" },
+        "source_type": { "enum": ["local", "official", "paper", "github"] },
+        "title": { "type": "string", "minLength": 1 },
+        "locator": { "type": "string", "minLength": 1 },
+        "pin": { "$ref": "#/$defs/PinRecord" },
+        "license": { "$ref": "#/$defs/LicenseRecord" },
+        "content_trust": { "enum": ["local_controlled", "untrusted_data"] }
+      }
+    },
+    "PacketSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_budget",
+        "included_source_ids",
+        "omitted_source_ids",
+        "included_evidence_ids",
+        "omitted_evidence_ids",
+        "omitted_excerpt_ids",
+        "rationale"
+      ],
+      "properties": {
+        "context_budget": { "$ref": "#/$defs/ContextBudget" },
+        "included_source_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/Id" } },
+        "omitted_source_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/Id" } },
+        "included_evidence_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/Id" } },
+        "omitted_evidence_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/Id" } },
+        "omitted_excerpt_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/Id" } },
+        "rationale": { "type": "string", "minLength": 1 }
+      }
+    },
+    "KnowledgePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "schema_version",
+        "id",
+        "requirement_id",
+        "lock_id",
+        "lock_digest",
+        "generated_at",
+        "purpose",
+        "question",
+        "authority_decision",
+        "sources",
+        "evidence",
+        "conflicts",
+        "selection",
+        "model_prior_fallback",
+        "external_content_policy",
+        "execution_authorized"
+      ],
+      "properties": {
+        "record_type": { "const": "KnowledgePacket" },
+        "schema_version": { "const": 1 },
+        "id": { "$ref": "#/$defs/Id" },
+        "requirement_id": { "$ref": "#/$defs/Id" },
+        "lock_id": { "$ref": "#/$defs/Id" },
+        "lock_digest": { "$ref": "#/$defs/Sha256" },
+        "generated_at": { "$ref": "#/$defs/Timestamp" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "question": { "type": "string", "minLength": 1 },
+        "authority_decision": { "$ref": "#/$defs/AuthorityDecision" },
+        "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/PacketSource" } },
+        "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/EvidenceRecord" } },
+        "conflicts": { "type": "array", "items": { "$ref": "#/$defs/ConflictRecord" } },
+        "selection": { "$ref": "#/$defs/PacketSelection" },
+        "model_prior_fallback": { "const": false },
+        "external_content_policy": { "const": "untrusted_data_no_execute" },
+        "execution_authorized": { "const": false }
+      }
+    },
+    "RegistryState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "schema_version",
+        "registry_id",
+        "created_at",
+        "updated_at",
+        "active_lock_id",
+        "active_lock_digest",
+        "previous_lock_id",
+        "previous_lock_digest"
+      ],
+      "properties": {
+        "record_type": { "const": "RegistryState" },
+        "schema_version": { "const": 1 },
+        "registry_id": { "$ref": "#/$defs/Id" },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "updated_at": { "$ref": "#/$defs/Timestamp" },
+        "active_lock_id": { "oneOf": [{ "$ref": "#/$defs/Id" }, { "type": "null" }] },
+        "active_lock_digest": { "oneOf": [{ "$ref": "#/$defs/Sha256" }, { "type": "null" }] },
+        "previous_lock_id": { "oneOf": [{ "$ref": "#/$defs/Id" }, { "type": "null" }] },
+        "previous_lock_digest": { "oneOf": [{ "$ref": "#/$defs/Sha256" }, { "type": "null" }] }
+      }
+    },
+    "JournalRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_type", "schema_version", "id", "operation", "status", "created_at", "committed_at", "before", "after", "target"],
+      "properties": {
+        "record_type": { "const": "JournalRecord" },
+        "schema_version": { "const": 1 },
+        "id": { "$ref": "#/$defs/Id" },
+        "operation": { "enum": ["init", "packet", "activate", "rollback"] },
+        "status": { "enum": ["prepared", "committed", "aborted"] },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "committed_at": { "type": ["string", "null"], "format": "date-time" },
+        "before": { "type": ["object", "null"] },
+        "after": { "type": ["object", "null"] },
+        "target": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

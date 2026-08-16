@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 交付审查"
+  short_description: "审查现有交付物与项目结果，输出带位置、影响和复验门的发现"
+  default_prompt: "使用 $xb-review 审查这个交付物，按证据位置、影响、严重度和复验门报告。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xbskill 工作报告"
+  short_description: "把多次记录汇成目标、结果、证据、偏差与决定清楚的工作报告"
+  default_prompt: "使用 $xb-report 把这些记录汇总成可核对的周报、月报或项目报告。"

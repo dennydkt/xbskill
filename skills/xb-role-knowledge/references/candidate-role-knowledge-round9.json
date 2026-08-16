@@ -1,0 +1,4064 @@
+{
+  "record_type": "RoleKnowledgeCatalog",
+  "schema_version": 1,
+  "catalog_id": "xb-builtin-role-knowledge",
+  "catalog_version": "0.3.0",
+  "origin": "builtin",
+  "source_registry": {
+    "file": "builtin-source-registry.json",
+    "sha256": "6d15ec532ad9cc9537377d1f763e21463962109f3d05e3b0060c7d7492baa837"
+  },
+  "published_at": "2026-08-11T09:34:07Z",
+  "governance_complete": false,
+  "units": [
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-data-analyst-metric-anomaly",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "指标异常可信诊断",
+      "job_family": "data",
+      "roles": [
+        "数据分析师"
+      ],
+      "task_families": [
+        "指标异常",
+        "数据对账",
+        "经营分析",
+        "差异解释"
+      ],
+      "lifecycle_stages": [
+        "分析与决定",
+        "质量核验",
+        "采用反馈"
+      ],
+      "signals": {
+        "include": [
+          "指标突升",
+          "指标突降",
+          "跨表对不上",
+          "直接写原因",
+          "差异",
+          "对账"
+        ],
+        "exclude": [
+          "只做已确认文字排版",
+          "无需分析的机械抄录"
+        ]
+      },
+      "professional_problem": "避免把口径、链路、结构或随机波动造成的指标差异直接写成经营原因。",
+      "claims": [
+        {
+          "id": "claim-four-ledgers-before-cause",
+          "statement": "异常解释应同时保留口径变化、数据链路、业务结构和真实经营四类候选，并先做能区分它们的核验。",
+          "conditions": [
+            "当前目标是解释指标异常或差异",
+            "至少两类候选会导向不同动作"
+          ],
+          "source_refs": [
+            "OFF-01",
+            "OFF-D01"
+          ],
+          "disconfirming_signals": [
+            "用户只需要按已确认事实排版",
+            "当前材料已由有权者冻结唯一原因且证据完整"
+          ]
+        },
+        {
+          "id": "claim-independent-check-before-adoption",
+          "statement": "关键主张需要可复现查询及至少一条独立交叉核验，并把是否被决定人采用与分析正确性分账。",
+          "conditions": [
+            "结论将支持业务或财务决定"
+          ],
+          "source_refs": [
+            "OFF-D01",
+            "GH-D01",
+            "GH-D04",
+            "GH-D06"
+          ],
+          "disconfirming_signals": [
+            "独立查询不能复现",
+            "业务事件证伪",
+            "定义版本已改变"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "定义、版本、生效日、统计对象、粒度、分母、窗口和源到报表各层",
+          "join、去重、迟到、基线、季节性、分群贡献、业务事件与决定人"
+        ],
+        "competing_explanations": [
+          "口径或版本变化",
+          "采集、转换或连接链路错误",
+          "业务结构变化",
+          "真实经营变化",
+          "基线随机波动"
+        ],
+        "distinguish": [
+          "做版本对照、独立查询、源到结果对账、贡献拆分和业务 owner 事件复核"
+        ],
+        "branches": [
+          "口径变化则标不可比并重述；链路异常则冻结业务解释；只有结构贡献则不越权写因果；业务证据确认后才给限范围结论"
+        ],
+        "actions": [
+          "建立可信差额，按事实、推断、建议分栏，并保留未知和翻转条件"
+        ],
+        "artifacts": [
+          "口径卡",
+          "可信差额表",
+          "四本解释账",
+          "查询与独立核验记录",
+          "采用反馈卡"
+        ],
+        "validation": [
+          "查询可复现，关键主张有独立核验，决定人确认是否采用，后续记录结论翻转或返工"
+        ],
+        "boundaries": [
+          "不得把描述关系升级为因果；异常阈值、观察窗、代表性和可接受误差必须由基线、错误成本与有权者校准"
+        ],
+        "reality_feedback": [
+          "记录结论是否改变决定、决定后的结果、返工、翻转和未采用原因"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "口径或版本变化",
+            "采集、转换或连接链路错误"
+          ],
+          "distinguishing_action": "固定统计对象和时间窗，做定义版本差分，并用独立查询沿源到报表逐层对账。",
+          "evidence_output": "带版本、生效日、层级差额和可复现查询的口径—链路判别表。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "版本切点与差异切点一致且同源重算可复现",
+              "interpretation": "口径或版本变化优先成立",
+              "next_action": "标记不可比区间，由业务 owner 决定重述或保留双口径。"
+            },
+            {
+              "when": "同一版本下源层正确而转换或连接层开始出现差额",
+              "interpretation": "采集、转换或连接链路错误优先成立",
+              "next_action": "冻结经营原因表述，交数据 owner 修复并重新对账。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "业务结构变化",
+            "真实经营变化",
+            "基线随机波动"
+          ],
+          "distinguishing_action": "做分群贡献拆解、历史基线区间检验，并由业务 owner 核对同期事件及其作用范围。",
+          "evidence_output": "分群贡献、基线区间、业务事件和反事实缺口并列的三路判别记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "总体差异由已知分群权重变化解释且组内指标稳定",
+              "interpretation": "业务结构变化优先成立",
+              "next_action": "报告结构贡献，不越权升级为经营因果。"
+            },
+            {
+              "when": "组内变化超出基线且有范围、时间一致的业务事实复核",
+              "interpretation": "真实经营变化获得限范围支持",
+              "next_action": "给出带翻转条件的有限结论，由决定人决定是否采用。"
+            },
+            {
+              "when": "变化落在预先固定的基线波动区间且无稳定分群或事件证据",
+              "interpretation": "基线随机波动仍不可排除",
+              "next_action": "延长观察或增加样本，不写确定经营原因。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "给一条逐项清单和样例，用户亲自核一条记录并请复核人确认",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "用户独立完成四账、分支和一个真实异常闭环"
+        ],
+        "S2_system": [
+          "设计指标变更、共享语义、独立复核及结论翻转率机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-01",
+        "OFF-D01",
+        "GH-D01",
+        "GH-D04",
+        "GH-D06"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前任务与已固定来源版本有效；命中刷新触发器立即重核",
+        "limitations": [
+          "不能替代本地指标定义、数据事实或因果研究"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 可提出候选解释与核验；用户可修订分析问题",
+        "decide": "业务 owner 决定口径、原因采用与业务动作",
+        "authorize": "数据 owner 授权数据访问；业务负责人授权试验",
+        "execute": "用户在既有权限内运行查询；业务执行者实施获批动作",
+        "verify": "分析复核者与业务 owner 分别验证数据主张和业务事实",
+        "accept_risk": "业务与数据风险 owner 接受剩余错误和使用风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "统计对象、口径版本或关键查询冲突未解时停止原因结论",
+          "未授权敏感数据访问时停止取数"
+        ],
+        "escalate": [
+          "需要因果结论、预算动作或跨域口径裁决时交有权者"
+        ],
+        "calibrate": [
+          "异常阈值、观察窗、代表性和可接受误差"
+        ]
+      },
+      "authority_scope": "通用数据分析专业实践；本地指标定义、业务事实与决定权以当前有权真源为准",
+      "supersedes": [],
+      "refresh_triggers": [
+        "指标定义或系统版本变化",
+        "独立核验不能复现",
+        "业务事件反证",
+        "现实采用持续无效"
+      ],
+      "tests": {
+        "positive": [
+          "三个系统销量对账且要向财务解释差异"
+        ],
+        "negative": [
+          "只把已确认的三句话排成邮件"
+        ],
+        "stage_pair": [
+          "同一异常事实分别用 S0/S2，专业 claims、权限与安全线一致，仅帮助深度变化"
+        ],
+        "overturn": [
+          "独立查询不能复现时停止业务原因结论"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-data-engineer-pipeline-recovery",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "管道正确性、回填与恢复",
+      "job_family": "data",
+      "roles": [
+        "数据工程师"
+      ],
+      "task_families": [
+        "数据管道",
+        "数据同步",
+        "回填",
+        "故障恢复",
+        "数据契约"
+      ],
+      "lifecycle_stages": [
+        "采集与摄取",
+        "建模与编排",
+        "运行与恢复"
+      ],
+      "signals": {
+        "include": [
+          "DAG 成功但数据错",
+          "freshness 超时",
+          "重复",
+          "漏数",
+          "schema 变更",
+          "回填",
+          "重试"
+        ],
+        "exclude": [
+          "纯业务口径归属争议",
+          "只需要解释现成图表"
+        ]
+      },
+      "professional_problem": "避免把调度成功当数据正确，并在重复、漏数、部分成功或契约漂移下造成二次污染。",
+      "claims": [
+        {
+          "id": "claim-pipeline-success-not-correctness",
+          "statement": "编排运行成功只证明已声明任务状态，不证明源、转换和消费者结果正确。",
+          "conditions": [
+            "存在数据管道或同步任务"
+          ],
+          "source_refs": [
+            "GH-D03",
+            "GH-D05",
+            "GH-D06"
+          ],
+          "disconfirming_signals": [
+            "任务不涉及任何数据处理链路"
+          ]
+        },
+        {
+          "id": "claim-recovery-needs-idempotency-consumer-check",
+          "statement": "回填或重试前应确认幂等、部分成功语义、影响范围、回滚与消费者验收。",
+          "conditions": [
+            "准备重试、回填、迁移或恢复"
+          ],
+          "source_refs": [
+            "OFF-D01",
+            "GH-D01",
+            "GH-D05"
+          ],
+          "disconfirming_signals": [
+            "幂等重跑产生重复",
+            "消费者结果与管道核验冲突"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "schema、主键粒度、run/job/dataset、部分成功语义、迟到、重复、重试幂等和依赖血缘",
+          "消费者影响、输入输出快照、回滚与恢复能力"
+        ],
+        "competing_explanations": [
+          "源不完整",
+          "契约漂移",
+          "转换或 join 错误",
+          "编排部分成功",
+          "非幂等重试",
+          "缓存、时区或迟到策略"
+        ],
+        "distinguish": [
+          "隔离样本重放、输入输出快照对比、关键记录追踪、幂等重跑和消费者侧核验"
+        ],
+        "branches": [
+          "部分成功先隔离下游；不可幂等停止自动重试；兼容漂移做版本适配；恢复已证才回填；不可逆则升级发布策略"
+        ],
+        "actions": [
+          "先圈定影响与消费者，再选择重放、补偿、回填、回滚或停机升级"
+        ],
+        "artifacts": [
+          "影响范围表",
+          "运行证据包",
+          "回填/回滚决定",
+          "runbook",
+          "消费者验收记录"
+        ],
+        "validation": [
+          "键级样本与聚合双核验、幂等重跑、恢复演练和消费者验收"
+        ],
+        "boundaries": [
+          "不得无备份或无授权改生产；SLO、告警、回填窗口、容量和恢复目标必须本地校准"
+        ],
+        "reality_feedback": [
+          "记录用户影响、复发、恢复时间、变更失败和下游返工趋势"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "源不完整",
+            "契约漂移",
+            "转换或 join 错误"
+          ],
+          "distinguishing_action": "固定一次运行及键级样本，保存源、契约和转换输入输出快照并逐层重放。",
+          "evidence_output": "首个差异层、契约版本、键级样本与聚合差额组成的链路证据包。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "源快照已缺失且后续层与其一致",
+              "interpretation": "源不完整优先成立",
+              "next_action": "隔离受影响数据并由源 owner 确认补数或接受缺口。"
+            },
+            {
+              "when": "生产者字段或语义版本变化而消费者仍按旧合同解析",
+              "interpretation": "契约漂移优先成立",
+              "next_action": "停止不兼容发布，决定兼容适配或版本迁移。"
+            },
+            {
+              "when": "源与契约一致但转换或 join 后首次出现重复、漏数",
+              "interpretation": "转换或 join 错误优先成立",
+              "next_action": "修复转换，在隔离样本与消费者侧双核验后再恢复。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "编排部分成功",
+            "非幂等重试",
+            "缓存、时区或迟到策略"
+          ],
+          "distinguishing_action": "核对任务级与数据集级状态，做受控幂等重跑，并比较缓存、事件时间、处理时间和迟到窗口。",
+          "evidence_output": "部分成功矩阵、重跑前后键差异及时间语义对照记录。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "任务显示成功但部分分区、数据集或下游提交失败",
+              "interpretation": "编排部分成功优先成立",
+              "next_action": "先阻断受影响下游，再按提交边界补偿。"
+            },
+            {
+              "when": "同一输入重跑产生新增重复或不同结果",
+              "interpretation": "非幂等重试成立",
+              "next_action": "停止自动重试，补齐去重键或补偿设计并重新演练。"
+            },
+            {
+              "when": "差异随缓存失效、时区换算或迟到窗口改变",
+              "interpretation": "缓存、时区或迟到策略优先成立",
+              "next_action": "由系统与数据 owner 校准时间语义后再决定回填范围。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "按既定设计做小样本重放，给停手点并由资深人员复核生产动作",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成契约、告警、回填和常见异常闭环"
+        ],
+        "S2_system": [
+          "处理平台、多租户、灾备、容量、成本和消费者保护机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-D01",
+        "GH-D01",
+        "GH-D03",
+        "GH-D05",
+        "GH-D06"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前管道、消费者与固定版本有效；schema、数据量或运行环境变化即重核",
+        "limitations": [
+          "通用可靠性机制不能替代本地 SLO、数据契约和恢复演练"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与工程师可提出诊断、回填和恢复选项",
+        "decide": "数据/系统 owner 决定恢复路径和消费者保护",
+        "authorize": "生产 owner 授权重跑、回填、回滚与隔离",
+        "execute": "数据工程师在获批范围执行；消费者团队配合验收",
+        "verify": "工程复核者核管道证据，下游 owner 核消费者结果",
+        "accept_risk": "服务、数据和业务风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "无备份、无生产授权、非幂等或恢复未证时停止回填/重试",
+          "涉及未授权敏感数据、疑似隐私泄露或活动安全事件时停止常规恢复并保全证据"
+        ],
+        "escalate": [
+          "消费者大范围受影响、不可逆变更或 SLO 冲突时升级",
+          "疑似安全或隐私事件时升级安全、隐私和事件响应 owner"
+        ],
+        "calibrate": [
+          "SLO、告警阈值、回填窗口、容量与恢复目标"
+        ]
+      },
+      "authority_scope": "通用数据工程可靠性实践；生产权限、SLO 与恢复目标由当前系统 owner 和风险 owner 决定",
+      "supersedes": [],
+      "refresh_triggers": [
+        "schema 或消费者清单变化",
+        "重跑不幂等",
+        "恢复演练失败",
+        "运行平台或数据量级变化"
+      ],
+      "tests": {
+        "positive": [
+          "DAG 显示成功但下游重复漏数，需要回填"
+        ],
+        "negative": [
+          "业务 owner 只争论指标定义且管道无异常"
+        ],
+        "stage_pair": [
+          "同一回填事实分别用 S0/S2，幂等、授权和消费者验证不变"
+        ],
+        "overturn": [
+          "重跑不幂等或恢复演练失败时禁止回填"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-data-governance-semantic-closure",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "语义冲突与质量问题闭环",
+      "job_family": "data",
+      "roles": [
+        "数据治理师"
+      ],
+      "task_families": [
+        "数据治理",
+        "口径治理",
+        "质量问题",
+        "数据所有权",
+        "元数据"
+      ],
+      "lifecycle_stages": [
+        "治理与信任",
+        "源头生产",
+        "采用反馈"
+      ],
+      "signals": {
+        "include": [
+          "跨系统口径冲突",
+          "质量问题反复",
+          "owner 缺失",
+          "目录没人用",
+          "例外",
+          "风险接受"
+        ],
+        "exclude": [
+          "已确定口径下的一次性算术错误",
+          "纯系统权限故障"
+        ]
+      },
+      "professional_problem": "避免用目录、政策或下游清洗冒充所有权、源头修复和现实采用。",
+      "claims": [
+        {
+          "id": "claim-governance-needs-owner-use-and-closure",
+          "statement": "数据治理必须连接支持的决定、实际 owner、源头控制、例外与关闭证据。",
+          "conditions": [
+            "问题跨系统或反复出现"
+          ],
+          "source_refs": [
+            "OFF-01",
+            "OFF-D01",
+            "GH-D01",
+            "GH-D02"
+          ],
+          "disconfirming_signals": [
+            "所谓冲突其实服务不同用途且边界清楚"
+          ]
+        },
+        {
+          "id": "claim-quality-check-not-governance-outcome",
+          "statement": "质量规则通过或元数据填充不等于治理有效，仍需消费者采用与复发结果。",
+          "conditions": [
+            "已有目录、规则或质量检查"
+          ],
+          "source_refs": [
+            "GH-D02",
+            "GH-D04"
+          ],
+          "disconfirming_signals": [
+            "消费者未采用新定义",
+            "整改后问题继续复发"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "支持的决定、业务影响、定义 owner、管理员、正式与实际规则、血缘和源头录入过程",
+          "分类访问、例外、风险接受人、消费者和关闭标准"
+        ],
+        "competing_explanations": [
+          "合法多口径",
+          "源头流程错误",
+          "所有权真空",
+          "技术契约漂移",
+          "激励或容量不足",
+          "制度与实际脱节"
+        ],
+        "distinguish": [
+          "沿一条主张追到源头，比较最近一次实际处理，分别验证口径用途并确认有权决定者"
+        ],
+        "branches": [
+          "用途不同则并存并写边界；同一决定冲突则交有权者统一或废止；源头根因在源头整改；容量不足缩关键范围；风险接受留期限"
+        ],
+        "actions": [
+          "建立问题、决定、例外和关闭四条相连的责任链"
+        ],
+        "artifacts": [
+          "质量问题单",
+          "定义决定记录",
+          "owner/RACI",
+          "例外与风险接受",
+          "关闭证据"
+        ],
+        "validation": [
+          "源头控制已实施、监控可见、消费者采用、例外退出和复发下降"
+        ],
+        "boundaries": [
+          "不得自封 owner、用制度文本冒充实际执行或把下游清洗叫源头修复；关键性和阈值由用途与有权者校准"
+        ],
+        "reality_feedback": [
+          "记录业务影响、复发、采用、例外退出、用户负担和治理净成本"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "合法多口径",
+            "源头流程错误",
+            "所有权真空"
+          ],
+          "distinguishing_action": "锁定一个具体决定，比较各口径用途，沿主张追到源头录入，并让实际决定人与 owner 分别确认。",
+          "evidence_output": "用途—决定映射、源头控制证据和 owner 确认状态组成的责任判别表。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "不同口径服务不同决定且边界可验证",
+              "interpretation": "合法多口径成立",
+              "next_action": "保留多口径，写清用途、命名和不可互换边界。"
+            },
+            {
+              "when": "同一决定下差异可追到源头录入或流程控制缺口",
+              "interpretation": "源头流程错误优先成立",
+              "next_action": "由源系统与业务 owner 授权源头整改，不以下游清洗冒充关闭。"
+            },
+            {
+              "when": "无人能对定义、例外或关闭作有权决定",
+              "interpretation": "所有权真空成立",
+              "next_action": "停止强制定口径，升级治理有权机构指定责任主体。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "技术契约漂移",
+            "激励或容量不足",
+            "制度与实际脱节"
+          ],
+          "distinguishing_action": "对照契约版本、实际处理样本、队列容量和正式制度，检查控制是否被执行及其成本。",
+          "evidence_output": "契约差分、实际处理轨迹、容量负荷和制度—行为偏差记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "技术接口或语义版本变化与问题起点一致",
+              "interpretation": "技术契约漂移优先成立",
+              "next_action": "建立版本兼容或迁移决定并验证消费者。"
+            },
+            {
+              "when": "规则明确但处理容量、激励或控制成本导致持续绕过",
+              "interpretation": "激励或容量不足优先成立",
+              "next_action": "缩到关键控制并由资源 owner 决定容量或激励调整。"
+            },
+            {
+              "when": "正式制度与最近实际处理稳定不一致",
+              "interpretation": "制度与实际脱节成立",
+              "next_action": "把现实流程带回有权者修订制度或执行机制。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "先登记一个关键问题、找到实际 owner 并完成一次关闭复核",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立处理跨系统冲突、源头整改和例外闭环"
+        ],
+        "S2_system": [
+          "按风险分层，设计控制、容量、抽查和治理净收益机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-01",
+        "OFF-D01",
+        "GH-D01",
+        "GH-D02",
+        "GH-D04"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前定义冲突、血缘和固定来源有效；owner、用途或源头证据变化即重核",
+        "limitations": [
+          "不能从目录覆盖率、规则通过率或正式制度推出现实采用"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与治理师可提出定义、owner、控制和例外候选",
+        "decide": "业务定义 owner 或治理有权机构决定统一、并存或废止",
+        "authorize": "数据/业务 owner 授权源头整改、访问和例外",
+        "execute": "源系统、数据和业务团队执行各自获批整改",
+        "verify": "治理复核者、消费者和审计角色验证控制与采用",
+        "accept_risk": "业务/数据风险 owner 接受有期限的剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "owner 或用途未确认时停止强制定口径",
+          "无权时停止发布全局治理命令",
+          "未授权访问受限数据或触及隐私、监管限制时停止取证与扩散"
+        ],
+        "escalate": [
+          "同一决定下关键口径冲突或风险接受超出本轮权限时升级",
+          "隐私、监管或跨域访问冲突交数据保护、合规与有权 owner"
+        ],
+        "calibrate": [
+          "关键性、质量阈值、例外期限和控制净成本"
+        ]
+      },
+      "authority_scope": "通用数据治理实践；本地定义所有权、风险接受和适用规则由有权主体确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "有权者确认口径本应并存",
+        "血缘或源头证据改变根因",
+        "监控显示整改无效",
+        "制度或 owner 变化"
+      ],
+      "tests": {
+        "positive": [
+          "两个系统同名指标冲突且质量问题反复"
+        ],
+        "negative": [
+          "单个 Excel 公式写错且口径和 owner 均明确"
+        ],
+        "stage_pair": [
+          "同一治理冲突分别用 S0/S2，owner 与风险接受权不因阶段改变"
+        ],
+        "overturn": [
+          "有权者确认两口径服务不同用途时改为并存边界"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-data-product-decision-adoption",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "数据产品决定、采用与退役",
+      "job_family": "data",
+      "roles": [
+        "数据产品经理"
+      ],
+      "task_families": [
+        "数据产品",
+        "看板",
+        "数据集",
+        "数据 API",
+        "数据平台",
+        "产品退役"
+      ],
+      "lifecycle_stages": [
+        "发现",
+        "服务",
+        "运营",
+        "退役"
+      ],
+      "signals": {
+        "include": [
+          "做看板",
+          "建数据集",
+          "建数据平台",
+          "使用量低",
+          "需求堆积",
+          "退役"
+        ],
+        "exclude": [
+          "只需一次性回答一个已界定问题",
+          "纯管道故障恢复"
+        ]
+      },
+      "professional_problem": "避免把看板、平台或使用量本身当成数据产品价值，并忽略质量、运营和退役。",
+      "claims": [
+        {
+          "id": "claim-data-product-begins-with-decision",
+          "statement": "数据产品应从具体用户工作和所支持的重复决定开始，而不是从输出形态开始。",
+          "conditions": [
+            "准备建立持续服务的数据集、看板或 API"
+          ],
+          "source_refs": [
+            "OFF-01",
+            "OFF-D01"
+          ],
+          "disconfirming_signals": [
+            "任务确属一次性分析且无需持续服务"
+          ]
+        },
+        {
+          "id": "claim-use-not-equal-adoption",
+          "statement": "使用、有效采用、现实结果、质量风险和运营成本必须分账，并支持扩改停决定。",
+          "conditions": [
+            "产品已运行或准备扩大投入"
+          ],
+          "source_refs": [
+            "OFF-D01",
+            "GH-D02"
+          ],
+          "disconfirming_signals": [
+            "用户不据此决定",
+            "质量边界不满足用途",
+            "运营成本超过价值"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "用户、工作任务、所支持决定、现有替代、价值与错误成本",
+          "数据依赖、质量、SLO、访问、owner、资金、有效采用、版本与退役"
+        ],
+        "competing_explanations": [
+          "一次性分析",
+          "监控工具",
+          "正式数据产品",
+          "流程问题",
+          "信任问题",
+          "无需建设"
+        ],
+        "distinguish": [
+          "用最小样例回放真实决定，交叉核验用户说明、行为、成本、依赖和运营负担"
+        ],
+        "branches": [
+          "无重复决定做一次性分析；无采用证据不扩建；信任瓶颈先修质量；价值成立建服务合同；边际价值低则退役"
+        ],
+        "actions": [
+          "先冻结一个用户决定和错误成本，再定义最小服务与扩改停门"
+        ],
+        "artifacts": [
+          "数据产品卡",
+          "服务/质量合同",
+          "结果与风险路线图",
+          "采用分账",
+          "扩改停决定"
+        ],
+        "validation": [
+          "真实用户完成决定，质量、成本、事故与采用分开核验"
+        ],
+        "boundaries": [
+          "不得用 views 证明价值或替统计、工程、合规拍板；价值指标、SLO、资金和退役门由证据与 owner 校准"
+        ],
+        "reality_feedback": [
+          "记录决策周期、返工、信任、事故、成本以及继续、改变或退役决定"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "一次性分析",
+            "监控工具",
+            "正式数据产品"
+          ],
+          "distinguishing_action": "用最小样例回放一个真实用户决定，核其重复频率、持续服务要求、错误成本和现有替代。",
+          "evidence_output": "用户—决定—频率—服务责任—错误成本判别卡。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "问题一次性且无需持续 owner、SLO 或复用",
+              "interpretation": "一次性分析成立",
+              "next_action": "转为有边界的一次性分析，不建立持续产品。"
+            },
+            {
+              "when": "用户只需持续看状态且不据此执行复杂工作流",
+              "interpretation": "监控工具优先成立",
+              "next_action": "定义告警、响应 owner 与最小监控，不扩大为平台。"
+            },
+            {
+              "when": "存在重复决定、稳定用户、持续质量责任和可观察结果",
+              "interpretation": "正式数据产品获得支持",
+              "next_action": "建立最小服务合同及扩改停门。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "流程问题",
+            "信任问题",
+            "无需建设"
+          ],
+          "distinguishing_action": "交叉核验用户实际行为、流程等待、数据质量事故、手工替代成本与不建设情景。",
+          "evidence_output": "流程瓶颈、信任缺口、替代成本和不建设结果的对照记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "数据可用但决定被审批、职责或流程阻断",
+              "interpretation": "流程问题优先成立",
+              "next_action": "先修流程与责任边界，再判断是否需要产品。"
+            },
+            {
+              "when": "用户因可复现质量、语义或访问问题不采用",
+              "interpretation": "信任问题优先成立",
+              "next_action": "先修质量和透明度，采用未恢复前不扩建。"
+            },
+            {
+              "when": "现有替代已满足决定且新增服务净价值不成立",
+              "interpretation": "无需建设成立",
+              "next_action": "记录不建设决定或退役候选。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "锁定单一用户、单一决定和一个可观察采用反馈",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立管理发现、服务、运行、反馈和退役闭环"
+        ],
+        "S2_system": [
+          "处理产品组合、资金、边界、共享语义和退役治理"
+        ]
+      },
+      "source_refs": [
+        "OFF-01",
+        "OFF-D01",
+        "GH-D02"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前用户决定、用途和固定来源有效；采用、质量或成本证据变化即重核",
+        "limitations": [
+          "不能用使用量或平台功能列表证明产品价值"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与数据产品经理可提出用户决定、服务和扩改停选项",
+        "decide": "产品/业务 owner 决定范围、优先级和扩改停",
+        "authorize": "数据 owner、合规和资金 owner 分别授权数据使用、风险与投入",
+        "execute": "数据产品、工程和运营团队执行获批工作",
+        "verify": "真实用户、质量 owner 和产品 owner 分别验证采用、质量和价值",
+        "accept_risk": "产品、数据和业务风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "没有具体用户决定或关键质量边界不满足时停止扩建",
+          "未获敏感数据访问授权、用途越界或安全控制不满足时停止试点与发布"
+        ],
+        "escalate": [
+          "需要新增资金、敏感数据访问或跨域定义裁决时升级",
+          "隐私、安全或合规风险交对应 owner 评审并决定是否继续"
+        ],
+        "calibrate": [
+          "价值指标、SLO、采用门、资金和退役窗口"
+        ]
+      },
+      "authority_scope": "通用数据产品实践；本地价值、质量、资金与退役决定由用户、数据 owner 和有权者共同确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "用户不据此决定",
+        "运营成本超过价值",
+        "数据质量或访问边界变化",
+        "产品进入退役阶段"
+      ],
+      "tests": {
+        "positive": [
+          "团队想建看板但不知道谁会据此做什么决定"
+        ],
+        "negative": [
+          "一次性核对一个数并在当天回答"
+        ],
+        "stage_pair": [
+          "同一数据产品假设分别用 S0/S2，价值与风险主张不变"
+        ],
+        "overturn": [
+          "用户不据此决定或运营成本超过价值时停止/退役"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-product-manager-result-experiment",
+      "version": "1.1.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "功能请求到可逆结果实验",
+      "job_family": "product_rd",
+      "roles": [
+        "产品经理"
+      ],
+      "task_families": [
+        "产品发现",
+        "需求分析",
+        "PRD",
+        "优先级",
+        "功能发布"
+      ],
+      "lifecycle_stages": [
+        "发现",
+        "交付",
+        "发布",
+        "持续改进"
+      ],
+      "signals": {
+        "include": [
+          "用户要功能",
+          "写 PRD",
+          "优先级冲突",
+          "上线成功",
+          "需求很多",
+          "no-build"
+        ],
+        "exclude": [
+          "只排版已确认需求",
+          "纯实现故障且产品目标无争议"
+        ]
+      },
+      "professional_problem": "避免把功能请求、PRD 或上线等同于用户问题和现实结果。",
+      "claims": [
+        {
+          "id": "claim-request-needs-competing-problem-forms",
+          "statement": "功能请求应与流程、政策、发现、可用性、配置和 no-build 等替代解释竞争。",
+          "conditions": [
+            "解决方案已先于问题被提出"
+          ],
+          "source_refs": [
+            "OFF-01",
+            "OFF-P01"
+          ],
+          "disconfirming_signals": [
+            "问题、用户、结果和约束已由多源证据充分冻结"
+          ]
+        },
+        {
+          "id": "claim-release-needs-result-and-guardrails",
+          "statement": "发布只能证明交付状态，继续投入需同时看用户结果、可靠性、成本与护栏。",
+          "conditions": [
+            "准备发布、扩大或宣布成功"
+          ],
+          "source_refs": [
+            "OFF-P01",
+            "OFF-P03",
+            "OFF-P04"
+          ],
+          "disconfirming_signals": [
+            "实验无价值",
+            "护栏或成本恶化"
+          ]
+        },
+        {
+          "id": "claim-cheapest-falsifier-before-build",
+          "statement": "在承诺建设前，应把问题改写为能被现实证据推翻的假设，将最近行为与转述观点分账、显形证据冲突，并优先选择成本最低且足以改变当前优先级的可逆辨别实验。",
+          "conditions": [
+            "需求证据尚未收敛或不同来源互相冲突",
+            "建设承诺的成本或风险高于最小辨别动作"
+          ],
+          "source_refs": [
+            "GH-P10"
+          ],
+          "disconfirming_signals": [
+            "最近实际行为显示目标用户没有该阻断或现有替代已满足结果",
+            "最小实验反驳问题假设或不会改变当前优先级"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "用户分群、真实任务、问题证据、现有替代、客服、行为和研究",
+          "价值、风险、机会成本、决定权、发布与回滚",
+          "最近一次实际行为、证据来源与日期、支持/反驳关系、来源间冲突和仍待验证的关键假设"
+        ],
+        "competing_explanations": [
+          "真实未满足需求",
+          "流程或政策问题",
+          "发现性问题",
+          "可用性问题",
+          "教育或配置问题",
+          "无需建设"
+        ],
+        "distinguish": [
+          "多源交叉核验、原型或技术 spike、最小纵向切片和可逆试点",
+          "逐条写出问题假设若成立/不成立应观察到什么，再从现有行为记录、任务回放、配置试验或可撤回原型中选择成本最低且能翻转优先级的一项"
+        ],
+        "branches": [
+          "证据弱继续发现或 no-build；高风险假设先实验；价值成立小批发布；护栏失败回滚；边际价值低停止",
+          "陈述与最近行为冲突时保留冲突而不取平均；最便宜实验足以反驳时降级或停止，不能区分时才升级证据成本"
+        ],
+        "actions": [
+          "把功能请求翻译成结果假设、风险假设和最小可逆验证",
+          "先冻结最近行为与证据冲突账，再由决定人按错误成本选择当前最便宜的翻转实验"
+        ],
+        "artifacts": [
+          "探索决定简报",
+          "假设与证据账",
+          "最近行为与证据冲突账",
+          "最便宜翻转实验记录",
+          "纵向切片 backlog",
+          "发布合同",
+          "扩改停决定"
+        ],
+        "validation": [
+          "按用户分群同时核验结果、可靠性、成本和护栏，由决定人作继续、改变或停止决定",
+          "实验前可指出会推翻问题假设与优先级的信号，实验后保留冲突、未解释项和实际翻转结果"
+        ],
+        "boundaries": [
+          "不得把 PRD、上线或 views 写成结果；不替 UX 宣称用户事实或替工程定实现；样本、窗口和成功线必须校准",
+          "不得复制来源模板或固化访谈数、样本数、观察窗、评分与判断线；证据成本按可逆性、错误成本和决定需求校准"
+        ],
+        "reality_feedback": [
+          "记录现实采用、用户结果、客服、事故、成本与投入重配",
+          "记录最近行为是否复现、证据冲突如何变化、实验是否翻转优先级以及未采用原因"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "真实未满足需求",
+            "流程或政策问题",
+            "发现性问题"
+          ],
+          "distinguishing_action": "先写可被推翻的问题假设，再观察最近真实任务，交叉核验用户陈述、行为、客服和现有替代，并逐条登记支持、反驳与冲突。",
+          "evidence_output": "用户分群、最近行为、任务阻断点、流程/发现路径、替代成本及证据冲突组成的问题假设账。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "不同证据源在同一用户分群和任务上稳定显示未满足结果",
+              "interpretation": "真实未满足需求获得支持",
+              "next_action": "定义结果假设和最小可逆验证，不直接承诺完整功能。"
+            },
+            {
+              "when": "用户已找到入口但被规则、审批或职责阻断",
+              "interpretation": "流程或政策问题优先成立",
+              "next_action": "交流程或政策 owner 决定调整，产品不以新功能掩盖约束。"
+            },
+            {
+              "when": "能力已存在且可完成，但目标用户找不到入口或不知道存在",
+              "interpretation": "发现性问题优先成立",
+              "next_action": "先验证导航、入口或触达改动。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "可用性问题",
+            "教育或配置问题",
+            "无需建设"
+          ],
+          "distinguishing_action": "写出各解释会产生的相反信号，从现有能力回放、配置/教育试验或可撤回原型中选择成本最低且足以翻转当前优先级的一项，让目标用户完成真实任务并保留 no-build 情景。",
+          "evidence_output": "预先声明的翻转信号、任务完成轨迹、错误点、配置/教育或原型试验成本，以及 no-build 结果记录。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "入口可见且配置正确，但交互阻断目标用户完成任务",
+              "interpretation": "可用性问题优先成立",
+              "next_action": "与 UX 定义最小交互修复及无障碍验证。"
+            },
+            {
+              "when": "既有能力在正确配置或适量指导后完成结果",
+              "interpretation": "教育或配置问题优先成立",
+              "next_action": "先修配置或支持材料，并观察复发。"
+            },
+            {
+              "when": "现有替代已满足结果且新增建设的价值低于成本和风险",
+              "interpretation": "无需建设成立",
+              "next_action": "记录 no-build 决定并释放投入。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "只处理一个可证伪问题、一个最近行为、一个最便宜翻转实验和一个回滚点，用户亲自核对真实用户证据",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "完成最近行为/冲突证据、翻转实验、纵向切片、发布和一次扩改停闭环"
+        ],
+        "S2_system": [
+          "处理组合取舍、二阶效应、机会成本和停止机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-01",
+        "OFF-P01",
+        "OFF-P03",
+        "OFF-P04",
+        "GH-P10"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前用户分群、任务、约束和已固定来源版本有效；用户行为、风险或市场条件变化即重核",
+        "limitations": [
+          "通用产品方法不能替代真实用户研究、工程可行性、合规判断或本地优先级决定",
+          "来源只支撑问题证伪、证据冲突与实验选择关系，不提供可跨任务照搬的模板或固定阈值"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与产品经理可提出问题解释、结果假设和实验选项",
+        "decide": "产品/业务 owner 决定目标、范围、优先级和扩改停",
+        "authorize": "研究对象负责人、数据/隐私 owner 与发布 owner 分别授权研究、数据使用和试点",
+        "execute": "产品、设计、工程和运营团队执行获批实验与交付",
+        "verify": "真实用户、UX/研究者、工程与业务 owner 分别验证任务、实现、护栏和结果",
+        "accept_risk": "产品、业务、安全或合规风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "没有真实用户问题证据或没有可撤回/止损路径时停止承诺开发",
+          "未获研究同意、敏感数据授权或存在安全伤害风险时停止研究与试点"
+        ],
+        "escalate": [
+          "涉及歧视、未成年人、重大财务/健康/安全影响或监管义务时交对应有权者",
+          "范围、资金或发布风险超出产品经理权限时升级"
+        ],
+        "calibrate": [
+          "样本、观察窗、成功线、护栏、机会成本和回滚阈值"
+        ]
+      },
+      "authority_scope": "通用数字产品发现与交付实践；本地用户事实、优先级和发布权限由实际 owner 决定",
+      "supersedes": [],
+      "refresh_triggers": [
+        "行为数据反驳访谈",
+        "最近行为或新来源扩大关键证据冲突",
+        "最小实验翻转问题假设或优先级",
+        "实验无价值",
+        "护栏或成本恶化",
+        "用户与市场条件变化"
+      ],
+      "tests": {
+        "positive": [
+          "收到功能请求并要求直接写 PRD 排期",
+          "访谈说需求强烈但最近行为与客服证据冲突，需要决定最便宜的翻转实验"
+        ],
+        "negative": [
+          "只把已确认功能说明润色成邮件"
+        ],
+        "stage_pair": [
+          "同一功能请求分别用 S0/S2，用户证据、研究同意、发布护栏和扩改停权不变"
+        ],
+        "overturn": [
+          "真实任务显示现有配置已满足结果时转为配置/教育路径而非开发功能",
+          "最便宜可逆实验反驳问题假设或不能改变优先级时停止建设承诺"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-ux-designer-journey-accessibility",
+      "version": "1.1.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "完整旅程、状态与无障碍验证",
+      "job_family": "product_rd",
+      "roles": [
+        "UX设计师",
+        "UX 设计师"
+      ],
+      "task_families": [
+        "用户体验",
+        "交互设计",
+        "用户研究",
+        "设计系统",
+        "无障碍"
+      ],
+      "lifecycle_stages": [
+        "研究",
+        "设计",
+        "实现交接",
+        "上线验证"
+      ],
+      "signals": {
+        "include": [
+          "新流程",
+          "新组件",
+          "设计系统",
+          "可用性投诉",
+          "无障碍投诉",
+          "设计稿交付"
+        ],
+        "exclude": [
+          "只修改不影响理解的文案标点",
+          "无用户界面的纯后端迁移"
+        ]
+      },
+      "professional_problem": "避免只设计理想主路径或用组件、自动检查和审美意见代替真实用户与无障碍验证。",
+      "claims": [
+        {
+          "id": "claim-ux-needs-complete-states",
+          "statement": "体验判断应覆盖真实旅程以及 loading、empty、error、权限、响应式等状态。",
+          "conditions": [
+            "设计会影响用户完成任务"
+          ],
+          "source_refs": [
+            "GH-P01",
+            "GH-P08"
+          ],
+          "disconfirming_signals": [
+            "任务明确不涉及任何用户交互或呈现"
+          ]
+        },
+        {
+          "id": "claim-accessibility-needs-complementary-checks",
+          "statement": "自动检查、人工走查、辅助技术和真实用户验证相互补充，组件存在不等于符合适用无障碍要求。",
+          "conditions": [
+            "存在无障碍或关键群体风险"
+          ],
+          "source_refs": [
+            "OFF-P02",
+            "GH-P01"
+          ],
+          "disconfirming_signals": [
+            "真实任务结果与设计假设相反",
+            "实现偏离设计合同"
+          ]
+        },
+        {
+          "id": "claim-ux-priority-master-override-needs-recheck",
+          "statement": "跨页面体验规则应按用户任务影响确定处理优先级，以版本化 MASTER 承载共享基线，并让局部 override 显形理由、范围和重审条件；规则继承或例外本身仍不能替代实际实现的状态与无障碍验证。",
+          "conditions": [
+            "多个页面或组件共享体验规则",
+            "局部场景需要偏离共享基线"
+          ],
+          "source_refs": [
+            "GH-P09"
+          ],
+          "disconfirming_signals": [
+            "实际实现状态或辅助技术结果与规则声明相反",
+            "override 的场景、责任或继续存在理由已失效"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "真实用户与语境、完整旅程、正常和异常状态、内容、响应式和实现偏差",
+          "可访问需求、样本代表性、辅助技术和关键群体",
+          "问题对关键任务的影响优先级、MASTER 版本、局部 override 的理由/范围/重审条件及实际实现状态"
+        ],
+        "competing_explanations": [
+          "交互问题",
+          "内容理解问题",
+          "可访问障碍",
+          "技术性能问题",
+          "政策或流程问题",
+          "样本偏差"
+        ],
+        "distinguish": [
+          "真实任务测试、人工走查、自动检查、辅助技术或用户验证、跨设备和实现回查",
+          "对照 MASTER 与局部 override 解决规则冲突，再在实际渲染实现中逐项复核正常、loading、empty、error、权限、响应式、键盘、焦点和语义"
+        ],
+        "branches": [
+          "关键路径阻断则停止发布；模式有证据且可复用才贡献组件；仅审美偏好不升级结论；样本不足保留未知",
+          "共享基线适用则回归 MASTER；局部情境证据成立才保留 override 并登记重审；声明与实际状态冲突时以实际验证失败处理"
+        ],
+        "actions": [
+          "先按用户任务影响排优先级并补全旅程与状态，再选择能区分体验、技术、内容和流程原因的最小研究",
+          "用 MASTER—override 关系管理共享与局部规则，但以实际实现和互补无障碍验证决定是否可交付"
+        ],
+        "artifacts": [
+          "旅程/状态矩阵",
+          "组件合同",
+          "MASTER—override 版本与重审账",
+          "研究证据卡",
+          "无障碍验证记录",
+          "实际状态与实现偏差账"
+        ],
+        "validation": [
+          "关键用户完成真实任务，自动、人工、辅助技术不互相替代，并在上线实现中复核",
+          "每个高影响问题和 override 都能回指实际状态、验证证据与重审条件，不能只指向规则文件"
+        ],
+        "boundaries": [
+          "不得由组件、MASTER、override 或自动检查宣称合规，不虚构用户证据，不无同意收集敏感数据；标准版本、优先级和代表性待校准",
+          "不得复制来源规则表或把来源优先级固化为本地阈值；具体顺序由用户伤害、任务阻断、可逆性和有权者确认"
+        ],
+        "reality_feedback": [
+          "记录生产缺陷、客服、关键群体任务结果、实现偏差和模式采用",
+          "记录高影响问题是否下降、override 是否仍必要、被哪些页面采用或形成新的排除/维护成本"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "交互问题",
+            "内容理解问题",
+            "可访问障碍"
+          ],
+          "distinguishing_action": "让目标用户及相关辅助技术用户在实际实现的正常与异常状态中完成同一真实任务，记录步骤、理解、焦点、语义和阻断点。",
+          "evidence_output": "按用户、实际状态与实现版本分层的任务轨迹、理解错误和辅助技术验证记录。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "用户理解目标但在控件、状态或反馈处稳定失败",
+              "interpretation": "交互问题优先成立",
+              "next_action": "修订交互和状态合同，再做同任务复测。"
+            },
+            {
+              "when": "控件可操作但术语、指令或错误信息被目标用户误解",
+              "interpretation": "内容理解问题优先成立",
+              "next_action": "与内容/业务 owner 修订信息表达并验证。"
+            },
+            {
+              "when": "键盘、焦点、语义、对比或辅助技术路径阻断关键群体",
+              "interpretation": "可访问障碍优先成立",
+              "next_action": "阻断关键路径发布，修复后用人工与辅助技术复测。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "技术性能问题",
+            "政策或流程问题",
+            "样本偏差"
+          ],
+          "distinguishing_action": "先核 MASTER 基线与局部 override 的版本、理由和范围，再对照设备/性能证据、流程规则与样本构成，在实际实现中复测同一任务。",
+          "evidence_output": "MASTER—override 差分、设备性能、流程阻断、样本覆盖和设计—实现差异的对照证据。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "失败随设备、网络或响应时延变化且交互语义一致",
+              "interpretation": "技术性能问题优先成立",
+              "next_action": "交工程 owner 修性能并保留 UX 任务验收。"
+            },
+            {
+              "when": "界面可用但用户被权限、审批或线下流程阻断",
+              "interpretation": "政策或流程问题优先成立",
+              "next_action": "交政策/流程 owner 决定，不用界面改动冒充解决。"
+            },
+            {
+              "when": "结论只在单一便利样本成立或关键群体结果相反",
+              "interpretation": "样本偏差成立",
+              "next_action": "保留未知，补充代表性样本后再决定。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "给一条按任务影响排序的完整状态清单和一个真实任务样例，标明 MASTER/override，由资深人员复核关键路径",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成研究、优先级、MASTER/override、状态、交接和上线回查闭环"
+        ],
+        "S2_system": [
+          "建立持续研究、设计系统治理、代表性和排除风险机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-P02",
+        "GH-P01",
+        "GH-P09",
+        "GH-P08"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前用户群、任务、设备、实现版本和已固定来源有效；样本、标准或实现变化即重核",
+        "limitations": [
+          "自动检查、组件存在或单次可用性测试均不能独立证明可访问性、代表性或生产体验",
+          "MASTER、override 和优先级只治理规则与注意力，不能替代实际状态、辅助技术和用户任务证据"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与 UX 设计师可提出旅程、状态、研究和设计选项",
+        "decide": "产品/体验 owner 决定体验目标、范围和设计采用",
+        "authorize": "研究负责人、隐私/数据 owner 与发布 owner 授权招募、数据收集和试点",
+        "execute": "UX 研究/设计与工程团队执行获批研究、设计和实现",
+        "verify": "真实用户、辅助技术用户、无障碍复核者和工程共同验证任务与实现",
+        "accept_risk": "产品、无障碍、隐私或合规风险 owner 接受剩余排除风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "关键用户路径或可访问路径被阻断时停止发布",
+          "未获研究同意、需要过量收集敏感数据或会暴露弱势群体时停止研究"
+        ],
+        "escalate": [
+          "适用无障碍标准、代表性或排除风险有争议时交合规、产品与用户代表",
+          "设计修复需要改变政策、产品语义或发布范围时升级"
+        ],
+        "calibrate": [
+          "用户群、样本代表性、设备范围、标准版本、任务成功线和严重度"
+        ]
+      },
+      "authority_scope": "通用 UX 与无障碍实践；适用标准、用户群和发布决定由当前产品与合规语境确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "真实用户任务结果相反",
+        "MASTER 版本或 override 理由、范围、责任变化",
+        "实现与设计合同不一致",
+        "适用标准变化",
+        "用户群或设备范围变化"
+      ],
+      "tests": {
+        "positive": [
+          "新组件需要覆盖错误状态和无障碍验证",
+          "多页面共享 MASTER 但一个页面申请 override，需要按影响排序并验证实际实现"
+        ],
+        "negative": [
+          "无用户界面的数据库索引维护"
+        ],
+        "stage_pair": [
+          "同一关键旅程分别用 S0/S2，研究同意、完整状态、互补验证和发布停止门不变"
+        ],
+        "overturn": [
+          "真实任务失败由网络性能复现时转工程修复，不能继续宣称纯交互原因",
+          "实际状态或辅助技术验证与 MASTER/override 声明冲突时撤销通过结论并重开修复"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-frontend-user-path-release",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "用户路径状态、发布与客户端观测",
+      "job_family": "product_rd",
+      "roles": [
+        "前端工程师"
+      ],
+      "task_families": [
+        "前端开发",
+        "页面交互",
+        "组件",
+        "前端性能",
+        "前端发布"
+      ],
+      "lifecycle_stages": [
+        "实现",
+        "测试",
+        "发布",
+        "运行观测"
+      ],
+      "signals": {
+        "include": [
+          "白屏",
+          "错误被吞",
+          "兼容",
+          "前端性能",
+          "a11y",
+          "组件状态",
+          "前端发布"
+        ],
+        "exclude": [
+          "纯后端批任务",
+          "只讨论未实现的产品优先级"
+        ]
+      },
+      "professional_problem": "避免只实现 happy path 或把构建成功当用户路径发布成功。",
+      "claims": [
+        {
+          "id": "claim-frontend-needs-state-contract",
+          "statement": "前端交付需要把旅程状态、API 错误语义、目标设备和负路径作为同一合同验证。",
+          "conditions": [
+            "实现页面、组件或交互流程"
+          ],
+          "source_refs": [
+            "GH-P08",
+            "OFF-P02"
+          ],
+          "disconfirming_signals": [
+            "任务不产生任何客户端状态或用户路径"
+          ]
+        },
+        {
+          "id": "claim-client-telemetry-needs-user-impact",
+          "statement": "客户端 telemetry 只有在隐私受控且能关联用户影响、发布版本和回滚决定时才有运行价值。",
+          "conditions": [
+            "需要判断生产表现或分群异常"
+          ],
+          "source_refs": [
+            "GH-P03",
+            "GH-P06"
+          ],
+          "disconfirming_signals": [
+            "服务端证据已定位非客户端",
+            "遥测无法区分用户影响"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "旅程与状态合同、API/schema/error 语义、浏览器、设备和用户分群",
+          "性能基线、client error、RUM/trace、feature flag、回滚和隐私"
+        ],
+        "competing_explanations": [
+          "客户端状态缺陷",
+          "API 合同不符",
+          "网络或缓存",
+          "浏览器兼容",
+          "性能问题",
+          "可访问障碍",
+          "埋点缺失"
+        ],
+        "distinguish": [
+          "状态矩阵复现、组件隔离、负路径 E2E、人工无障碍、关联 ID 追踪和分群 RUM"
+        ],
+        "branches": [
+          "API 不符联合修合同而非吞错；观测缺失先加最小安全信号；关键路径失败暂停或回滚；分群异常限范围处理"
+        ],
+        "actions": [
+          "用一个可发布纵向切片把状态、合同、测试、观测和回滚串起来"
+        ],
+        "artifacts": [
+          "客户端状态合同",
+          "风险测试图",
+          "发布/回滚清单",
+          "生产观测与用户影响账"
+        ],
+        "validation": [
+          "目标设备真实路径和负路径通过，telemetry 可关联用户影响，回滚路径实测可用"
+        ],
+        "boundaries": [
+          "不得单方面改产品或 API 语义，不用遥测泄露敏感数据；性能预算、浏览器范围和告警线必须校准"
+        ],
+        "reality_feedback": [
+          "记录客户端错误、性能、客服、回滚和分群影响；产品价值另账"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "客户端状态缺陷",
+            "API 合同不符"
+          ],
+          "distinguishing_action": "固定发布版本和关联 ID，用状态矩阵、组件隔离与负路径 E2E 对照客户端状态及实际 API 响应。",
+          "evidence_output": "客户端状态、请求响应、错误语义和首个失败边界的关联记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "API 响应符合合同但客户端状态转换或错误呈现错误",
+              "interpretation": "客户端状态缺陷优先成立",
+              "next_action": "修状态机与负路径测试，验证关键用户路径。"
+            },
+            {
+              "when": "实际字段、状态码或错误语义偏离已确认合同",
+              "interpretation": "API 合同不符优先成立",
+              "next_action": "与后端/产品 owner 修合同或实现，不在前端静默吞错。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "网络或缓存",
+            "浏览器兼容",
+            "性能问题"
+          ],
+          "distinguishing_action": "跨目标网络、缓存状态、浏览器和设备复现，并对照性能基线、资源瀑布和长任务。",
+          "evidence_output": "网络/缓存、浏览器矩阵及分阶段性能证据。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "故障随离线、弱网或缓存版本稳定出现",
+              "interpretation": "网络或缓存优先成立",
+              "next_action": "修缓存失效与弱网降级，并验证更新/回退路径。"
+            },
+            {
+              "when": "仅在目标范围内特定浏览器能力或实现差异出现",
+              "interpretation": "浏览器兼容优先成立",
+              "next_action": "按已决定支持范围修复或给显式边界。"
+            },
+            {
+              "when": "正确路径因加载、交互或渲染超过校准预算而失败",
+              "interpretation": "性能问题优先成立",
+              "next_action": "定位预算消耗并以用户侧指标验证优化。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "可访问障碍",
+            "埋点缺失"
+          ],
+          "distinguishing_action": "做键盘/焦点/语义人工走查并检查最小隐私安全 telemetry 能否关联版本和用户影响。",
+          "evidence_output": "无障碍阻断记录与遥测覆盖/隐私评估并列证据。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "关键任务在键盘、焦点、语义或辅助技术下被阻断",
+              "interpretation": "可访问障碍优先成立",
+              "next_action": "停止关键路径发布，联合 UX 修复并复测。"
+            },
+            {
+              "when": "故障无法按版本、路径或用户影响观察且拟加信号符合最小化原则",
+              "interpretation": "埋点缺失成立",
+              "next_action": "经隐私授权补最小信号，再决定限范围处理或回滚。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "完成一个局部但状态完整的切片，给停手点和复核人",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成纵向切片、负路径、RUM/trace 与回滚闭环"
+        ],
+        "S2_system": [
+          "处理前端架构、性能预算、迁移和组织开发效果"
+        ]
+      },
+      "source_refs": [
+        "OFF-P02",
+        "GH-P03",
+        "GH-P06",
+        "GH-P08"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前发布版本、目标浏览器/设备、用户路径和固定来源有效；合同或客户端环境变化即重核",
+        "limitations": [
+          "构建、单元测试或聚合遥测不能单独证明真实用户路径、隐私安全或可访问性"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与前端工程师可提出客户端诊断、实现和回滚选项",
+        "decide": "产品/API owner 决定用户与错误语义，前端 owner 决定本地实现方案",
+        "authorize": "发布 owner 授权上线/回滚，隐私 owner 授权 telemetry，安全 owner 授权相关例外",
+        "execute": "前端工程师在获批范围实现、测试、发布或回滚",
+        "verify": "QA、UX/无障碍复核者、API owner 与真实用户验证路径、合同和影响",
+        "accept_risk": "服务、产品、隐私或可访问性风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "关键用户路径失败、回滚不可用或 API 错误被静默吞掉时停止发布",
+          "遥测可能泄露敏感数据或无隐私授权时停止采集"
+        ],
+        "escalate": [
+          "产品/API 语义冲突、安全缺陷、广泛分群影响或不可逆发布时升级",
+          "关键可访问路径受阻时交发布、UX 与合规 owner"
+        ],
+        "calibrate": [
+          "性能预算、浏览器/设备范围、告警线、分群阈值和回滚门"
+        ]
+      },
+      "authority_scope": "通用前端工程实践；产品语义、目标设备、隐私和发布权限由本地 owner 确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "服务端证据改变定位",
+        "目标群体结果不同",
+        "回滚或 flag 不可用",
+        "浏览器与设备范围变化"
+      ],
+      "tests": {
+        "positive": [
+          "页面白屏且错误被吞，需要判断是否回滚"
+        ],
+        "negative": [
+          "纯后端数据迁移且没有任何客户端改动"
+        ],
+        "stage_pair": [
+          "同一白屏事故分别用 S0/S2，产品/API 语义、隐私、关键路径与回滚发布门不变"
+        ],
+        "overturn": [
+          "关联证据定位 API 合同不符时不得继续把问题归为客户端状态缺陷"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-backend-contract-migration",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "API/数据契约变更与恢复",
+      "job_family": "product_rd",
+      "roles": [
+        "后端工程师"
+      ],
+      "task_families": [
+        "后端开发",
+        "API",
+        "数据库迁移",
+        "服务发布",
+        "故障恢复"
+      ],
+      "lifecycle_stages": [
+        "设计",
+        "实现",
+        "迁移",
+        "发布",
+        "运行"
+      ],
+      "signals": {
+        "include": [
+          "API 变更",
+          "schema 变更",
+          "数据库迁移",
+          "500",
+          "重试造重",
+          "一致性",
+          "容量事故"
+        ],
+        "exclude": [
+          "纯前端样式问题",
+          "只做产品需求优先级"
+        ]
+      },
+      "professional_problem": "避免在消费者、幂等、一致性、容量和恢复未知时实施破坏性服务或数据变更。",
+      "claims": [
+        {
+          "id": "claim-backend-change-needs-consumer-contract",
+          "statement": "API 和 schema 变更必须显形消费者、兼容策略、错误模型、版本与弃用边界。",
+          "conditions": [
+            "存在现有消费者或持久化数据"
+          ],
+          "source_refs": [
+            "OFF-P04",
+            "GH-P04"
+          ],
+          "disconfirming_signals": [
+            "消费者清单改变",
+            "所谓破坏性字段实际从未对外形成合同"
+          ]
+        },
+        {
+          "id": "claim-migration-needs-recovery-proof",
+          "statement": "不可逆迁移、非幂等重试或恢复未证时，应改变发布策略而不是继续上线。",
+          "conditions": [
+            "准备迁移、灰度或恢复"
+          ],
+          "source_refs": [
+            "OFF-P03",
+            "OFF-P04",
+            "GH-P03",
+            "GH-P05",
+            "GH-P06"
+          ],
+          "disconfirming_signals": [
+            "恢复演练失败",
+            "容量或一致性事实改变"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "消费者、版本、幂等、并发、一致性、错误模型、安全和授权",
+          "数据量、锁、容量、依赖、SLO、灰度、回滚与恢复"
+        ],
+        "competing_explanations": [
+          "合同不兼容",
+          "并发竞态",
+          "非幂等重试",
+          "迁移锁或容量",
+          "授权控制",
+          "下游依赖"
+        ],
+        "distinguish": [
+          "契约、集成、负载、安全和恢复测试，迁移 dry-run、快照对账、消费者 canary 与 trace 关联"
+        ],
+        "branches": [
+          "可兼容则扩展；不可兼容则版本/适配/同步切换；回滚不可行改变发布策略并升级；恢复未证不发布"
+        ],
+        "actions": [
+          "先冻结消费者与恢复合同，再选择兼容扩展、分阶段迁移、灰度或停止"
+        ],
+        "artifacts": [
+          "API 合同",
+          "迁移 runbook",
+          "发布门",
+          "ADR",
+          "消费者验收与恢复证据"
+        ],
+        "validation": [
+          "消费者 canary、前后数据对账、恢复演练和用户侧 SLI"
+        ],
+        "boundaries": [
+          "不得无备份和批准做不可逆迁移或替风险 owner 接受风险；SLO、容量、弃用窗与一致性取舍待校准"
+        ],
+        "reality_feedback": [
+          "记录事故、重试、成本、用户影响、兼容迁移和恢复结果"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "合同不兼容",
+            "授权控制",
+            "下游依赖"
+          ],
+          "distinguishing_action": "冻结消费者清单和合同版本，做消费者 canary、授权负路径测试及依赖 trace 对照。",
+          "evidence_output": "消费者—版本—权限—依赖边界和首个失败点的合同证据包。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "旧消费者按既有合同调用时因字段、语义或错误模型变化失败",
+              "interpretation": "合同不兼容成立",
+              "next_action": "改为兼容扩展、版本化或同步迁移，不直接破坏发布。"
+            },
+            {
+              "when": "身份、租户、资源或动作边界被错误允许或拒绝",
+              "interpretation": "授权控制优先成立",
+              "next_action": "停止发布并交安全/数据 owner 修授权模型和负路径。"
+            },
+            {
+              "when": "本服务合同正确但下游超时、限流或未按承诺消费",
+              "interpretation": "下游依赖优先成立",
+              "next_action": "与依赖 owner 决定降级、隔离或协调恢复。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "并发竞态",
+            "非幂等重试",
+            "迁移锁或容量"
+          ],
+          "distinguishing_action": "在隔离环境运行并发/重复请求、迁移 dry-run 和代表性负载，保存前后快照及锁等待。",
+          "evidence_output": "并发序列、幂等键、重复副作用、锁与容量曲线以及恢复结果。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "结果随请求交错顺序变化且违反一致性不变量",
+              "interpretation": "并发竞态成立",
+              "next_action": "修并发控制并验证不变量与失败恢复。"
+            },
+            {
+              "when": "相同幂等语义请求重放产生重复副作用",
+              "interpretation": "非幂等重试成立",
+              "next_action": "停止自动重试，补幂等键或补偿并重新演练。"
+            },
+            {
+              "when": "dry-run 或代表性负载显示锁等待、容量或迁移窗不可接受",
+              "interpretation": "迁移锁或容量优先成立",
+              "next_action": "改变分批、双写、影子或停机策略，由 owner 校准窗口。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "完成正常与明确错误路径，生产变更设求助点并由资深人员复核",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成合同、测试、灰度、迁移和恢复闭环"
+        ],
+        "S2_system": [
+          "处理服务边界、韧性、错误预算、容量和组织治理"
+        ]
+      },
+      "source_refs": [
+        "OFF-P03",
+        "OFF-P04",
+        "GH-P03",
+        "GH-P04",
+        "GH-P05",
+        "GH-P06"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前消费者、合同版本、流量/数据规模、运行环境和固定来源有效；任一关键条件变化即重核",
+        "limitations": [
+          "通用工程实践不能替代本地 SLO、安全模型、容量数据、消费者确认和恢复演练"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与后端工程师可提出合同、迁移、恢复和降级选项",
+        "decide": "API/数据/服务 owner 决定合同语义、一致性与迁移路径",
+        "authorize": "生产、数据与安全 owner 分别授权发布、数据变更和安全例外",
+        "execute": "后端/平台/数据库工程师在获批范围实施和回滚",
+        "verify": "消费者、运维、QA 与安全复核者验证合同、数据、SLI、恢复和授权",
+        "accept_risk": "服务、数据、安全或业务风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "无备份、无生产授权、恢复未证或不可逆影响未获接受时停止迁移/发布",
+          "发现授权绕过、数据泄露迹象或活动安全事件时停止常规变更并保全证据"
+        ],
+        "escalate": [
+          "破坏性合同、跨租户/敏感数据、安全事件、重大容量或 SLO 风险交对应 owner",
+          "消费者无法同步且无安全兼容路径时升级发布决定"
+        ],
+        "calibrate": [
+          "SLO、容量、弃用窗口、一致性取舍、灰度比例和恢复目标"
+        ]
+      },
+      "authority_scope": "通用后端工程实践；生产、数据、SLO、风险接受和发布权限由当前系统有权者确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "消费者清单变化",
+        "恢复演练失败",
+        "流量、容量或一致性事实改变",
+        "安全标准版本变化"
+      ],
+      "tests": {
+        "positive": [
+          "API 和数据库迁移可能破坏旧消费者且回滚未证"
+        ],
+        "negative": [
+          "只改前端静态颜色且后端接口不变"
+        ],
+        "stage_pair": [
+          "同一迁移事实分别用 S0/S2，合同、生产授权、备份、容量与恢复证明要求不变"
+        ],
+        "overturn": [
+          "恢复演练失败或授权负路径被绕过时禁止发布并改变迁移策略"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-architect-evolution-quality",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "演进架构与可证伪质量属性",
+      "job_family": "product_rd",
+      "roles": [
+        "架构师"
+      ],
+      "task_families": [
+        "系统架构",
+        "微服务",
+        "平台建设",
+        "技术选型",
+        "架构迁移"
+      ],
+      "lifecycle_stages": [
+        "约束澄清",
+        "方案决策",
+        "迁移",
+        "运行治理"
+      ],
+      "signals": {
+        "include": [
+          "拆微服务",
+          "合并服务",
+          "建平台",
+          "换框架",
+          "跨系统标准",
+          "目标架构"
+        ],
+        "exclude": [
+          "单一低风险实现 bug",
+          "只需按已定方案编码"
+        ]
+      },
+      "professional_problem": "避免用流行架构、厂商框架或头衔代替质量属性、约束、迁移证据和组织承载力。",
+      "claims": [
+        {
+          "id": "claim-architecture-needs-quality-scenarios",
+          "statement": "架构选项应由可观察质量属性场景、约束和替代方案比较驱动。",
+          "conditions": [
+            "问题涉及跨组件边界或长期技术取舍"
+          ],
+          "source_refs": [
+            "OFF-P03",
+            "OFF-P04",
+            "GH-F03"
+          ],
+          "disconfirming_signals": [
+            "问题可由局部合同或模块调整解决"
+          ]
+        },
+        {
+          "id": "claim-architecture-needs-evolution-feedback",
+          "statement": "架构决定需有演进路线、例外、fitness check 和现实运行反馈，不能只交目标图。",
+          "conditions": [
+            "准备迁移、标准化或建设平台"
+          ],
+          "source_refs": [
+            "OFF-P03",
+            "OFF-P04",
+            "GH-F03"
+          ],
+          "disconfirming_signals": [
+            "试点不改善目标",
+            "团队运行证据恶化"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "业务结果、质量属性场景、硬约束、依赖、消费者和团队拓扑",
+          "运行能力、事故、成本、变更证据、迁移与可逆性"
+        ],
+        "competing_explanations": [
+          "服务边界问题",
+          "契约耦合",
+          "所有权或组织问题",
+          "部署问题",
+          "数据边界问题",
+          "容量问题",
+          "无需架构变化"
+        ],
+        "distinguish": [
+          "ADR 选项权衡、技术 spike、fitness check、依赖图、迁移试点和事故/容量证据"
+        ],
+        "branches": [
+          "耦合主因先修合同或模块；独立扩缩和故障域有证才拆分；运营能力不足延后复杂化；无净收益保持或简化"
+        ],
+        "actions": [
+          "把抽象目标改写成可证伪质量场景，先跑最小演进试点"
+        ],
+        "artifacts": [
+          "质量属性场景",
+          "ADR 链",
+          "依赖/约束图",
+          "演进路线",
+          "例外与停止门"
+        ],
+        "validation": [
+          "fitness 结果、迁移现实结果、事故、成本、变更耦合和团队承载趋势"
+        ],
+        "boundaries": [
+          "不得用头衔、面试样例、stars 或厂商框架证明选型；来源只支持提问与决策纪律，不授予生产选型权；阈值、窗口和团队承载力必须校准"
+        ],
+        "reality_feedback": [
+          "记录拆、合、简化、退役决定以及例外是否退出"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "服务边界问题",
+            "契约耦合",
+            "所有权或组织问题"
+          ],
+          "distinguishing_action": "画运行依赖与变更共振图，比较独立扩缩/故障域证据、合同变化和实际团队责任。",
+          "evidence_output": "服务边界、合同变更耦合、故障传播与责任 owner 对照图。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "业务能力需独立演进、扩缩或隔离且运行证据支持",
+              "interpretation": "服务边界问题获得支持",
+              "next_action": "用最小边界试点验证拆分收益和运营成本。"
+            },
+            {
+              "when": "大多数共振来自未版本化合同或共享内部模型",
+              "interpretation": "契约耦合优先成立",
+              "next_action": "先修合同与模块边界，不急于拆服务。"
+            },
+            {
+              "when": "边界技术上清楚但无人拥有运行、决定或消费者关系",
+              "interpretation": "所有权或组织问题优先成立",
+              "next_action": "由组织/业务 owner 明确责任与容量，再决定技术变化。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "部署问题",
+            "数据边界问题",
+            "容量问题",
+            "无需架构变化"
+          ],
+          "distinguishing_action": "做部署技术 spike、数据一致性/所有权检查、代表性容量测试，并与局部修复和保持现状情景比较。",
+          "evidence_output": "部署失败边界、数据不变量、容量曲线和局部修复净收益对照。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "主要痛点来自发布耦合、环境差异或不可重复部署",
+              "interpretation": "部署问题优先成立",
+              "next_action": "先修交付流水线、环境合同或发布隔离。"
+            },
+            {
+              "when": "跨边界写入、所有权或一致性不变量无法满足",
+              "interpretation": "数据边界问题优先成立",
+              "next_action": "由数据/业务 owner 决定所有权与一致性，再设计迁移。"
+            },
+            {
+              "when": "代表性负载显示明确资源瓶颈且局部优化不足",
+              "interpretation": "容量问题获得支持",
+              "next_action": "按校准目标试点扩容、分区或架构调整。"
+            },
+            {
+              "when": "局部合同、模块、部署或配置改动已满足质量场景且净收益更高",
+              "interpretation": "无需架构变化成立",
+              "next_action": "保持或简化架构，记录不变更决定。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "只整理约束和一个质量场景，由资深架构/运行 owner 复核",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成 ADR、质量场景、试点和迁移验证"
+        ],
+        "S2_system": [
+          "处理组合、组织、监管、自治、演进和二阶效应治理"
+        ]
+      },
+      "source_refs": [
+        "OFF-P03",
+        "OFF-P04",
+        "GH-F03"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前质量场景、约束、团队拓扑、运行数据和固定来源有效；架构或组织条件变化即重核",
+        "limitations": [
+          "这些来源只支撑方案比较、交付和现实反馈纪律，不直接证明某技术选型或授予生产权威"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与架构师可提出质量场景、架构选项、试点和演进路线",
+        "decide": "对业务与系统结果负责的架构/业务 owner 决定目标方案与边界",
+        "authorize": "生产、数据、安全、合规和变更 owner 授权试点、迁移及例外",
+        "execute": "各工程与平台团队在获批范围实施演进",
+        "verify": "消费者、运维、工程团队和独立架构复核者验证 fitness、迁移与运行结果",
+        "accept_risk": "业务、服务、安全、数据或监管风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "没有可证伪质量场景、消费者/约束未知或迁移恢复未证时停止生产架构承诺",
+          "存在未解决安全、隐私、监管、数据驻留或不可逆迁移风险时停止推进"
+        ],
+        "escalate": [
+          "跨域边界、重大资金、监管义务、风险接受或组织重构交有权决策机构",
+          "试点恶化事故、成本或团队承载时升级继续/改变/停止决定"
+        ],
+        "calibrate": [
+          "质量属性阈值、观察窗、团队承载力、迁移批次、成本和停止门"
+        ]
+      },
+      "authority_scope": "通用系统架构实践；业务优先级、质量目标、风险与迁移授权由实际 owner 决定",
+      "supersedes": [],
+      "refresh_triggers": [
+        "试点不改善目标",
+        "团队运行证据恶化",
+        "约束或消费者变化",
+        "平台边际成本上升"
+      ],
+      "tests": {
+        "positive": [
+          "团队争论是否拆微服务但没有质量属性和迁移证据"
+        ],
+        "negative": [
+          "修复一个边界清楚的低风险空指针错误"
+        ],
+        "stage_pair": [
+          "同一拆分争议分别用 S0/S2，质量场景、生产授权、安全监管与迁移恢复门不变"
+        ],
+        "overturn": [
+          "局部合同修复满足质量场景或试点恶化运行结果时停止拆分方案"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-project-manager-reforecast-benefits",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "延期再预测、变更与收益回流",
+      "job_family": "function",
+      "roles": [
+        "项目管理",
+        "项目经理"
+      ],
+      "task_families": [
+        "项目计划",
+        "进度管理",
+        "范围变更",
+        "风险管理",
+        "收益管理"
+      ],
+      "lifecycle_stages": [
+        "启动",
+        "计划",
+        "交付",
+        "变更",
+        "收益回流"
+      ],
+      "signals": {
+        "include": [
+          "延期",
+          "范围蔓延",
+          "资源争议",
+          "依赖卡住",
+          "完成率",
+          "风险",
+          "再预测"
+        ],
+        "exclude": [
+          "只安排一个无需依赖的个人小任务",
+          "纯专业技术根因尚未诊断"
+        ]
+      },
+      "professional_problem": "避免把所有偏差归为执行力、用虚假完成率隐藏范围容量依赖和收益变化。",
+      "claims": [
+        {
+          "id": "claim-delay-needs-competing-constraints",
+          "statement": "延期再预测应区分范围、容量、依赖、决定延迟、质量返工、估算不确定和外部事件。",
+          "conditions": [
+            "基线与当前预测出现偏差"
+          ],
+          "source_refs": [
+            "OFF-F01",
+            "GH-F01",
+            "GH-F02"
+          ],
+          "disconfirming_signals": [
+            "基线或范围已被有权者正式重置"
+          ]
+        },
+        {
+          "id": "claim-project-completion-needs-benefit",
+          "statement": "交付或流程办结不等于收益发生，变更与停止决定应连接现实验收和收益。",
+          "conditions": [
+            "项目目标声称包含业务或服务收益"
+          ],
+          "source_refs": [
+            "OFF-F01",
+            "GH-F03"
+          ],
+          "disconfirming_signals": [
+            "收益已不再存在",
+            "验收对象或决定权变化"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "目标、范围、验收、基线、当前预测、容量和依赖",
+          "决定延迟、质量返工、风险触发器、实际权力和收益"
+        ],
+        "competing_explanations": [
+          "范围增长",
+          "容量不足",
+          "依赖阻塞",
+          "决定延迟",
+          "质量返工",
+          "估算不确定",
+          "外部事件",
+          "价值已过时"
+        ],
+        "distinguish": [
+          "比较基线与预测差，核容量/依赖证据、实际承诺和变更影响情景"
+        ],
+        "branches": [
+          "范围可切则减范围；容量或期限需变交有权者决定；依赖无承诺则升级或重排；收益消失则停止"
+        ],
+        "actions": [
+          "建立再预测与有权取舍，不用任务完成率覆盖真实偏差"
+        ],
+        "artifacts": [
+          "再预测",
+          "变更决定包",
+          "依赖/风险账",
+          "容量承诺",
+          "验收与收益追踪"
+        ],
+        "validation": [
+          "新承诺有 owner、验收现实达成、收益实际发生并记录预测误差"
+        ],
+        "boundaries": [
+          "无权承诺预算、资源和期限，不制造虚假完成；缓冲、概率和收益目标必须校准"
+        ],
+        "reality_feedback": [
+          "记录预测误差、变更效果、控制成本和收益，支持继续、改变或停止"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "范围增长",
+            "容量不足",
+            "依赖阻塞"
+          ],
+          "distinguishing_action": "比较冻结基线与当前范围，核可用容量、实际投入和依赖 owner 的有期限承诺。",
+          "evidence_output": "范围差分、容量账和依赖承诺/失约记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "新增或隐含交付物解释主要预测差",
+              "interpretation": "范围增长优先成立",
+              "next_action": "让 sponsor 决定减范围、增资源或改期限。"
+            },
+            {
+              "when": "已承诺范围不变但可用工时/技能低于计划",
+              "interpretation": "容量不足优先成立",
+              "next_action": "禁止以加班假设填平缺口，交资源 owner 取舍。"
+            },
+            {
+              "when": "关键前置无 owner、日期或现实交付",
+              "interpretation": "依赖阻塞优先成立",
+              "next_action": "升级依赖承诺或重排，不制造虚假完成率。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "决定延迟",
+            "质量返工",
+            "估算不确定"
+          ],
+          "distinguishing_action": "追踪等待有权决定的时长、返工来源和历史同类预测误差区间。",
+          "evidence_output": "决定等待账、返工因果链和估算区间校准记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "关键路径等待未按期作出的有权决定",
+              "interpretation": "决定延迟优先成立",
+              "next_action": "向决定人提交有期限选项与不决定后果。"
+            },
+            {
+              "when": "已完成工作因验收、缺陷或定义问题反复重做",
+              "interpretation": "质量返工优先成立",
+              "next_action": "修验收与质量门，重新预测剩余工作。"
+            },
+            {
+              "when": "范围和条件未显著变但历史同类误差持续偏大",
+              "interpretation": "估算不确定优先成立",
+              "next_action": "改用区间与概率，校准而不归责个人。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "外部事件",
+            "价值已过时"
+          ],
+          "distinguishing_action": "核对外部事件的时间/作用范围，并让收益 owner 重新验证目标用户、验收和预期收益。",
+          "evidence_output": "外部影响情景与当前收益假设重验记录。",
+          "required_permission": "decide",
+          "outcomes": [
+            {
+              "when": "不可控事件与关键路径偏差在时间和范围上吻合且收益仍在",
+              "interpretation": "外部事件优先成立",
+              "next_action": "由 sponsor 决定缓冲、重排、减范围或改期限。"
+            },
+            {
+              "when": "目标用户、需求或收益已消失/被替代",
+              "interpretation": "价值已过时成立",
+              "next_action": "提交停止或重定向决定，不以沉没成本继续。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "先明确一个 owner、截止、依赖和验收，给升级点",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立管理基线、容量、风险、变更和一次收益回流"
+        ],
+        "S2_system": [
+          "处理组合入口、容量分配、跨项目依赖和停止门"
+        ]
+      },
+      "source_refs": [
+        "OFF-F01",
+        "GH-F01",
+        "GH-F02",
+        "GH-F03"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前基线、范围、容量、依赖和收益假设有效；有权重置或现实条件变化即重核",
+        "limitations": [
+          "计划工具、完成率和历史估算不能单独证明进度原因、个人绩效或收益"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与项目经理可提出再预测、变更、风险和取舍选项",
+        "decide": "sponsor/指导机构决定范围、期限、优先级、继续或停止",
+        "authorize": "预算、资源和依赖 owner 授权资金、人员与承诺变更",
+        "execute": "工作包 owner 和团队执行获批计划",
+        "verify": "验收 owner、依赖方和收益 owner 验证交付、承诺与现实收益",
+        "accept_risk": "sponsor、业务或项目风险 owner 接受剩余交付与收益风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "要求伪造完成率、隐瞒风险、无权承诺资源或以强制加班填平计划时停止",
+          "出现报复、胁迫、骚扰、安全或健康风险时停止常规催办并保护当事人信息"
+        ],
+        "escalate": [
+          "范围/预算/期限取舍、重大依赖失约或价值消失交 sponsor",
+          "报复、强迫、虚假报告或健康安全风险交有权的人事、伦理、合规或安全渠道"
+        ],
+        "calibrate": [
+          "估算区间、缓冲、风险概率、容量、验收和收益目标"
+        ]
+      },
+      "authority_scope": "通用项目交付与收益实践；预算、资源、范围、期限和收益由实际有权者确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "基线或范围被重置",
+        "依赖承诺变化",
+        "收益不再存在",
+        "实际容量或验收变化"
+      ],
+      "tests": {
+        "positive": [
+          "项目延期且范围、容量和依赖互相争议"
+        ],
+        "negative": [
+          "个人把一个无依赖文件改名"
+        ],
+        "stage_pair": [
+          "同一延期事实分别用 S0/S2，预算资源权、真实完成、健康安全与收益验证门不变"
+        ],
+        "overturn": [
+          "收益 owner 确认价值已消失时转停止/重定向，不再优化原计划"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-admin-service-resource",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "紧急资源事项、例外与验收闭环",
+      "job_family": "function",
+      "roles": [
+        "行政",
+        "行政专员"
+      ],
+      "task_families": [
+        "紧急资源事项",
+        "资源例外",
+        "采购或调拨",
+        "物资验收",
+        "资产入账与归还"
+      ],
+      "lifecycle_stages": [
+        "事项受理",
+        "替代核验",
+        "授权执行",
+        "验收入账",
+        "例外关闭"
+      ],
+      "signals": {
+        "include": [
+          "紧急采购",
+          "临时物资",
+          "先办后补",
+          "库存调拨",
+          "租借替代",
+          "验收入账",
+          "资产归还异常"
+        ],
+        "exclude": [
+          "常规差旅或活动排期",
+          "泛供应商管理",
+          "法定采购适用性要求最终法律结论",
+          "纯技术系统故障"
+        ]
+      },
+      "professional_problem": "避免以紧急口号或单位类别绕过资源权限，并遗漏库存/租借替代、职责分离、验收入账和例外关闭。",
+      "claims": [
+        {
+          "id": "claim-admin-request-needs-entity-authority",
+          "statement": "行政资源事项应先核实际实体、资金、现行规则、权限和合法例外，不能从组织类别直接推适用流程。",
+          "conditions": [
+            "紧急资源事项涉及采购、付款、调拨或正式资源承诺"
+          ],
+          "source_refs": [
+            "OFF-F02",
+            "OFF-F03",
+            "OFF-O02"
+          ],
+          "disconfirming_signals": [
+            "现行制度或有权者否定初始分类"
+          ]
+        },
+        {
+          "id": "claim-admin-service-needs-asset-closure",
+          "statement": "紧急资源到位不等于事项关闭，仍需需求方验收、资产入账或归还、异常处理与例外退出。",
+          "conditions": [
+            "事项产生物资、资产或需追踪的资源结果"
+          ],
+          "source_refs": [
+            "GH-F02",
+            "GH-F04"
+          ],
+          "disconfirming_signals": [
+            "实际需求取消",
+            "库存、租借或缩范围已满足且无需新增承诺"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "需求对象、最低可接受结果、时限、实际实体、资金、权限、现行规则和紧急例外",
+          "库存、调拨、租借、缩范围、供应方、利益冲突、安全、隐私、收货、验收、入账和归还"
+        ],
+        "competing_explanations": [
+          "真实紧急",
+          "计划失效",
+          "库存可替代",
+          "供应商问题",
+          "事项分类错误",
+          "无需购买"
+        ],
+        "distinguish": [
+          "查现行制度和最近同类案例，核库存/租借/缩范围、职责分离、收货与验收及备用路径"
+        ],
+        "branches": [
+          "合法例外且获批则限范围留痕执行；无例外停止承诺并给替代；库存/调拨/租借可满足则不新增购买；供应失败改备用、缩范围或取消"
+        ],
+        "actions": [
+          "先做事项入口卡和替代检查，再走获授权的资源闭环"
+        ],
+        "artifacts": [
+          "紧急资源入口卡",
+          "替代方案与授权记录",
+          "采购/调拨/资产链",
+          "供应方与利益冲突记录",
+          "验收/入账/归还及例外关闭证据"
+        ],
+        "validation": [
+          "需求方确认最低结果、收货与验收职责分离、资产入账或归还、例外按期退出"
+        ],
+        "boundaries": [
+          "不得无权购买、付款或签署，不按国企/事业单位标签判法规，不过量收集人员信息；预算与阈值待校准"
+        ],
+        "reality_feedback": [
+          "记录成本、服务质量、重复紧急、供应商表现和连续性"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "真实紧急",
+            "计划失效",
+            "事项分类错误"
+          ],
+          "distinguishing_action": "核最低结果和最后安全时点，对照原计划、最近同类事项、实际实体/资金和现行事项分类。",
+          "evidence_output": "时间影响、计划偏差、实体/资金、分类依据与有权确认组成的入口判别卡。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "延后会造成经有权者确认的现实损失且无常规路径可及时满足",
+              "interpretation": "真实紧急获得支持",
+              "next_action": "只在获批例外范围内执行并设置退出期限。"
+            },
+            {
+              "when": "需求可预见且主要因未提前申报、排队或容量管理失败",
+              "interpretation": "计划失效优先成立",
+              "next_action": "先给当前最低风险替代，事后回流入口/容量而不把失误常态化为例外。"
+            },
+            {
+              "when": "实体、资金或事项性质与初始流程不一致",
+              "interpretation": "事项分类错误成立",
+              "next_action": "停止当前承诺，交制度/采购/财务有权者重新路由。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "库存可替代",
+            "供应商问题",
+            "无需购买"
+          ],
+          "distinguishing_action": "核库存、调拨、租借、缩范围和取消情景，并查供应能力、利益冲突、收货与验收条件。",
+          "evidence_output": "购买与非购买方案的到位时间、成本、风险、验收和归还对照表。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "现有库存、调拨或租借在时限内满足最低结果",
+              "interpretation": "库存可替代成立",
+              "next_action": "走授权调拨/租借与归还闭环，不新增购买。"
+            },
+            {
+              "when": "需求成立但供应能力、合规、利益冲突或交付条件不满足",
+              "interpretation": "供应商问题优先成立",
+              "next_action": "停用该方案，启用获批备用、缩范围或取消。"
+            },
+            {
+              "when": "缩范围、共享、延期或取消不造成不可接受后果",
+              "interpretation": "无需购买成立",
+              "next_action": "记录不购买决定和现实结果。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "给逐项清单和复核人，用户亲自核一项权限、替代与验收",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立处理紧急判别、替代、例外、验收入账和关闭闭环"
+        ],
+        "S2_system": [
+          "建立紧急资源入口、容量、重复例外、审计抽查和连续性机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-F02",
+        "OFF-F03",
+        "OFF-O02",
+        "GH-F02",
+        "GH-F04"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前紧急资源事项、实体、资金、制度版本和供应事实有效；任一条件变化即重核",
+        "limitations": [
+          "通用清单不能判断具体法规适用性、替代本地采购/财务制度或证明某供应方合格"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI、需求方与行政可提出最低结果、替代和资源选项",
+        "decide": "业务/服务 owner 决定最低结果、优先级、缩范围或取消",
+        "authorize": "采购、预算、财务、资产或例外有权者分别授权购买、付款、调拨和例外",
+        "execute": "行政、采购、仓储或供应方在获批范围交付",
+        "verify": "需求方验收人、收货/资产角色与财务/审计分别验证结果、数量、入账和例外关闭",
+        "accept_risk": "预算、合规、安全或业务连续性风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "无权购买/付款/签署、要求拆分规避控制、利益冲突未披露或验收职责冲突时停止",
+          "涉及人身安全、受限物资、未授权个人信息或疑似违法事项时停止常规办理"
+        ],
+        "escalate": [
+          "具体法规适用、重大金额、受限物资、安全隐患或例外超权交采购、法务、财务、安全等有权者",
+          "供应失败影响连续性且替代不足时交业务连续性 owner"
+        ],
+        "calibrate": [
+          "紧急时点、金额/审批阈值、最低结果、验收抽样、例外期限和资产界限"
+        ]
+      },
+      "authority_scope": "通用紧急资源事项与验收实践；实体、资金、适用规则、采购/调拨/付款和例外权限由当前制度与有权者确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "现行制度、实体或资金改变",
+        "授权人否定例外",
+        "最低资源需求或替代可用性变化",
+        "供应方、安全或验收事实变化"
+      ],
+      "tests": {
+        "positive": [
+          "临时关键物资要求紧急采购并提出先办后补"
+        ],
+        "negative": [
+          "常规差旅排期",
+          "要求直接给某事业单位采购法规的最终法律结论"
+        ],
+        "stage_pair": [
+          "同一紧急资源事实分别用 S0/S2，采购付款权、替代检查、安全隐私与验收关闭门不变"
+        ],
+        "overturn": [
+          "库存调拨已满足最低结果或授权人否定例外时停止新增购买"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-secretary-decision-authorization",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "含糊指令、决定记录与授权保护",
+      "job_family": "function",
+      "roles": [
+        "秘书",
+        "办公室秘书"
+      ],
+      "task_families": [
+        "指令澄清",
+        "会议支持",
+        "纪要",
+        "对外材料",
+        "日程与督办"
+      ],
+      "lifecycle_stages": [
+        "受领指令",
+        "材料准备",
+        "会议决定",
+        "对外传递",
+        "督办与交接"
+      ],
+      "signals": {
+        "include": [
+          "领导口头交办",
+          "会议纪要",
+          "对外表态",
+          "敏感日程",
+          "代领导写",
+          "秘书角色不清"
+        ],
+        "exclude": [
+          "法定秘书职责要求最终法律结论",
+          "纯数据管道故障"
+        ]
+      },
+      "professional_problem": "避免把含糊指令、建议或讨论静默改写成领导决定、对外承诺或法定职责结论。",
+      "claims": [
+        {
+          "id": "claim-secretary-needs-role-and-authority-clarity",
+          "statement": "秘书工作先区分普通支持角色与法定职务，并核对象、意图、交付、保密和授权。",
+          "conditions": [
+            "角色称谓或授权会改变动作"
+          ],
+          "source_refs": [
+            "OFF-F02",
+            "OFF-F06"
+          ],
+          "disconfirming_signals": [
+            "角色、章程或授权事实改变"
+          ]
+        },
+        {
+          "id": "claim-record-discussion-decision-separately",
+          "statement": "讨论、建议、决定、条件和待定项必须分开记录，争议更正采用追加留痕。",
+          "conditions": [
+            "输出将被视为会议或权威记录"
+          ],
+          "source_refs": [
+            "OFF-F03",
+            "OFF-F05",
+            "GH-F03"
+          ],
+          "disconfirming_signals": [
+            "有权者更正或撤销决定",
+            "材料版本发生变化"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "普通秘书还是法定职务、对象、意图、交付、时限、保密和决定权",
+          "材料来源、版本、讨论/决定/条件/待定以及冲突指令"
+        ],
+        "competing_explanations": [
+          "信息请求",
+          "建议稿",
+          "请示或决定",
+          "代办",
+          "仅草案",
+          "普通秘书支持",
+          "法定职责"
+        ],
+        "distinguish": [
+          "一句话复述确认，核授权与接收人，多材料交叉核验，由有权者确认争议决定"
+        ],
+        "branches": [
+          "含糊先给草案/选项；对外承诺必须确认；纪要争议追加修订；法定秘书停通用路径并锁当前法规与章程"
+        ],
+        "actions": [
+          "把每项交办拆成来源、授权、交付、决定状态和复核点"
+        ],
+        "artifacts": [
+          "指令卡",
+          "议程/预读",
+          "决定纪要",
+          "行动账",
+          "授权与版本记录"
+        ],
+        "validation": [
+          "有权者确认、收件人理解一致、行动 owner 关闭、记录追加式可追溯"
+        ],
+        "boundaries": [
+          "不得替领导表态、签署或承诺，不把建议写成决定，不静默改原记录；法定职责需当前专业复核"
+        ],
+        "reality_feedback": [
+          "记录更正、争议、决定落实和交接后能否复现"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "信息请求",
+            "建议稿",
+            "仅草案"
+          ],
+          "distinguishing_action": "向来源人复述对象、意图、使用场景、决定状态和允许传播范围，并核材料上的版本/草案标识。",
+          "evidence_output": "来源确认、对象、用途、决定状态、版本和传播范围指令卡。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "只需提供已授权事实且不要求立场或决定",
+              "interpretation": "信息请求成立",
+              "next_action": "按最小必要范围提供并保留来源。"
+            },
+            {
+              "when": "要求形成可供有权者选择的观点但尚未决定",
+              "interpretation": "建议稿成立",
+              "next_action": "标明建议、选项、依据和待决定项。"
+            },
+            {
+              "when": "材料尚需核验/批准且不得作为权威版本传播",
+              "interpretation": "仅草案成立",
+              "next_action": "显著标草案、限制收件人并设置复核点。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "请示或决定",
+            "代办"
+          ],
+          "distinguishing_action": "核是否存在有权者明确决定、条件和生效范围，并区分获授权执行动作与代表有权者表态。",
+          "evidence_output": "请示—决定—授权—执行四段状态及有权确认记录。",
+          "required_permission": "decide",
+          "outcomes": [
+            {
+              "when": "事项仍待有权者取舍或已有明确决定可核",
+              "interpretation": "请示或决定路径成立",
+              "next_action": "未决写选项；已决逐字保留决定、条件、owner 和生效范围。"
+            },
+            {
+              "when": "只授权办理具体动作且未授权形成新决定或对外承诺",
+              "interpretation": "代办成立",
+              "next_action": "限授权执行并回报，不扩大为代表表态。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "普通秘书支持",
+            "法定职责"
+          ],
+          "distinguishing_action": "核角色任命、章程/制度、事项性质和当前授权来源，必要时由专业有权者确认。",
+          "evidence_output": "角色性质、任命/授权真源、适用事项和专业复核状态。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "角色仅承担一般协调、材料和记录支持",
+              "interpretation": "普通秘书支持成立",
+              "next_action": "按通用支持边界执行，不声称法定职权。"
+            },
+            {
+              "when": "任命、章程或现行规则可能赋予法定职责",
+              "interpretation": "法定职责路径命中",
+              "next_action": "停止通用结论，锁当前法规/章程并交专业复核。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "先做复述、来源和纪要准确性，关键对外动作设复核点",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立处理预协调、材料版本、敏感边界和督办闭环"
+        ],
+        "S2_system": [
+          "建立决定账、授权失效、记录修订和交接机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-F02",
+        "OFF-F03",
+        "OFF-F05",
+        "OFF-F06",
+        "GH-F03"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前角色、授权、材料版本、收件范围和固定来源有效；授权或权威记录变化即重核",
+        "limitations": [
+          "通用秘书方法不能判定法定职责、替代当前授权或证明口头指令已成为正式决定"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与秘书可起草复述、选项、议程、纪要和行动项",
+        "decide": "领导、会议或法定有权机构决定立场、承诺、条件与行动",
+        "authorize": "授权官员、保密/记录 owner 和对外沟通 owner 授权传播、代办或发布",
+        "execute": "秘书只在确认范围内准备、传递、记录和督办",
+        "verify": "有权者、发言人/收件人和记录 owner 分别确认决定、理解与权威版本",
+        "accept_risk": "领导、法务、合规、保密或记录风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "要求冒签、冒充表态、把建议写成决定、删除/篡改记录或越过保密授权时停止",
+          "指令疑似违法、胁迫、报复、骚扰或要求销毁证据时停止执行并保护原始材料"
+        ],
+        "escalate": [
+          "冲突指令、重大对外承诺、法定职责或授权不明交有权者/法务/合规",
+          "胁迫、报复、骚扰或证据保全风险交安全、伦理、人事或合规渠道"
+        ],
+        "calibrate": [
+          "保密级别、收件范围、复核时点、督办频率、记录保留和授权有效期"
+        ]
+      },
+      "authority_scope": "通用秘书与会议支持实践；具体授权、保密、法定职责和对外决定由当前真源与有权者确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "角色词义变化",
+        "授权撤销",
+        "有权者更正决定",
+        "法规、章程或记录版本更新"
+      ],
+      "tests": {
+        "positive": [
+          "领导口头交办对外材料但没有说明是否已决定"
+        ],
+        "negative": [
+          "要求直接认定上市公司董事会秘书的法定责任"
+        ],
+        "stage_pair": [
+          "同一口头交办分别用 S0/S2，决定权、对外授权、保密与权威记录要求不变"
+        ],
+        "overturn": [
+          "有权者确认仅为建议稿或撤销授权时，禁止写成决定或继续对外传递"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-office-formal-record-flow",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "正式事项与权威记录流转",
+      "job_family": "function",
+      "roles": [
+        "综合办公室",
+        "机关办公室",
+        "办公室"
+      ],
+      "task_families": [
+        "公文",
+        "用印",
+        "正式决定流转",
+        "督办",
+        "档案"
+      ],
+      "lifecycle_stages": [
+        "事项分类",
+        "决定流转",
+        "签发传递",
+        "督办",
+        "记录归档"
+      ],
+      "signals": {
+        "include": [
+          "公文还是通知",
+          "签发",
+          "用印",
+          "权威版本",
+          "归档",
+          "办公室牵头",
+          "正式督办"
+        ],
+        "exclude": [
+          "不涉及正式记录的普通同事聊天",
+          "突发事件的专业处置",
+          "行政采购或活动执行",
+          "具体密级或保留期要求最终法律结论"
+        ]
+      },
+      "professional_problem": "避免把办公室牵头当最终决定权、把便利副本当权威记录，或在规则不明时做正式签发、用印、销毁。",
+      "claims": [
+        {
+          "id": "claim-office-formality-needs-entity-and-matter",
+          "statement": "正式公文、用印和归档规则应先按实际实体、单位层级与事项分类判断，不能由企业类别直接激活。",
+          "conditions": [
+            "动作可能形成正式记录或触发专门规则"
+          ],
+          "source_refs": [
+            "OFF-F03",
+            "OFF-F05",
+            "OFF-O01"
+          ],
+          "disconfirming_signals": [
+            "现行制度否定初始分类",
+            "事项只是普通协作且不形成正式记录"
+          ]
+        },
+        {
+          "id": "claim-office-closure-needs-authoritative-record-and-reality",
+          "statement": "流转办结需区分有权批准版本、实际执行与可检索权威记录，便利副本不得冒充正式记录。",
+          "conditions": [
+            "办公室负责正式流转、督办或记录"
+          ],
+          "source_refs": [
+            "OFF-F01",
+            "GH-F03",
+            "GH-F04"
+          ],
+          "disconfirming_signals": [
+            "有权者更正或撤销决定",
+            "权威版本或记录归属发生变化"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "实际实体、单位层级、事项、正式职权及提出—决定—批准—执行—验收链",
+          "现行规则、权威版本、便利副本、敏感度、保留/移交 owner 与记录索引"
+        ],
+        "competing_explanations": [
+          "普通协作",
+          "正式公文事项",
+          "便利副本",
+          "正式记录",
+          "协调权",
+          "最终决定权",
+          "规则不适用"
+        ],
+        "distinguish": [
+          "做实体+事项分类，核当前制度和最近同类正式记录，画六权责任图并核批准版本与记录索引"
+        ],
+        "branches": [
+          "正式公文命中则锁适用规则与签发人；普通协作轻量处理；便利副本只作参考并指向权威版本；规则不明停止签发、用印、销毁或改正式记录"
+        ],
+        "actions": [
+          "先确认事项性质和权威版本，再组织决定、执行、记录与现实结果"
+        ],
+        "artifacts": [
+          "议题/文稿证据包",
+          "六权责任图",
+          "决定与签发账",
+          "批准版本送达记录",
+          "权威记录与归档索引"
+        ],
+        "validation": [
+          "有权批准版本正确送达并捕获，决定实际执行，权威记录可检索且更正追加可追溯"
+        ],
+        "boundaries": [
+          "不得无权签发、盖章、销毁或改正式记录，办公室牵头不等于最终决定；密级、保留期和升级阈值需当前有权规则"
+        ],
+        "reality_feedback": [
+          "记录决定是否落实、收件人是否按权威版本执行、检索失败、更正和重复流转，不以系统显示办结代替现实结果"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "普通协作",
+            "正式公文事项"
+          ],
+          "distinguishing_action": "按实际实体与事项核是否会形成正式职权、签发、用印、外部效力或必须归档的记录。",
+          "evidence_output": "实体—事项—正式效力—适用流程分类卡。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "事项仅为日常协作且不形成正式决定、对外效力或权威记录",
+              "interpretation": "普通协作成立",
+              "next_action": "采用轻量沟通并避免误标为正式公文。"
+            },
+            {
+              "when": "事项命中当前制度定义的正式文种、签发/用印或归档要求",
+              "interpretation": "正式公文事项成立",
+              "next_action": "锁定适用规则、签发人、版本与归档路径后流转。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "便利副本",
+            "正式记录",
+            "规则不适用"
+          ],
+          "distinguishing_action": "核批准来源、版本号/生效状态、记录 owner、系统索引和当前制度适用条件。",
+          "evidence_output": "副本—权威记录来源链、版本状态、owner 和规则适用证据。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "材料由权威版本复制且只供便利使用",
+              "interpretation": "便利副本成立",
+              "next_action": "显著指向权威来源，不在副本上静默改决定。"
+            },
+            {
+              "when": "材料由有权流程批准并由指定记录系统/owner 保存",
+              "interpretation": "正式记录成立",
+              "next_action": "保护不可变主体，以追加更正和审计索引维护。"
+            },
+            {
+              "when": "实体或事项未命中该规则的适用条件",
+              "interpretation": "规则不适用成立",
+              "next_action": "记录不适用依据，回到实际命中的流程；不因企业标签硬套。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "协调权",
+            "最终决定权"
+          ],
+          "distinguishing_action": "把提出、决定、批准、执行、验证和风险接受逐项映射到具体主体，并由有权者确认。",
+          "evidence_output": "六权责任图与决定/授权确认记录。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "办公室只能组织材料、流转、催办或汇总",
+              "interpretation": "协调权成立",
+              "next_action": "限于协调和事实记录，不代签、不代决、不接受他人风险。"
+            },
+            {
+              "when": "制度、任命或明确授权把该决定授予具体主体",
+              "interpretation": "最终决定权由该主体持有",
+              "next_action": "获取其确认后记录决定、条件和生效范围。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "先保证来源、格式、版本和交接准确，签发、用印与记录动作设求助点",
+          "S0 只降低操作复杂度，不降低本单元的权限、证据、安全和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成事项分类、议题、会签、版本、督办和权威记录闭环"
+        ],
+        "S2_system": [
+          "建立信息上行、决定节奏、版本/记录抽查、跨单位流转和授权失效机制"
+        ]
+      },
+      "source_refs": [
+        "OFF-F01",
+        "OFF-F03",
+        "OFF-F05",
+        "OFF-O01",
+        "GH-F03",
+        "GH-F04"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前实体、事项、授权、制度与权威版本有效；任何一项变化即重新分类",
+        "limitations": [
+          "通用记录与流转实践不能确定具体文种、密级、保留期、印章效力或法定职权"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI、经办人与办公室可提出事项分类、材料结构、流转和记录方案",
+        "decide": "制度指定的签发人、会议或业务有权者决定内容与行动",
+        "authorize": "用印、保密、记录和归档有权者授权盖章、传播、访问、移交或处置",
+        "execute": "办公室经办人在批准范围内流转、送达、督办和归档",
+        "verify": "收件人、决定 owner、记录/档案与审计角色验证送达、落实、版本和可检索性",
+        "accept_risk": "负有职权的领导、保密、法务、合规或记录风险 owner 接受剩余风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "签发/用印/传播/销毁无授权、权威版本冲突或规则适用不明时停止正式动作",
+          "要求篡改正式记录、倒签、隐匿更正、销毁调查/诉讼相关材料或越密传播时停止并保全证据"
+        ],
+        "escalate": [
+          "具体文种、密级、保留期、印章效力、法定职权或跨单位冲突交法务、保密、档案等有权者",
+          "记录完整性、调查保全或重大对外承诺风险交决定与合规主体"
+        ],
+        "calibrate": [
+          "文种与适用范围、复核层级、送达时限、敏感度、保留/移交期和抽查比例"
+        ]
+      },
+      "authority_scope": "通用正式事项流转与权威记录实践；正式职权、适用规则、签发/用印、密级、保留和记录处置由当前有权真源确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "实体或事项类型变化",
+        "现行制度否定分类",
+        "授权人更正/撤销决定",
+        "权威版本或记录归属变化"
+      ],
+      "tests": {
+        "positive": [
+          "办公室牵头正式公文，需要判断签发、用印、督办和权威归档"
+        ],
+        "negative": [
+          "同事之间不形成记录的普通约午餐聊天",
+          "突发安全事件的专业处置方案"
+        ],
+        "stage_pair": [
+          "同一正式公文分别用 S0/S2，签发用印权、版本、保密与权威记录门不变"
+        ],
+        "overturn": [
+          "现行制度确认事项仅为普通协作或授权被撤销时停止正式签发/用印路径"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-finance-thesis-evidence-update",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "可证伪论点、财报基线与估值更新",
+      "job_family": "finance",
+      "roles": [
+        "金融分析师",
+        "投资研究员",
+        "权益研究员",
+        "投委会支持"
+      ],
+      "task_families": [
+        "投资论点",
+        "权益研究",
+        "财报更新",
+        "估值分析",
+        "催化剂跟踪",
+        "投委会材料"
+      ],
+      "lifecycle_stages": [
+        "选题与筛选",
+        "论点与建模",
+        "业绩更新",
+        "投委会支持",
+        "持续监控"
+      ],
+      "signals": {
+        "include": [
+          "投资论点",
+          "财报",
+          "业绩超预期",
+          "旧预测",
+          "新预测",
+          "估值",
+          "敏感性",
+          "催化剂"
+        ],
+        "exclude": [
+          "要求直接下单或自动交易",
+          "只做已确认数字排版",
+          "要求会计、税务、法律或监管最终结论"
+        ]
+      },
+      "professional_problem": "避免把不可证伪叙事、未固定比较基准的 beat/miss 或单点估值写成投资结论，并阻止研究材料越权成为交易授权。",
+      "claims": [
+        {
+          "id": "claim-thesis-needs-disconfirming-evidence",
+          "statement": "投资论点应把关键驱动、支持证据、反证、催化剂和失效条件逐项连接，使新披露能削弱、推翻或修订当前判断。",
+          "conditions": [
+            "任务要求建立、更新或复核投资论点"
+          ],
+          "source_refs": [
+            "GH-R01"
+          ],
+          "disconfirming_signals": [
+            "官方披露与关键驱动相反",
+            "预期催化剂未发生或发生后未产生论点预期的经营证据"
+          ]
+        },
+        {
+          "id": "claim-earnings-needs-old-new-baseline-bridge",
+          "statement": "财报更新应固定事件前比较基准，把报告实际、旧预测与新预测分开，并桥接经营驱动、一次性项目、会计口径和模型变化。",
+          "conditions": [
+            "任务使用财报或经营披露更新预测与论点"
+          ],
+          "source_refs": [
+            "GH-R01"
+          ],
+          "disconfirming_signals": [
+            "事件前基准不可获得或不同来源口径不一致",
+            "官方更正、重述或新分部口径使旧新桥不可比"
+          ]
+        },
+        {
+          "id": "claim-valuation-needs-scenarios-and-sensitivity",
+          "statement": "估值应展示方法、关键输入、情景区间与敏感性并做独立复算或方法交叉检查；估值输出是研究证据，不是交易决定。",
+          "conditions": [
+            "任务要求形成或更新估值判断"
+          ],
+          "source_refs": [
+            "GH-R01"
+          ],
+          "disconfirming_signals": [
+            "独立复算不能重现主要输出",
+            "资本结构、可比口径或关键输入变化使原情景失效"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "论点支柱、关键驱动、支持/反驳证据、催化剂、日期确定性、来源坐标和失效条件",
+          "官方报告实际、事件前比较基准、旧预测、新预测、分部贡献、一次性项目、会计口径和披露时点",
+          "估值时点、资本结构、方法、关键输入、情景、敏感性、交叉检查和决定 owner"
+        ],
+        "competing_explanations": [
+          "核心经营驱动改变",
+          "一次性项目或会计口径影响",
+          "比较基准或披露时点错配",
+          "资本结构或估值输入变化",
+          "市场预期变化",
+          "数据或模型错误"
+        ],
+        "distinguish": [
+          "锁定同一披露时点和口径，交叉核验官方财报、附注与管理层说明，并做报告实际—事件前基准—旧预测—新预测桥",
+          "独立复算关键行和估值情景，逐项改变关键输入，比较基本面桥、市场预期和模型错误的解释力"
+        ],
+        "branches": [
+          "经营驱动有证则修订论点；一次性/口径影响则分账而不外推；基准不可比则停止 beat/miss；输入变化重算情景；模型不复现则冻结结论",
+          "论点被新证据削弱时提交维持、修订或退出研究判断，由有权投资主体另行决定任何仓位与交易"
+        ],
+        "actions": [
+          "先固定研究问题、证券/主体、期间、披露与比较基准，再更新论点证据账、财报桥和估值情景",
+          "把事实、模型输出、推断、未知和会翻转判断的新证据分栏交给独立复核者和决定人"
+        ],
+        "artifacts": [
+          "可证伪论点追踪器",
+          "来源与证据冲突账",
+          "财报实际—基线—旧预测—新预测桥",
+          "估值情景与敏感性表",
+          "投委会研究决定包"
+        ],
+        "validation": [
+          "官方披露坐标可重定位，关键模型行可独立复算，旧新差异可归因且反证未被隐藏",
+          "研究负责人或投委会支持链确认材料边界，后续披露与催化剂实际结果回填论点"
+        ],
+        "boundaries": [
+          "AI 与研究人员可提出、计算和解释，但本单元不推荐、决定、授权或执行交易，也不接受投资风险",
+          "不得从来源模板固化估值权重、情景、目标价、重要性线或观察窗；会计、税务、法律、监管与市场数据需当前真源和专业复核"
+        ],
+        "reality_feedback": [
+          "记录论点支柱被强化、削弱或推翻，催化剂是否兑现，预测误差和模型返工如何变化",
+          "记录材料是否被决定人采用及采用原因，但不把采纳、价格变化或交易结果反向写成研究必然正确"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "核心经营驱动改变",
+            "一次性项目或会计口径影响",
+            "比较基准或披露时点错配"
+          ],
+          "distinguishing_action": "固定事件前基准与披露时点，逐项对照官方财报、附注、分部数据、旧预测和新预测，并标出不可比项目。",
+          "evidence_output": "报告实际—事件前基准—旧预测—新预测桥，以及每项差异的来源、口径、持续性和反证记录。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "同口径分部或关键经营指标的持续变化解释主要旧新差异，且官方披露与独立复算一致",
+              "interpretation": "核心经营驱动改变获得限范围支持",
+              "next_action": "更新相关论点支柱、预测与失效条件，交研究复核者确认。"
+            },
+            {
+              "when": "主要差异来自明确披露的一次性项目、会计分类或确认时点",
+              "interpretation": "一次性项目或会计口径影响优先成立",
+              "next_action": "报告原始与可比口径两套桥，不把一次性差异外推为持续经营变化。"
+            },
+            {
+              "when": "所谓 beat/miss 使用了事后、过期、不同口径或不可复核的比较基准",
+              "interpretation": "比较基准或披露时点错配成立",
+              "next_action": "撤回超预期/低预期表述，重新固定可比较基准或明确无法判断。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "资本结构或估值输入变化",
+            "市场预期变化",
+            "数据或模型错误"
+          ],
+          "distinguishing_action": "冻结估值时点，独立复算关键模型行，逐项改变资本结构、经营和折现/倍数输入，并把基本面桥与可复核的预期变化分开。",
+          "evidence_output": "关键输入来源、独立复算差异、情景区间、敏感性和基本面—预期对照表。",
+          "required_permission": "verify",
+          "outcomes": [
+            {
+              "when": "净债务、股本、税率、汇率或估值输入变化能复现主要估值区间移动",
+              "interpretation": "资本结构或估值输入变化优先成立",
+              "next_action": "更新输入来源与情景敏感性，由研究负责人决定研究结论如何表述。"
+            },
+            {
+              "when": "基本面桥变化有限，但可复核的共识或定价基准发生显著变化",
+              "interpretation": "市场预期变化获得限范围支持",
+              "next_action": "把预期差与经营变化分账，并保留预期来源与失效条件。"
+            },
+            {
+              "when": "独立复算、单位、链接或数据来源不能重现模型主要输出",
+              "interpretation": "数据或模型错误成立",
+              "next_action": "冻结估值和投资结论，修复数据/模型并重新走独立复核。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "只更新一个论点支柱、一条官方来源和一组旧新桥，用户亲自核比较基准并由资深研究者复核",
+          "S0 只降低操作复杂度，不降低来源、复算、六权、风险和禁止交易授权的边界。"
+        ],
+        "S1_working": [
+          "独立完成论点证据、财报旧新桥、估值情景、反证和一次现实更新闭环"
+        ],
+        "S2_system": [
+          "治理多论点版本、模型复核、催化剂组合、预期差、指标游戏和研究失效/退出机制"
+        ]
+      },
+      "source_refs": [
+        "GH-R01"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前研究主体、证券、报告期、披露时点、模型版本和固定来源 commit 有效；新披露或输入变化即重核",
+        "limitations": [
+          "仓库只支撑论点、财报更新和估值对象关系，不证明任何证券被低估/高估或未来表现",
+          "缺当前官方披露、市场数据、会计口径或本地投资授权时不能形成受影响结论"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与金融/投资研究人员可提出论点、竞争解释、模型更新和研究选项",
+        "decide": "研究负责人、组合经理或投委会决定是否采纳研究判断与后续投资方向",
+        "authorize": "数据、研究发布和投资有权者分别授权数据使用、材料传播与任何后续投资动作；本单元不授予交易权",
+        "execute": "分析师可在获批范围更新研究材料和模型；交易只能由另行授权的人员在独立流程执行",
+        "verify": "独立模型复核者、研究负责人及必要的会计/法务/合规专业人员验证数据、模型、表述和边界",
+        "accept_risk": "投委会、组合、合规或具名投资风险 owner 接受剩余投资风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "关键披露缺失、比较基准不可复核、模型不能独立重现或来源冲突未解时停止投资结论",
+          "要求研究人员直接下单、自动交易、越权调仓、使用未授权重大非公开信息或把研究包写成交易授权时停止"
+        ],
+        "escalate": [
+          "会计重述、监管/法律/税务判断、重大非公开信息、敏感数据或对外研究发布交对应专业与有权者",
+          "仓位、交易、风险限额和剩余投资风险交投委会、组合经理、交易与风控的独立授权流程"
+        ],
+        "calibrate": [
+          "重要性、比较基准、情景范围、估值方法与权重、关键输入、催化剂日期、观察窗和风险限额"
+        ]
+      },
+      "authority_scope": "通用金融分析与投资研究支持实践；会计、税务、法律、监管、研究发布、投资决定、交易和风险接受均由当前真源与具名有权主体确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "官方披露、重述或报告期变化",
+        "论点反证或催化剂结果与预期相反",
+        "资本结构、市场数据、估值输入或模型版本变化",
+        "独立复算失败或研究权限/监管边界变化"
+      ],
+      "tests": {
+        "positive": [
+          "权益研究员要在财报后更新投资论点、旧新预测桥和估值敏感性，供投委会复核"
+        ],
+        "negative": [
+          "只把已确认财务数字排成表格",
+          "要求直接下单或自动调仓"
+        ],
+        "stage_pair": [
+          "同一财报更新分别用 S0/S2，官方来源、比较基准、独立复算、六权与禁止交易授权边界不变"
+        ],
+        "overturn": [
+          "官方重述使旧新桥不可比或独立复算不能重现估值时，撤回 beat/miss 与估值结论并重建"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    },
+    {
+      "record_type": "RoleKnowledgeUnit",
+      "schema_version": 1,
+      "id": "rk-marketing-evidence-experiment",
+      "version": "1.0.0",
+      "status": "candidate",
+      "origin": "builtin",
+      "name": "客户证据、计划取舍与受控实验",
+      "job_family": "marketing",
+      "roles": [
+        "营销经理",
+        "产品营销",
+        "增长营销",
+        "营销分析师"
+      ],
+      "task_families": [
+        "客户研究",
+        "产品营销",
+        "营销计划",
+        "增长实验",
+        "活动与投放",
+        "营销分析"
+      ],
+      "lifecycle_stages": [
+        "客户研究",
+        "定位与计划",
+        "创意与发布",
+        "实验与投放",
+        "复盘与扩展"
+      ],
+      "signals": {
+        "include": [
+          "客户访谈",
+          "客户痛点",
+          "定位",
+          "营销计划",
+          "优先级",
+          "不做什么",
+          "A/B 测试",
+          "护栏指标",
+          "低流量"
+        ],
+        "exclude": [
+          "只排版已确认文案",
+          "要求无授权发布或投放",
+          "要求广告、隐私或促销规则最终法律结论"
+        ]
+      },
+      "professional_problem": "避免把内部观点冒充客户事实、把战术清单冒充有取舍的计划，或在看结果后挑指标并用低流量随机波动宣称增长。",
+      "claims": [
+        {
+          "id": "claim-customer-evidence-needs-separate-ledgers",
+          "statement": "客户原话、最近行为、内部观点与推断应按来源、日期、细分和置信度分账，支持与反驳证据都要保留。",
+          "conditions": [
+            "客户证据将影响定位、计划、创意或产品营销判断"
+          ],
+          "source_refs": [
+            "GH-M01"
+          ],
+          "disconfirming_signals": [
+            "新访谈或行为数据不能复现所谓共同问题",
+            "结论只来自内部转述、便利样本或诱导提问"
+          ]
+        },
+        {
+          "id": "claim-marketing-plan-needs-priority-and-not-do",
+          "statement": "营销计划应把目标、受众、证据、资源、owner、优先顺序和明确不做项连接起来，不能用渠道或战术数量代替取舍。",
+          "conditions": [
+            "任务需要分配预算、团队或时间到多个营销选项"
+          ],
+          "source_refs": [
+            "GH-M01"
+          ],
+          "disconfirming_signals": [
+            "资源、业务目标或目标受众变化",
+            "优先项目不能说明相对不做项的机会成本"
+          ]
+        },
+        {
+          "id": "claim-experiment-needs-preregistration-and-low-traffic-branch",
+          "statement": "营销实验应在看结果前固定假设、主指标、护栏、分析范围和停止/扩大决定；低流量不足以区分解释时，应切换定性验证或更强信号，而非制造统计确定性。",
+          "conditions": [
+            "准备以实验或投放数据作因果或扩大投入判断"
+          ],
+          "source_refs": [
+            "GH-M01"
+          ],
+          "disconfirming_signals": [
+            "埋点、流量分配或实验条件在观察后发生未记录变化",
+            "护栏恶化或现有流量无法支持当前判别目的"
+          ]
+        }
+      ],
+      "injection": {
+        "observe": [
+          "客户证据来源、日期、细分、触发、最近行为、原话、内部观点、反证、冲突和置信度",
+          "业务目标、唯一受众、替代品、定位、预算、团队、owner、优先级、机会成本和不做项",
+          "实验假设、分配机制、样本形成、主/辅/护栏指标、埋点、流量结构、效应量目的、停止规则和低流量可替代证据"
+        ],
+        "competing_explanations": [
+          "真实客户问题",
+          "细分或样本偏差",
+          "定位或信息表达问题",
+          "产品价值缺口",
+          "渠道或创意执行问题",
+          "埋点或流量结构变化",
+          "随机波动或信号不足"
+        ],
+        "distinguish": [
+          "把客户原话、最近行为、内部观点和反证分账，跨细分回放真实任务并检查提问与招募偏差",
+          "在看结果前登记假设、主指标、护栏、分析范围和翻转条件，先核埋点/流量，再按判别力选择受控实验、定性任务验证或更强可观察信号"
+        ],
+        "branches": [
+          "跨来源复现才支持客户问题；样本偏差则补目标细分；定位问题先修信息；价值缺口回产品 owner；渠道问题限范围修执行",
+          "埋点/流量漂移则作废本轮因果读数；护栏失败停止扩大；低流量不能区分时切定性或更强信号，并保留未知"
+        ],
+        "actions": [
+          "先建客户证据与冲突账，再按目标、资源和机会成本排出优先与不做项",
+          "对最高风险假设建立预注册、可撤回实验和低流量替代分支，由有权者决定发布、预算和扩大"
+        ],
+        "artifacts": [
+          "客户证据与内部观点分账",
+          "客户证据冲突卡",
+          "营销优先级与不做项计划",
+          "预注册实验与护栏卡",
+          "低流量判别分支",
+          "继续/改变/停止决定记录"
+        ],
+        "validation": [
+          "关键客户主张能回到具体来源/日期/细分并允许反证，新证据能改变定位或优先级",
+          "实验读数保留效应、不确定性、护栏、埋点/流量变化和失败；扩大后复核留存、单位经济与负面效果"
+        ],
+        "boundaries": [
+          "不得把内部意见写成客户事实、相关性写成因果，或在看结果后换主指标、挑分群和提前停测",
+          "不得无授权使用个人数据、发布受监管主张、承诺品牌/预算或外发内容；样本、MDE、窗口、优先级权重和成功线按任务校准，不复制来源模板"
+        ],
+        "reality_feedback": [
+          "记录客户证据是否复现、冲突是否增加、计划不做项是否被守住及资源是否真实投入",
+          "记录实验采用、效应与护栏、低流量分支结果、扩大后的留存/单位经济和停止或回滚决定"
+        ]
+      },
+      "decision_graph": [
+        {
+          "hypotheses": [
+            "真实客户问题",
+            "细分或样本偏差",
+            "定位或信息表达问题",
+            "产品价值缺口"
+          ],
+          "distinguishing_action": "跨目标细分回放最近真实任务，把原话、行为、内部观点和反证分账，并用现有产品/替代方案验证问题发生在表达还是价值。",
+          "evidence_output": "带来源、日期、细分和置信度的客户证据/冲突账，以及任务阻断、信息理解和现有替代对照。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "不同来源在目标细分和同一任务上复现相同阻断，且替代成本可见",
+              "interpretation": "真实客户问题获得限范围支持",
+              "next_action": "把该证据纳入优先计划和可证伪实验，不外推到未覆盖细分。"
+            },
+            {
+              "when": "结论主要来自便利样本、单一细分、诱导提问或与最近行为相反",
+              "interpretation": "细分或样本偏差优先成立",
+              "next_action": "保留未知，补目标细分或改用行为证据后再决定。"
+            },
+            {
+              "when": "产品能完成目标任务，但目标客户无法理解差异、证明或下一行动",
+              "interpretation": "定位或信息表达问题优先成立",
+              "next_action": "修订定位/信息并以单一行动做可撤回验证。"
+            },
+            {
+              "when": "目标客户理解信息后仍因核心结果、可信度或切换成本不采用",
+              "interpretation": "产品价值缺口优先成立",
+              "next_action": "交产品/业务 owner 决定价值、范围或 no-go，不用加大投放掩盖。"
+            }
+          ]
+        },
+        {
+          "hypotheses": [
+            "渠道或创意执行问题",
+            "埋点或流量结构变化",
+            "随机波动或信号不足"
+          ],
+          "distinguishing_action": "在看结果前固定假设、分配、主指标、护栏、分析范围和翻转条件，先核埋点与流量构成，再运行获批实验；若流量不足则执行预先写明的定性或更强信号分支。",
+          "evidence_output": "预注册记录、版本/分配/埋点核验、效应与不确定性、护栏、流量结构及低流量分支结果。",
+          "required_permission": "authorize",
+          "outcomes": [
+            {
+              "when": "在预注册范围内，渠道/创意版本差异可复现且护栏未恶化",
+              "interpretation": "渠道或创意执行问题获得限范围支持",
+              "next_action": "由预算/渠道 owner 决定保持、小批扩大或复测，并继续观察护栏。"
+            },
+            {
+              "when": "埋点定义、实验分配、受众构成或流量来源在观察中发生未受控变化",
+              "interpretation": "埋点或流量结构变化成立",
+              "next_action": "作废受影响因果读数，修复测量/分配后重新预注册。"
+            },
+            {
+              "when": "当前流量和噪声无法区分预先声明的实际效应，或结果对小变化不稳定",
+              "interpretation": "随机波动或信号不足仍不可排除",
+              "next_action": "不宣称赢家，转向真实任务定性验证、聚合更强信号或由 owner 重新定义可回答问题。"
+            }
+          ]
+        }
+      ],
+      "stage_adaptation": {
+        "S0_new": [
+          "只处理一个客户主张、一个内部观点、一项优先/不做取舍和一个带护栏的验证，用户亲自核来源与发布权限",
+          "S0 只降低操作复杂度，不降低证据分账、预注册、隐私/品牌权限、护栏和现实验证门。"
+        ],
+        "S1_working": [
+          "独立完成客户证据、计划取舍、预注册实验、低流量分支和一次继续/改变/停止闭环"
+        ],
+        "S2_system": [
+          "治理跨细分证据、营销组合、实验平台、归因漂移、指标游戏、预算重配和停止机制"
+        ]
+      },
+      "source_refs": [
+        "GH-M01"
+      ],
+      "evidence_model": {
+        "confidence": "medium",
+        "observation_window": "仅对当前产品、目标细分、渠道、创意/计划版本、埋点与流量条件和固定来源 commit 有效；任一变化即重核",
+        "limitations": [
+          "仓库只支撑客户证据、计划与实验的功能关系，不证明本地客户事实、渠道效果或因果",
+          "低流量分支能保护判断诚实，但不能把定性证据冒充统计确定性"
+        ]
+      },
+      "permission_model": {
+        "propose": "AI 与营销岗位可提出客户假设、定位、优先级、实验和低流量替代选项",
+        "decide": "业务、产品或营销 owner 决定受众、优先级、不做项、继续/改变/停止和预算方向",
+        "authorize": "预算、品牌、渠道、隐私/数据、法务/合规 owner 分别授权花费、发布、数据使用和受监管主张",
+        "execute": "营销、内容、渠道和分析人员在获批范围开展研究、发布、投放和测量",
+        "verify": "客户研究负责人、数据/实验复核者、品牌/合规与业务 owner 分别验证证据、测量、表述和结果",
+        "accept_risk": "预算、品牌、隐私、合规或业务风险 owner 接受剩余营销风险"
+      },
+      "risk_gates": {
+        "stop": [
+          "客户证据无来源、实验看结果后改主指标、埋点/分配漂移未解或护栏恶化时停止因果与扩大结论",
+          "未获同意/数据授权、拟发布无证据数字或受监管主张、冒用客户隐私或无预算/品牌权限时停止研究、发布或投放"
+        ],
+        "escalate": [
+          "个人信息、未成年人、敏感细分、广告/促销/行业监管、品牌承诺或重大预算交对应有权者",
+          "产品价值缺口、跨团队资源冲突或扩大/停止超出营销权限时交产品、业务和预算 owner"
+        ],
+        "calibrate": [
+          "客户细分与代表性、优先级变量、预算、主指标、MDE、样本形成、观察窗、护栏、扩大与停止线"
+        ]
+      },
+      "authority_scope": "通用营销研究、计划与实验实践；客户事实、预算、品牌、隐私、广告/促销规则、发布和风险接受由当前真源与具名有权主体确认",
+      "supersedes": [],
+      "refresh_triggers": [
+        "新客户证据反驳或无法复现原结论",
+        "产品、ICP、定位、渠道或创意版本变化",
+        "埋点、流量结构、实验分配或护栏变化",
+        "预算、隐私、品牌、广告或监管边界变化"
+      ],
+      "tests": {
+        "positive": [
+          "增长营销要用互相冲突的访谈和低流量 A/B 结果排下期计划，并明确不做项"
+        ],
+        "negative": [
+          "只把已确认且有授权的三句活动文案排版"
+        ],
+        "stage_pair": [
+          "同一客户证据与低流量实验分别用 S0/S2，证据分账、预注册、护栏、隐私/发布/预算权限和停止门不变"
+        ],
+        "overturn": [
+          "埋点/流量漂移、护栏恶化或目标细分行为反驳客户主张时，作废扩大结论并重开证据/实验"
+        ],
+        "evidence_refs": []
+      },
+      "review": {
+        "status": "pending",
+        "answerer_isolated": false,
+        "reviewer_independent": false,
+        "scores": {
+          "G": 0,
+          "C": 0,
+          "A": 0,
+          "P": 0,
+          "S": 0,
+          "E": 0,
+          "R": 0,
+          "V": 0
+        },
+        "evidence_refs": [],
+        "reviewed_at": null,
+        "reviewer_id": null
+      }
+    }
+  ]
+}
