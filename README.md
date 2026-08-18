@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的「快点下班」工作生存与选择系统。把任务、沟通、卡点、领导、选择交给 Agent，获得清晰判断、可直接使用的产物，以及应该解决、调整还是退出的答案。
 
-[![Version](https://img.shields.io/badge/version-1.3.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.5.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -73,7 +73,13 @@ $xb-decode 我想系统学怎么听懂话里有话，用《人民的名义》当
 | 执行 | `xb-goal` / `xb-plan` / `xb-it` / `xb-data` / `xb-automation` / `xb-review` | 目标边界 / 工作包 / IT 修复 / 数据口径 / 自动化 / 验收 |
 | 关系与边界 | `xb-conflict` / `xb-boundary` / `xb-action` / `xb-wellbeing` | 冲突方案 / 拒绝与升级 / 阻力归因 / 减压与求助边界 |
 | 成长与选择 | `xb-decision` / `xb-career` / `xb-capability` / `xb-learning` / `xb-ai-native` / `xb-knowledge` | 取舍 / 去留 / 能力判级 / 技能训练 / AI 原生发展 / 知识库 |
-| 深度支持 | `xb-role-knowledge` / `xb-save` / `xb-restore` / `xb-update` / `xb-builder` / `xb-audit` | 岗位知识单元 / 状态快照 / 恢复 / 更新 / 孵化新专科 / 系统审计 |
+| 深度支持 | `xb-role-knowledge` / `xb-save` / `xb-restore` / `xb-update` / `xb-builder` / `xb-audit` | 岗位知识单元 / 会话全文与自动分类 / 恢复 / 更新 / 孵化新专科 / 系统审计 |
+
+## v1.5 本地会话记忆
+
+每个真实任务进入收尾检查点时，xbskill 会明确询问是否保存本次会话。用户同意后，可见对话全文、会话摘要、分类账和滚动进度写入项目的 `memory/xbskill/`；人物、公司、目标和表达风格以带来源、置信度与推翻条件的方式增量更新。
+
+保存按当前会话逐次授权。路径穿越、凭据模式、会话历史缺口或写入失败会响亮报错；保存动作不包含 Git、云同步和外发。
 
 ## 设计原则
 

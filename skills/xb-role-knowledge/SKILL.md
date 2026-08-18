@@ -141,7 +141,7 @@ python <本Skill绝对路径>/scripts/upstream_sync.py refresh-candidate --outpu
 
 候选目录只用于审阅当前固定 commit 的不可信文本、blob/SHA-256、行数和坐标。只检查报告中的 changed sources / affected units；将新关系重写为“条件—竞争解释—辨别动作—分支—产物—验证—翻转”，不得复制模板、固定阈值、无证据数字或审美映射。`discovery_only` 只能提出下一来源需求，不能进入 active claim；许可不兼容、来源不可用或证据不足时明确保留缺口。
 
-真正的“内化完成”必须同时满足：来源固定且可用、`RoleKnowledgeUnit` 更新、确定性与陌生试跑通过、独立八门全 2、catalog 激活，并在普通任务中由 `RoleKnowledgePacket → ApplicationTrace → 实际交付物` 证明参加。仅生成 refresh candidate、更新来源账或写完候选单元都不算完成。
+达到“内化完成”必须同时满足：来源固定且可用、`RoleKnowledgeUnit` 更新、确定性与陌生试跑通过、独立八门全 2、catalog 激活，并在普通任务中由 `RoleKnowledgePacket → ApplicationTrace → 实际交付物` 证明参加。仅生成 refresh candidate、更新来源账或写完候选单元都不算完成。
 
 ### 4. 写 RoleKnowledgeUnit
 

@@ -56,6 +56,19 @@ def run_role_knowledge(root: Path, argv: list[str]) -> tuple[int, str]:
     return run_role_tool(root, "role_knowledge.py", argv)
 
 
+def run_session_store(root: Path, project_root: Path, bundle_path: Path) -> tuple[int, str]:
+    script = root / "xb-save" / "scripts" / "session_store.py"
+    completed = subprocess.run(
+        [sys.executable, str(script), "--project-root", str(project_root), "--bundle", str(bundle_path)],
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        check=False,
+    )
+    return completed.returncode, completed.stdout + completed.stderr
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
@@ -439,6 +452,88 @@ def main() -> int:
         require(len(sm.skill_dirs(receiver)) == 35, "receiver did not discover all 35 skills")
         print("PASS clean install and discovery")
 
+        session_protocol = (receiver / "xbskill" / "references" / "session-memory-protocol.md").read_text(encoding="utf-8")
+        shell_text = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
+        save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
+        restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
+        require(all(term in session_protocol for term in (
+            "保存提示｜要把本次会话的可见对话全文和自动分类结果保存到本地",
+            "下一个有新内容的会话仍照常提示",
+            "既往 `auto_checkpoint: on` 不能替代本次授权",
+            "assistant_inference", "needs_identity", "company_tone", "communication_style",
+            "禁止把档案标为 `complete`", "本地保存阶段禁止联网",
+        )), "session memory protocol loses prompt, per-session consent, completeness, locality, or taxonomy gates")
+        require("session-memory-protocol.md" in shell_text and "在导航条后明确询问一次" in shell_text, "navigation shell does not enforce explicit save prompt")
+        require("authorized_current_session=true" in save_text and "session_store.py" in save_text, "xb-save does not require the transactional local writer")
+        require("默认不加载 transcript 全文" in restore_text, "xb-restore exposes full sensitive transcript by default")
+
+        session_project = sandbox / "session-project"
+        session_project.mkdir()
+        bundle_path = sandbox / "session-bundle.json"
+        bundle = {
+            "schema_version": 1,
+            "session_id": "2026-08-18-1030-memory-loop",
+            "authorized_current_session": True,
+            "network_writes": False,
+            "completeness": "complete",
+            "completeness_gaps": [],
+            "transcript": [
+                {"turn": 1, "role": "user", "content": "领导希望先看结论，我偏好直接表达。"},
+                {"turn": 2, "role": "assistant", "content": "已记录为用户陈述，等待后续事件验证。"},
+            ],
+            "classification": [
+                {
+                    "item_id": "M001", "category": "communication_style", "subject": "self",
+                    "content": "用户表述自己偏好直接表达", "evidence_level": "user_statement",
+                    "source": "2026-08-18-1030-memory-loop turn 1", "confidence": "中",
+                    "target": "context/people/self.md", "action": "candidate_only",
+                    "reversal": "用户在不同场景给出相反偏好",
+                }
+            ],
+            "context_updates": [
+                {"target": "context/people/self.md", "content": "- [用户陈述｜turn 1｜中] 偏好直接表达；待跨场景验证。"}
+            ],
+            "session_markdown": "# 会话摘要\n\n- 完整性：complete",
+            "classification_markdown": "# 分类账\n\n- M001：communication_style → candidate_only",
+            "progress_markdown": "# 当前进度\n\n- 最近会话：2026-08-18-1030-memory-loop",
+        }
+        write_json(bundle_path, bundle)
+        code, output = run_session_store(receiver, session_project, bundle_path)
+        require(code == 0 and '"status": "saved"' in output, f"authorized local session save failed:\n{output}")
+        memory_root = session_project / "memory" / "xbskill"
+        transcript_path = memory_root / "sessions" / bundle["session_id"] / "transcript.md"
+        require(transcript_path.is_file() and "第 1 轮 · 用户" in transcript_path.read_text(encoding="utf-8"), "visible transcript was not stored")
+        self_path = memory_root / "context" / "people" / "self.md"
+        require(self_path.is_file() and "偏好直接表达" in self_path.read_text(encoding="utf-8"), "classification did not fill the local self profile")
+        bundle["context_updates"][0]["content"] = "- [用户陈述｜turn 1｜中] 偏好直接表达；第二次保存覆盖同会话块。"
+        write_json(bundle_path, bundle)
+        code, output = run_session_store(receiver, session_project, bundle_path)
+        require(code == 0 and self_path.read_text(encoding="utf-8").count("## 会话增量 2026-08-18-1030-memory-loop") == 1, "same-session incremental save duplicated context blocks")
+        unauthorized = dict(bundle)
+        unauthorized["authorized_current_session"] = False
+        write_json(bundle_path, unauthorized)
+        code, output = run_session_store(receiver, session_project, bundle_path)
+        require(code != 0 and "E_AUTHORIZATION" in output, "session writer accepted missing current-session authorization")
+        escaped = dict(bundle)
+        escaped["context_updates"] = [{"target": "context/../../escape.md", "content": "escape"}]
+        write_json(bundle_path, escaped)
+        code, output = run_session_store(receiver, session_project, bundle_path)
+        require(code != 0 and "E_PATH" in output, "session writer allowed path traversal")
+        secret = dict(bundle)
+        secret["transcript"] = [
+            {"turn": 1, "role": "user", "content": "-----BEGIN " + "PRIVATE KEY-----"},
+        ]
+        write_json(bundle_path, secret)
+        code, output = run_session_store(receiver, session_project, bundle_path)
+        require(code != 0 and "E_SECRET" in output, "session writer stored a private-key pattern")
+        incomplete = dict(bundle)
+        incomplete["completeness"] = "complete"
+        incomplete["completeness_gaps"] = ["compacted turn 3"]
+        write_json(bundle_path, incomplete)
+        code, output = run_session_store(receiver, session_project, bundle_path)
+        require(code != 0 and "E_COMPLETENESS" in output, "session writer labeled a gapped transcript complete")
+        print("PASS per-session prompt, local transcript/classification, incremental update, authorization, path, secret, and completeness gates")
+
         ui = receiver / "xb-action" / "agents" / "openai.yaml"
         original_ui = ui.read_text(encoding="utf-8")
         ui.write_text(original_ui.replace('display_name: "xbskill ', 'display_name: "', 1), encoding="utf-8")
@@ -460,6 +555,14 @@ def main() -> int:
         require(code != 0 and str(missing) in output, "missing required reference did not fail loudly")
         held.rename(missing)
         print("PASS missing dependency fails loudly")
+
+        session_dependency = receiver / "xbskill" / "references" / "session-memory-protocol.md"
+        held_session_dependency = session_dependency.with_suffix(".md.missing")
+        session_dependency.rename(held_session_dependency)
+        code, output = capture_validate(receiver)
+        require(code != 0 and str(session_dependency) in output, "missing session memory protocol did not fail loudly")
+        held_session_dependency.rename(session_dependency)
+        print("PASS missing session memory protocol fails loudly")
 
         output_collab_evidence = (
             receiver / "xbskill" / "references" / "v1.0-output-collab-blind-answers.md"
@@ -501,7 +604,8 @@ def main() -> int:
         print("PASS goal, help, agency, capability, people, and company models are complete")
 
         root_skill = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
-        require("首次使用但已经给出真实需求时不得进入本模式" in root_skill, "first-use tutorial can still block a real request")
+        require("用户已给出真实需求时不得进入本模式" in root_skill, "tutorial can still block a real request")
+        require("只由显式询问触发" in root_skill, "tutorial is not limited to explicit capability questions")
         require("用户说“新手入门”或第一次使用" not in root_skill, "first use still unconditionally triggers the full tutorial")
         work_model = (receiver / "xbskill" / "references" / "work-model.md").read_text(encoding="utf-8")
         routing_text = routing.read_text(encoding="utf-8")
@@ -1573,7 +1677,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY 30/30 receiver tests passed")
+    print("SUMMARY 32/32 receiver tests passed")
     return 0
 
 
