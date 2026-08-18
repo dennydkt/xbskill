@@ -1,5 +1,5 @@
 {
-  "version": "1.5.1",
-  "notice": "会话上下文被压缩后，优先调用宿主只读任务/线程历史恢复完整对话并读取全部分页；仅在恢复仍有缺口时请求导出或部分保存。",
+  "version": "1.5.2",
+  "notice": "Windows 版 Codex Desktop 暂停任务历史恢复，避免触发任务生命周期链路；压缩后使用当前上下文或用户导出。其他宿主仅在精确当前会话 ID、纯只读和无副作用条件全部满足时恢复。",
   "details_url": "https://github.com/dennydkt/xbskill"
 }

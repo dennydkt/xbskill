@@ -462,16 +462,21 @@ def main() -> int:
             "既往 `auto_checkpoint: on` 不能替代本次授权",
             "assistant_inference", "needs_identity", "company_tone", "communication_style",
             "禁止把档案标为 `complete`", "本地保存阶段禁止联网",
-            "只读任务、线程或会话历史入口", "沿宿主分页游标持续读取",
-            "hasMore=false", "已尝试的入口", "任务摘要、压缩摘要",
-        )), "session memory protocol loses prompt, consent, completeness, locality, taxonomy, or host-history recovery gates")
+            "Windows 版 Codex Desktop 安全分支", "禁止调用任务、线程或会话历史接口",
+            "list/read/resume/archive/unarchive/fork/rename/pin/send", "禁止查找“原始任务”",
+            "用户主动提供的完整导出", "精确当前会话 ID", "副作用无法确认",
+            "沿宿主分页游标持续读取", "hasMore=false", "已尝试入口", "任务摘要、压缩摘要",
+        )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
         require("session-memory-protocol.md" in shell_text and "在导航条后明确询问一次" in shell_text, "navigation shell does not enforce explicit save prompt")
         require("authorized_current_session=true" in save_text and "session_store.py" in save_text, "xb-save does not require the transactional local writer")
         require(all(term in save_text for term in (
-            "先按协议调用当前宿主可用的只读任务/线程/会话历史入口",
-            "自动定位当前会话并读取全部分页",
-            "报告已尝试的入口与精确缺口",
-        )), "xb-save asks for user export before attempting host-native history recovery")
+            "Windows 版 Codex Desktop 禁止调用任务/线程/会话历史接口",
+            "禁止寻找所谓“原始任务”或关联任务",
+            "只用当前可见上下文和用户提供的完整导出",
+            "精确当前会话 ID 可证明", "无任务生命周期副作用",
+            "报告宿主、分支、已尝试入口与精确缺口",
+            "保存现有部分",
+        )), "xb-save loses the Codex Windows containment or safe history fallback")
         require("默认不加载 transcript 全文" in restore_text, "xb-restore exposes full sensitive transcript by default")
 
         session_project = sandbox / "session-project"

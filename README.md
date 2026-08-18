@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的「快点下班」工作生存与选择系统。把任务、沟通、卡点、领导、选择交给 Agent，获得清晰判断、可直接使用的产物，以及应该解决、调整还是退出的答案。
 
-[![Version](https://img.shields.io/badge/version-1.5.1-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.5.2-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -75,13 +75,15 @@ $xb-decode 我想系统学怎么听懂话里有话，用《人民的名义》当
 | 成长与选择 | `xb-decision` / `xb-career` / `xb-capability` / `xb-learning` / `xb-ai-native` / `xb-knowledge` | 取舍 / 去留 / 能力判级 / 技能训练 / AI 原生发展 / 知识库 |
 | 深度支持 | `xb-role-knowledge` / `xb-save` / `xb-restore` / `xb-update` / `xb-builder` / `xb-audit` | 岗位知识单元 / 会话全文与自动分类 / 恢复 / 更新 / 孵化新专科 / 系统审计 |
 
-## v1.5.1 本地会话记忆
+## v1.5.2 本地会话记忆与 Codex Windows 隔离
 
 每个真实任务进入收尾检查点时，xbskill 会明确询问是否保存本次会话。用户同意后，可见对话全文、会话摘要、分类账和滚动进度写入项目的 `memory/xbskill/`；人物、公司、目标和表达风格以带来源、置信度与推翻条件的方式增量更新。
 
 保存按当前会话逐次授权。路径穿越、凭据模式、会话历史缺口或写入失败会响亮报错；保存动作不包含 Git、云同步和外发。
 
-发现上下文压缩后，xbskill 会先尝试调用当前宿主的只读任务、线程或会话历史入口，自动定位当前会话并读取全部分页。只有历史入口不可用、读取失败、内容截断或附件仍缺失时，才提示用户提供完整导出或选择部分保存；任务摘要和压缩摘要不充当逐字正文。
+在 Windows 版 Codex Desktop 中，xbskill 暂停调用任务、线程或会话历史接口，也不寻找“原始任务”或关联任务。压缩后只使用当前可见上下文与用户主动提供的完整导出；有缺口时明确提供“完整导出”或“保存现有部分”选项。
+
+其他宿主仅在精确当前会话 ID 可证明、接口纯只读且无任务生命周期副作用时读取当前会话全部分页。任务摘要和压缩摘要不充当逐字正文。
 
 ## 设计原则
 
