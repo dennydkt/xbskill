@@ -58,12 +58,12 @@ $xb-career 比较留下、换组和外部机会，给我现实试验和翻转条
 完整套件包含 35 个 Skill：
 
 - 主入口：`xbskill`
-- 看懂：`xb-triage`、`xb-analysis`、`xb-people`、`xb-decode`、`xb-company`、`xb-stakeholder`
-- 表达：`xb-talk`、`xb-upward`、`xb-writing`、`xb-presentation`、`xb-report`、`xb-meeting`
-- 执行：`xb-goal`、`xb-plan`、`xb-it`、`xb-data`、`xb-automation`、`xb-review`
-- 关系与边界：`xb-conflict`、`xb-boundary`、`xb-action`、`xb-wellbeing`
-- 成长与选择：`xb-decision`、`xb-career`、`xb-capability`、`xb-learning`、`xb-ai-native`、`xb-knowledge`
-- 深度支持：`xb-role-knowledge`、`xb-save`、`xb-restore`、`xb-update`、`xb-builder`、`xb-audit`
+- 看懂：`xb-triage` `xb-analysis` `xb-people` `xb-decode` `xb-company` `xb-stakeholder`
+- 表达：`xb-talk` `xb-upward` `xb-writing` `xb-presentation` `xb-report` `xb-meeting`
+- 执行：`xb-goal` `xb-plan` `xb-it` `xb-data` `xb-automation` `xb-review`
+- 关系与边界：`xb-conflict` `xb-boundary` `xb-action` `xb-wellbeing`
+- 成长与选择：`xb-decision` `xb-career` `xb-capability` `xb-learning` `xb-ai-native` `xb-knowledge`
+- 深度支持：`xb-role-knowledge` `xb-save` `xb-restore` `xb-update` `xb-builder` `xb-audit`
 
 ## 设计原则
 
