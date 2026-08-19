@@ -35,6 +35,11 @@ FORBIDDEN_PATH_PARTS = {"internal", "evaluation", "memory"}
 FORBIDDEN_TEXT = re.compile(
     r"不是.*而是|不在于|不需要.*需要|不会.*会|真正的|与其说"
 )
+FORBIDDEN_RELEASE_CONTEXT = re.compile(
+    r"C:\\Users|/home/|国药|sinopharm|数据中台|xb-iteration|"
+    r"internal-skills|本轮对话|主会话|四家工具",
+    re.IGNORECASE,
+)
 TEXT_SUFFIXES = {".md", ".yml", ".yaml", ".json", ".cff"}
 
 
@@ -103,6 +108,12 @@ def main() -> None:
         match = FORBIDDEN_TEXT.search(text)
         if match:
             fail(f"forbidden writing pattern in {relative}: {match.group(0)!r}")
+        context_match = FORBIDDEN_RELEASE_CONTEXT.search(text)
+        if context_match:
+            fail(
+                f"private release context leaked into {relative}: "
+                f"{context_match.group(0)!r}"
+            )
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     install = "npx -y skills add dennydkt/xbskill -g --all"

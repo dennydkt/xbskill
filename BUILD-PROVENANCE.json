@@ -1,7 +1,7 @@
 {
   "project": "xbskill",
-  "version": "1.6",
-  "source_commit": "678b6e42f3840c2b17cedd63d0cf85702da5719a",
-  "built_at_utc": "2026-08-19T04:11:59+00:00",
-  "builder": "internal/xb-iteration/scripts/build_public_release.py"
+  "version": "1.6.1",
+  "source_commit": "9e5bce8471c13be211f53853b5ec2ff05681bc15",
+  "built_at_utc": "2026-08-19T04:40:52+00:00",
+  "builder": "xbskill-public-release-builder"
 }

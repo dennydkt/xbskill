@@ -74,6 +74,11 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def markdown_section(text: str, heading: str) -> str:
+    match = re.search(rf"^## {re.escape(heading)}\s*$\n(.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL)
+    return match.group(1) if match else ""
+
+
 OUTPUT_COLLAB_CASE_IDS = tuple(f"X{i:02d}" for i in range(13, 20))
 COPY_FORBIDDEN_RE = re.compile(
     r"不是.*而是|不在于|不需要.*需要|不会.*会|真正的|与其说"
@@ -456,6 +461,12 @@ def main() -> int:
         answer_format = (receiver / "xbskill" / "references" / "answer-format.md").read_text(encoding="utf-8")
         contracts_text = (receiver / "xbskill" / "references" / "contracts.md").read_text(encoding="utf-8")
         shell_text = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
+        memory_consent_answers_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-blind-answers.md"
+        memory_consent_review_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-independent-review.md"
+        memory_consent_release_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-release-record.md"
+        memory_consent_answers = memory_consent_answers_path.read_text(encoding="utf-8")
+        memory_consent_review = memory_consent_review_path.read_text(encoding="utf-8")
+        memory_consent_release = memory_consent_release_path.read_text(encoding="utf-8")
         decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
@@ -469,7 +480,11 @@ def main() -> int:
             "list/read/resume/archive/unarchive/fork/rename/pin/send", "禁止查找“原始任务”",
             "用户主动提供的完整导出", "精确当前会话 ID", "副作用无法确认",
             "沿宿主分页游标持续读取", "hasMore=false", "已尝试入口", "任务摘要、压缩摘要",
-            "本轮只有一次性、无跨会话价值的简单问答", "仍保留带 Skill 署名的结尾导航条",
+            "当前可见会话包含至少一条用户消息",
+            "缺少材料并请求用户补充", "提出澄清问题",
+            "模型必须把是否保存交给用户",
+            "缺少材料，需要用户补充后才能继续",
+            "同一最终回答仍在运行工具或继续分析",
         )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
         require("session-memory-protocol.md" in shell_text and "在导航条后明确询问一次" in shell_text, "navigation shell does not enforce explicit save prompt")
         require(all(term in answer_format for term in (
@@ -479,8 +494,42 @@ def main() -> int:
             "它必须是本轮唯一公开当前 Skill",
             "支持子调用、知识包、框架、内部维护专科和下一步候选均不进入",
             "简单、一次性问题也保留导航条",
-            "本轮无跨会话内容", "不追加保存提示",
+            "记忆：待本次确认", "当前可见会话包含至少一条用户消息",
+            "缺少材料后请求用户补充", "预计分类为空均适用",
         )), "answer format loses the visible single-skill trace")
+        active_memory_contract = "\n".join((session_protocol, answer_format, contracts_text, shell_text))
+        forbidden_memory_shortcuts = (
+            "本轮无跨会话内容", "无跨会话价值", "无需保存", "不必保存",
+            "不值得保存", "无保存价值", "不追加保存提示", "可省略保存提示",
+        )
+        require(not any(term in active_memory_contract for term in forbidden_memory_shortcuts),
+                "active memory contract lets the model preempt user consent")
+        answer_a = markdown_section(memory_consent_answers, "A：简单问答")
+        answer_b = markdown_section(memory_consent_answers, "B：缺少材料并等待用户补充")
+        answer_c = markdown_section(memory_consent_answers, "C：同一最终回答仍在执行")
+        save_prompt = "保存提示｜"
+        require(save_prompt in answer_a and "记忆：待指定本地项目" in answer_a,
+                "memory consent case A loses its prompt or pending memory state")
+        require(save_prompt in answer_b and "记忆：待指定本地项目" in answer_b,
+                "memory consent case B loses its prompt or pending memory state")
+        require(save_prompt not in answer_c and "当前只产生中间进度" in answer_c,
+                "memory consent case C interrupts active model-side work")
+        require(all(term in memory_consent_answers for term in (
+            "历史失败证据", "v1.6.1 的 A/B/C 规则取代其运行预期",
+        )), "memory consent blind evidence loses the historical correction")
+        final_memory_review = markdown_section(memory_consent_review, "终轮评审")
+        require("Status: PASS" in final_memory_review and
+                "| 分数 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |" in final_memory_review,
+                "memory consent independent review is not all-two PASS")
+        answers_digest = hashlib.sha256(memory_consent_answers_path.read_bytes()).hexdigest().upper()
+        review_digest = hashlib.sha256(memory_consent_review_path.read_bytes()).hexdigest().upper()
+        require(f"Answers-SHA256: {answers_digest}" in memory_consent_release and
+                f"Review-SHA256: {review_digest}" in memory_consent_release,
+                "memory consent release record loses its frozen evidence binding")
+        require(all(term in memory_consent_release for term in (
+            "旧行为由 v1.6.1 记录降级为历史失败证据",
+            "G/C/A/P/S/E/R/V 全 2", "0 added、0 modified、0 removed",
+        )), "memory consent release record loses correction or publish evidence")
         require(all(term in shell_text for term in (
             "固定带一个公开当前 Skill 的准确调用名和本轮职责",
             "每轮必填且只显示一个公开当前 Skill",
@@ -489,6 +538,9 @@ def main() -> int:
         require(all(term in contracts_text for term in (
             "每次回答都在结尾导航条显形唯一公开当前 Skill",
             "支持子调用、内部维护专科和下一步候选不得成为第二个署名",
+            "当前可见会话包含至少一条用户消息",
+            "模型必须把保存决定交给用户",
+            "内容重要性和预计分类结果不能取消询问",
         )), "cross-skill contract allows ambiguous or hidden skill attribution")
         require(all(term in decision_text for term in (
             "向参与者明确标注“内测/验证中”和当前交付方式",
