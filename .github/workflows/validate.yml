@@ -1,0 +1,35 @@
+name: Validate public release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate release governance
+        run: python -B .github/scripts/check_release.py
+
+      - name: Validate suite
+        run: python -B skills/xbskill/scripts/suite_manager.py validate --target skills
+
+      - name: Run receiver tests
+        run: python -B skills/xbskill/scripts/forward_test.py

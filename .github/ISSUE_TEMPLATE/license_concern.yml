@@ -1,0 +1,53 @@
+name: License or attribution concern
+description: 报告署名缺失、超范围使用、来源争议或冒充官方
+title: "[License] "
+labels:
+  - license
+body:
+  - type: dropdown
+    id: concern
+    attributes:
+      label: 问题类型
+      options:
+        - 署名或许可证被删除
+        - 超范围商业使用
+        - 修改版拒绝提供应公开内容
+        - 冒充官方或来源混淆
+        - 第三方来源或权利争议
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: 涉及地址
+      placeholder: URL、仓库、文件或产品页
+    validations:
+      required: true
+  - type: input
+    id: source_version
+    attributes:
+      label: 对应 xbskill 版本或 commit
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: 逐项对照与条款
+      description: 写明具体文件、片段、许可证条款和可复验差异。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据
+      description: 截图、网页存档、文件哈希、发现时间和抓取时间。敏感证据请改用私密安全报告。
+    validations:
+      required: true
+  - type: checkboxes
+    id: declaration
+    attributes:
+      label: 报告确认
+      options:
+        - label: 我已核对当前许可证与可能的合法授权，并如实说明我和相关权利的关系。
+          required: true

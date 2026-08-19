@@ -1,0 +1,40 @@
+name: Feature request
+description: 提议一个有真实样本和验收条件的能力改进
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: situation
+    attributes:
+      label: 真实处境
+      description: 谁在什么情境下遇到什么问题？请脱敏。
+    validations:
+      required: true
+  - type: textarea
+    id: current_gap
+    attributes:
+      label: 当前版本的缺口
+      description: 当前输出在哪里失效，造成什么后果？
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 合格证据
+      description: 陌生用户按字面执行后，怎样判断改进成立？
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: 反例、风险或排除项
+    validations:
+      required: true
+  - type: checkboxes
+    id: source
+    attributes:
+      label: 来源确认
+      options:
+        - label: 若提议引用外部材料，我会提供来源、版本、许可和使用方式。
+          required: true

@@ -3,3 +3,5 @@
 .tmp*/
 .receiver*/
 *.bak
+.DS_Store
+Thumbs.db

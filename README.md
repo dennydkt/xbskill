@@ -1,102 +1,91 @@
 # xbskill
 
-> 面向脑力工作者的「快点下班」工作生存与选择系统。把任务、沟通、卡点、领导、选择交给 Agent，获得清晰判断、可直接使用的产物，以及应该解决、调整还是退出的答案。
+> 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.5.2-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.6-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
-[![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-16A34A.svg?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
-**支持：Claude Code、Codex、ZCode、Kimi-CLI，以及其他支持 Skills 的 Agent。**
-
-## xbskill 解决什么问题
-
-判断该用哪个工具这件事本身交给 `$xbskill`：把当下最想处理的一件工作直接发给它，它会判断你现在需要稳住、解卡、看懂、改变还是选择，选一个专科，交付可以直接使用的产物。
-
-| 真实处境 | 你会得到 |
-| --- | --- |
-| 说不清哪里有问题，反复失败，怀疑问题在自己 | 五坐标扫描、竞争解释、当前一步 |
-| 领导一句话里有话，听不懂又不敢问 | 候选解码、辨别动作、回应选项与验证窗口 |
-| 想要一句话术：催进度、拒绝、反馈、道歉 | 可直接发送的话术与三种强度变体 |
-| 汇报没重点、请示没边界、预期管不住 | 领导可直接决策的信息包 |
-| 明知要做却拖不动，或被加活、被甩锅、被越权 | 阻力归因、边界表达、留痕与升级路径 |
-| 材料很多、抽象评价、需要找原因 | 现象—冲突—约束—反馈的职场问题说明书 |
-| 怀疑这份工作值不值得继续 | 选项、代价、现实试验与退出阈值 |
-
-系统的北极星：帮助你在可接受的身心与伦理成本下完成必要结果，同时保留或增加理解、能力、边界和选择权。它不教你无条件忍受，也不把结构伤害包装成心态问题。
+支持 Claude Code、Codex、ZCode、Kimi-CLI，以及其他支持 Skills 的 Agent。
 
 ## 安装
 
-### 推荐：支持 Skills 的 Agent（需要 Node.js 环境）
+推荐安装全部 35 个 Skill：
 
 ```bash
 npx -y skills add dennydkt/xbskill -g --all
 ```
 
-`-g` 安装到用户级技能目录（全部 Agent 共用），`--all` 安装全部 35 个 skill。也可以去掉 `--all` 交互式选择要装的专科。
+该命令保持普通试用路径：无需注册、许可申请、授权码、遥测或额外运行服务。去掉 `--all` 可以交互式选择安装。
 
-### 手动安装
+手动安装：
 
 ```bash
 git clone https://github.com/dennydkt/xbskill.git
-# 把 skills/ 下的全部目录复制到你的 Agent 技能目录，例如：
 cp -r xbskill/skills/* ~/.agents/skills/
 ```
 
 ## 快速开始
 
-安装完成后，在 Agent 中直接输入：
-
 ```text
-$xbskill 我领导今天对我做的方案只说了句"还可以再优化"，没给任何方向，他到底什么意思？
+$xbskill 我每天加班到十点，产出却总被否定。我想知道问题在方法、协作还是环境，也想判断要不要换组。
 ```
 
-```text
-$xbskill 我每天加班到十点，产出却总被否定，我不知道问题出在我还是环境，要不要考虑换组。
-```
-
-已经知道需求时，可直接调用专科：
+已经知道需求时，可以直接调用专科：
 
 ```text
-$xb-talk 帮我写一条催同事交材料的话，不伤关系但要有截止时间
-$xb-decode 解码一下：今天例会我被移出了下季度项目的汇报名单
-$xb-upward 我要向领导申请两个人力支援下个月的活动，帮我打包汇报
-$xb-decode 我想系统学怎么听懂话里有话，用《人民的名义》当教材
+$xb-talk 帮我写一条催同事交材料的话，保留关系并明确截止时间
+$xb-data 帮我核对这份表的口径、异常和结论
+$xb-upward 把我的人力申请整理成领导可直接决策的信息包
+$xb-career 比较留下、换组和外部机会，给我现实试验和翻转条件
 ```
 
-## 能力一览（35 skills）
+## 你会得到什么
 
-| 类别 | 专科 | 一句话交付 |
-| --- | --- | --- |
-| 主入口 | `xbskill` | 接住问题、判断处境、路由专科、回流反馈 |
-| 看懂 | `xb-triage` / `xb-analysis` / `xb-people` / `xb-decode` / `xb-company` / `xb-stakeholder` | 瓶颈定位 / 归因说明书 / 工作画像 / 潜台词解码 / 公司档案 / 多方利益地图 |
-| 表达 | `xb-talk` / `xb-upward` / `xb-writing` / `xb-presentation` / `xb-report` / `xb-meeting` | 话术 / 汇报包 / 成稿 / PPT 与答辩 / 周报月报 / 会议推进 |
-| 执行 | `xb-goal` / `xb-plan` / `xb-it` / `xb-data` / `xb-automation` / `xb-review` | 目标边界 / 工作包 / IT 修复 / 数据口径 / 自动化 / 验收 |
-| 关系与边界 | `xb-conflict` / `xb-boundary` / `xb-action` / `xb-wellbeing` | 冲突方案 / 拒绝与升级 / 阻力归因 / 减压与求助边界 |
-| 成长与选择 | `xb-decision` / `xb-career` / `xb-capability` / `xb-learning` / `xb-ai-native` / `xb-knowledge` | 取舍 / 去留 / 能力判级 / 技能训练 / AI 原生发展 / 知识库 |
-| 深度支持 | `xb-role-knowledge` / `xb-save` / `xb-restore` / `xb-update` / `xb-builder` / `xb-audit` | 岗位知识单元 / 会话全文与自动分类 / 恢复 / 更新 / 孵化新专科 / 系统审计 |
+| 真实处境 | 典型交付 |
+| --- | --- |
+| 问题说不清、反复失败 | 事实、冲突、候选解释和当前一步 |
+| 领导话里有话、关系难判断 | 候选解码、辨别动作、回应与观察窗口 |
+| 催办、拒绝、反馈、道歉 | 可直接发送的话术和强度变体 |
+| 汇报没重点、请示没边界 | 决策信息包、风险和明确请求 |
+| 拖不动、被加活、被甩锅 | 阻力归因、边界表达、留痕与升级路径 |
+| 工作去留与长期选择 | 选项、代价、现实试验和退出阈值 |
 
-## v1.5.2 本地会话记忆与 Codex Windows 隔离
+系统服务用户的长期净收益与选择权：在可接受的身心与伦理成本下完成必要结果，同时增加理解、能力、边界和可选择空间。
 
-每个真实任务进入收尾检查点时，xbskill 会明确询问是否保存本次会话。用户同意后，可见对话全文、会话摘要、分类账和滚动进度写入项目的 `memory/xbskill/`；人物、公司、目标和表达风格以带来源、置信度与推翻条件的方式增量更新。
+## 能力一览
 
-保存按当前会话逐次授权。路径穿越、凭据模式、会话历史缺口或写入失败会响亮报错；保存动作不包含 Git、云同步和外发。
+完整套件包含 35 个 Skill：
 
-在 Windows 版 Codex Desktop 中，xbskill 暂停调用任务、线程或会话历史接口，也不寻找“原始任务”或关联任务。压缩后只使用当前可见上下文与用户主动提供的完整导出；有缺口时明确提供“完整导出”或“保存现有部分”选项。
-
-其他宿主仅在精确当前会话 ID 可证明、接口纯只读且无任务生命周期副作用时读取当前会话全部分页。任务摘要和压缩摘要不充当逐字正文。
+- 主入口：`xbskill`
+- 看懂：`xb-triage`、`xb-analysis`、`xb-people`、`xb-decode`、`xb-company`、`xb-stakeholder`
+- 表达：`xb-talk`、`xb-upward`、`xb-writing`、`xb-presentation`、`xb-report`、`xb-meeting`
+- 执行：`xb-goal`、`xb-plan`、`xb-it`、`xb-data`、`xb-automation`、`xb-review`
+- 关系与边界：`xb-conflict`、`xb-boundary`、`xb-action`、`xb-wellbeing`
+- 成长与选择：`xb-decision`、`xb-career`、`xb-capability`、`xb-learning`、`xb-ai-native`、`xb-knowledge`
+- 深度支持：`xb-role-knowledge`、`xb-save`、`xb-restore`、`xb-update`、`xb-builder`、`xb-audit`
 
 ## 设计原则
 
-- **单步路由**：一次只处理当前一个瓶颈，不预设长链流程。
-- **过程诚实**：区分事实、推断、未知；关键假设、成本与边界显形；缺证据时响亮报错，不静默降级。
-- **用户侧北极星**：默认优化你的净收益与选择权，不默认优化雇主产出。
-- **可证伪**：重要结论带翻转条件与现实反馈点；解决、调整、退出三种方向都摆在桌面上。
-
-完整模型见 `skills/xbskill/references/`（work-model、agency-model、resolution-standard 等）。
+- 单步路由：一次处理当前一个瓶颈，现实反馈回来后再决定下一步。
+- 过程诚实：事实、推断和未知分账；缺来源、权限或证据时明确停下。
+- 权限分离：建议、决定、授权、执行、复核和风险承担分别标记。
+- 可证伪：重要判断带翻转条件、观察窗口和下一反馈点。
+- 用户侧价值：产物、现实采用和用户净收益分别验收。
 
 ## 与 dbskill 的关系
 
-xbskill 的工程机制（导航壳与专科架构、单步路由、竞争解释、八门验收、知识来源协议等）白盒重写自 [dontbesilent2025/dbskill](https://github.com/dontbesilent2025/dbskill)，遵循其 Keep / Re-derive / Reject 三分法：程序机制保留，领域语义（职场生存与选择）全部独立重推导，有害先验拒绝。重写追踪见 `skills/xbskill/references/dbs-reuse-case.md`。感谢 dbskill 开源这套高质量的方法论工程。
+xbskill 的部分工程机制经过对 [dontbesilent2025/dbskill](https://github.com/dontbesilent2025/dbskill) 的白盒研究。职场领域目标、语义、权限、风险、案例、产物和验收由 xbskill 独立重推导。详细追踪见 `skills/xbskill/references/dbs-reuse-case.md`，许可边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+## 开放与原创证明
+
+- Python 脚本：AGPL-3.0-or-later。
+- Skill 文本和其他内容：CC BY-NC-SA 4.0。
+- 普通安装、本地试用、学习和非商业内部使用保持直接可用。
+- 公开再分发需要署名、标明修改并遵守对应许可证。
+- 修改版需显著标注非官方版本，避免来源混淆。
+
+完整规则见 [LICENSE](LICENSE)、[ATTRIBUTION.md](ATTRIBUTION.md) 和 [TRADEMARKS.md](TRADEMARKS.md)。作者链、基线提交与核验方法见 [PROVENANCE.md](PROVENANCE.md)。
 
 ## 更新
 
@@ -104,8 +93,12 @@ xbskill 的工程机制（导航壳与专科架构、单步路由、竞争解释
 npx -y skills add dennydkt/xbskill -g --all
 ```
 
-重新执行安装命令即覆盖更新；已安装套件内也可用 `$xb-update` 做差异预览与备份更新。
+重新执行安装命令即可覆盖更新；套件内也可以使用 `$xb-update` 预览差异并先做备份。
 
-## 许可证
+## 参与和反馈
 
-[CC BY-NC 4.0](LICENSE)：以非商业目的自由使用、修改与分发；须署名并标明修改；禁止商业使用。具体以许可证全文为准。
+- Bug 与功能建议：使用 GitHub Issue 模板。
+- 修改与贡献：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全问题：[SECURITY.md](SECURITY.md)
+- 许可或署名问题：[LICENSE-ENFORCEMENT.md](LICENSE-ENFORCEMENT.md)
+- 引用方式：[CITATION.cff](CITATION.cff)

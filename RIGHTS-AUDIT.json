@@ -1,0 +1,29 @@
+{
+  "record_type": "ExactTextOverlapAudit",
+  "captured_at": "2026-08-19",
+  "method": "normalized exact lines and paragraphs; no semantic judgment",
+  "minimum_characters": 48,
+  "source_commit": "7e24d98e15048beefc7de3ddaade091f4aede9f5",
+  "skills_last_change_commit": "7e24d98e15048beefc7de3ddaade091f4aede9f5",
+  "derived_root": "skills/",
+  "derived_file_count": 160,
+  "derived_tree_sha256": "fe28da228ed0e631dd9a76d1b90e7258cad3bf5b98bb7b06865715c9e8c77913",
+  "upstream_snapshot": {
+    "description": "installed workspace dbs and dbs-* text tree used for comparison",
+    "file_count": 102,
+    "tree_sha256": "029371c99805d4f7ccedeaed6928930898c86029dc28a16db7f8961253d6994a"
+  },
+  "upstream_public": {
+    "repository": "dontbesilent2025/dbskill",
+    "commit": "80370b63c247794469fda83f225d39d6947993bc",
+    "license": "CC BY-NC 4.0",
+    "license_blob_sha": "a4c34ed84b3ed189fb9b3f0f245103df667faf23"
+  },
+  "overlap_count": 0,
+  "overlaps": [],
+  "limitations": [
+    "The audit detects exact normalized lines and paragraphs at or above the threshold.",
+    "It does not detect paraphrase, semantic similarity, ideas, methods, or independently recreated structures.",
+    "It supports provenance review and does not replace a rights-holder agreement or legal opinion."
+  ]
+}

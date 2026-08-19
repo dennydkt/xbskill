@@ -453,7 +453,10 @@ def main() -> int:
         print("PASS clean install and discovery")
 
         session_protocol = (receiver / "xbskill" / "references" / "session-memory-protocol.md").read_text(encoding="utf-8")
+        answer_format = (receiver / "xbskill" / "references" / "answer-format.md").read_text(encoding="utf-8")
+        contracts_text = (receiver / "xbskill" / "references" / "contracts.md").read_text(encoding="utf-8")
         shell_text = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
+        decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
         require(all(term in session_protocol for term in (
@@ -466,8 +469,36 @@ def main() -> int:
             "list/read/resume/archive/unarchive/fork/rename/pin/send", "禁止查找“原始任务”",
             "用户主动提供的完整导出", "精确当前会话 ID", "副作用无法确认",
             "沿宿主分页游标持续读取", "hasMore=false", "已尝试入口", "任务摘要、压缩摘要",
+            "本轮只有一次性、无跨会话价值的简单问答", "仍保留带 Skill 署名的结尾导航条",
         )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
         require("session-memory-protocol.md" in shell_text and "在导航条后明确询问一次" in shell_text, "navigation shell does not enforce explicit save prompt")
+        require(all(term in answer_format for term in (
+            "每个最终回答都在结尾显示一条紧凑导航",
+            "Skill：{$xb-* 或 $xbskill}",
+            "每轮必填且只能出现一个名称",
+            "它必须是本轮唯一公开当前 Skill",
+            "支持子调用、知识包、框架、内部维护专科和下一步候选均不进入",
+            "简单、一次性问题也保留导航条",
+            "本轮无跨会话内容", "不追加保存提示",
+        )), "answer format loses the visible single-skill trace")
+        require(all(term in shell_text for term in (
+            "固定带一个公开当前 Skill 的准确调用名和本轮职责",
+            "每轮必填且只显示一个公开当前 Skill",
+            "全轮是否恰好一条结尾导航条",
+        )), "navigation shell does not enforce the visible single-skill trace")
+        require(all(term in contracts_text for term in (
+            "每次回答都在结尾导航条显形唯一公开当前 Skill",
+            "支持子调用、内部维护专科和下一步候选不得成为第二个署名",
+        )), "cross-skill contract allows ambiguous or hidden skill attribution")
+        require(all(term in decision_text for term in (
+            "向参与者明确标注“内测/验证中”和当前交付方式",
+            "只收集完成本次验证所需的数据",
+            "样本范围、观察窗口、关键动作的分母、基线、阈值、错误后果和停止条件",
+            "任一项待定时只交付待校准方案，不启动外部验证",
+        )), "xb-decision loses experiment disclosure, data minimization, or calibration gates")
+        direct_specialists = [path for path in receiver.iterdir() if path.is_dir() and path.name.startswith("xb-")]
+        missing_contracts = [path.name for path in direct_specialists if "contracts.md" not in (path / "SKILL.md").read_text(encoding="utf-8")]
+        require(not missing_contracts, f"direct specialists bypass the shared answer contract: {missing_contracts}")
         require("authorized_current_session=true" in save_text and "session_store.py" in save_text, "xb-save does not require the transactional local writer")
         require(all(term in save_text for term in (
             "Windows 版 Codex Desktop 禁止调用任务/线程/会话历史接口",

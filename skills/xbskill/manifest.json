@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.5.2",
+  "version": "1.6",
   "files": {
     "xb-action/agents/openai.yaml": "e9b419e3dba68f7be0fb25745749faa4a16f6b97397432c4c29a717ff037c59f",
     "xb-action/SKILL.md": "7b7b850fd40af17a975fc241ff0d21fd2bc6ee8ca8b3c83bd38f4f426ba57579",
@@ -29,7 +29,7 @@
     "xb-data/agents/openai.yaml": "5968c138ff370a5da97630d4b2e636e2286e18e7d6930e577aaab2fbe0a38974",
     "xb-data/SKILL.md": "b1558449c1f60853fbde6bd49af07ef1ac15e28de4d3dd4a7b25e9a4aef68da6",
     "xb-decision/agents/openai.yaml": "01fcc422b1048f5727dc1ad6f5b7222e76c62d9295f3f6f57332b918a86f009e",
-    "xb-decision/SKILL.md": "3e7d42ac20aa30f445cd90bd287930dd95881208e90987364b47674ff0121cb4",
+    "xb-decision/SKILL.md": "ca090cd3c5901317985704e1ab899495baf2479765862df465bff5a860baa88c",
     "xb-decode/agents/openai.yaml": "bc6e03f815b37663714c94804a45ffa038cba69cea9e20019604676a72d43673",
     "xb-decode/references/subtext-cases-rmyd.md": "4fa788b84a1c033d379d36b7f39773de725bfb3ef4ce6541427f73aa17ea43ff",
     "xb-decode/references/subtext-mechanisms.md": "e223af6a03a854fd4a4a3e28a937dfe85221492347c6b25b0e0599dc3b070271",
@@ -103,11 +103,11 @@
     "xbskill/.gitignore": "df739b063be489b8076b444db3ece24a5602eed0fde7062dbd0cd55bdba1792b",
     "xbskill/agents/openai.yaml": "41488e15e0c1e34327a7fd25870c2616cceabd617390b0e16109d96e69902ef0",
     "xbskill/references/agency-model.md": "5e6745d2dc9f5a18890e8bdfb726534ef85658b8eb92700e000ae34b1432a53c",
-    "xbskill/references/answer-format.md": "247b4a2b85bdd54e8fcf4ba1470cd5c4f58e8926b90788cfd8e585fe5b87fd84",
+    "xbskill/references/answer-format.md": "36a0b9b40f351d69fbb632cdd42b022640ad75d55f1c7eeea0f7250fa2fe9430",
     "xbskill/references/capability-model.md": "7f21877c0212df50e5f6aa9b067c0041cccdd37c3e53d790e3b2e4d58f23dd32",
     "xbskill/references/common-scenarios.md": "c10073f318729945bb889b48a64f550ced938f83c436383979e556d045c287d4",
     "xbskill/references/context-protocol.md": "634782b00751c48d60b25b00be75af266f828cc1cad81436620cd677bd8fd2af",
-    "xbskill/references/contracts.md": "9ec3fd67aed03a2760c07aaffb134f585749994530d1ddc5958bf3150a0e6c24",
+    "xbskill/references/contracts.md": "265eac960a75adb68a548f315e3ba7a9887b1feba3fac29353a57f5ade76f235",
     "xbskill/references/data-work-specialties.md": "dd6e85322ea77f769ca7fe710f1e5ac6f495d6a2c4ff6ef929927cb13e111b0d",
     "xbskill/references/dbs-reuse-case.md": "591c037709463f95b6480ca78b730a0a4fb5e6b0d6feb68da2e3e3c5529edd8f",
     "xbskill/references/finance-marketing-specialties.md": "8f54c2115d5b6bbaba831d84b767b4dd1c86109d2ee78e1b3b962473a9d40ffb",
@@ -123,7 +123,7 @@
     "xbskill/references/role-context-model.md": "5c48a46ba6b6d544d06048e4299ca22250efafe6b0713302528aebbb0fb1dec0",
     "xbskill/references/role-specialty-regression.md": "2679beabb401c4ed44cbbcd5b153c224ac0f44292e41405e96caf872914af65a",
     "xbskill/references/routing.md": "c625f9369455be46f635df726802a97ba6ceb7253c8fc55d9788c4d8e3fc4d94",
-    "xbskill/references/session-memory-protocol.md": "4af4181a391b44513715d5ed49eca10fc7400dad1b70a51af497880e2d27b0aa",
+    "xbskill/references/session-memory-protocol.md": "d37d6e1fdbfea2c6957ed2ebb2e73bb1284a5e1c66dd91ca698f612e6055f031",
     "xbskill/references/specialist-regression.md": "22f1cb84de3bd882a2e6b64b7b21632182a4dfca6ba2160b957d81d516ae1fc7",
     "xbskill/references/specialist-rewrite-method.md": "a5d65b86a080933c3175240ef511bd5729b674ccd7d601dcbb1384bbf13eab4d",
     "xbskill/references/specialty-source-ledger.md": "c3ae45f80aac5a2811821a2d492e359cbe2fda8b8b5f260c461b3c94dbe131bf",
@@ -164,12 +164,15 @@
     "xbskill/references/v1.5-session-memory-release-record.md": "5aef8e7bbb7fd562d00a95041e0f3138c21f9dbbfdda99c9d62d084193549260",
     "xbskill/references/v1.5.1-history-recovery-release-record.md": "bf3109b2ad55912c7deafdfa653df07f4bd306d10a9473a8bb55af2c69d41322",
     "xbskill/references/v1.5.2-codex-windows-containment-release-record.md": "4458952b64ffb20166b05421abf32081c17f7ebc5b2600c1fed61ad6fe0bf969",
+    "xbskill/references/v1.6-skill-trace-blind-answers.md": "ce2a6542a1f7c2239f916e5cdea45582b204bdd5c9062bff0bb2dad57f58bce6",
+    "xbskill/references/v1.6-skill-trace-independent-review.md": "ccc123420e2702dd8cc3dd7669058ea06f0586fd59d3de3c038e959ec3eacb79",
+    "xbskill/references/v1.6-skill-trace-release-record.md": "18560d14cb314edee4a67487e34198b71115acfc6c9af46a19e7278c349fc46b",
     "xbskill/references/work-model.md": "f9119cfd8f16dfc167e75861640e4759c7982959a2fa2c908b5e0ed0c21a8059",
     "xbskill/references/workplace-regression.md": "8e686ff576d282e8c8a08eed94cdbd096dff631777557e576230ebde6483b73b",
-    "xbskill/scripts/forward_test.py": "6d4870d70492c54ce69459ae4aabef4f602c6b39560f0b04f2f6f20a1a4661bc",
+    "xbskill/scripts/forward_test.py": "c12cc955a89f15749909f1db8deffdf92f08d49a13ee79660f0fd48e554a7cb3",
     "xbskill/scripts/knowledge_manager.py": "386eaf5b55959eed1707ea72c3850d10fd425489791deb73db08676db9a9d959",
     "xbskill/scripts/suite_manager.py": "73b262a3ad6603e369851ec1b470a1ade4a32fada90900adfe4bb57b28dd907b",
-    "xbskill/SKILL.md": "b6b9f4170cd2bce3d36039b14479b888a18e39f5934920677ff1573f3123e690",
-    "xbskill/VERSION": "ded1b601e81d31ca1f65c4f3ccf2ebd7992b6390e37bc2a86f3837282f1e00cf"
+    "xbskill/SKILL.md": "1ce5d9c259ea7b6f24f80f254b3eb16d9ae18216271f507bfffd27b4c3922aa9",
+    "xbskill/VERSION": "e5cd57eee9635f3612a2a913746f7f794cdb573cc3e16f6b7d8e613f92beac83"
   }
 }

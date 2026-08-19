@@ -1,5 +1,5 @@
 {
-  "version": "1.5.2",
-  "notice": "Windows 版 Codex Desktop 暂停任务历史恢复，避免触发任务生命周期链路；压缩后使用当前上下文或用户导出。其他宿主仅在精确当前会话 ID、纯只读和无副作用条件全部满足时恢复。",
+  "version": "1.6",
+  "notice": "xbskill public release with visible skill trace and repository governance.",
   "details_url": "https://github.com/dennydkt/xbskill"
 }

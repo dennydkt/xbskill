@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use or redistribute xbskill, please cite the project and the exact version or commit."
+title: "xbskill"
+type: software
+authors:
+  - family-names: "dennydkt"
+version: "1.6"
+date-released: "2026-08-19"
+repository-code: "https://github.com/dennydkt/xbskill"
+url: "https://github.com/dennydkt/xbskill"
+abstract: "A work survival and choice system for knowledge workers, distributed as 35 Agent Skills."
+keywords:
+  - agent-skills
+  - workplace
+  - knowledge-work
+  - career
+  - productivity

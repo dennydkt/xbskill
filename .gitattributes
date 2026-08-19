@@ -1,0 +1,11 @@
+* text=auto
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+LICENSE text eol=lf
+LICENSES/*.txt text eol=lf
+
+# Manifest hashes bind the shipped Skill bytes. Keep them verbatim on every OS.
+skills/** -text
