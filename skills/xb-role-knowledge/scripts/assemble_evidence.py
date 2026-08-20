@@ -35,15 +35,19 @@ def normalize_external_utc(value: Any, context: str) -> str:
 
     if isinstance(value, str) and rk.UTC_TIMESTAMP_RE.fullmatch(value):
         return rk.utc_timestamp(value, context)
-    if not isinstance(value, str) or not re.fullmatch(
-        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,9}Z", value,
-    ):
+    match = re.fullmatch(
+        r"(?P<seconds>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\.\d{1,9}Z",
+        value if isinstance(value, str) else "",
+    )
+    if match is None:
         rk.fail("E_SCHEMA", f"{context} must be an ISO-8601 UTC timestamp ending in Z")
     try:
-        parsed = dt.datetime.fromisoformat(value[:-1] + "+00:00")
+        parsed = dt.datetime.strptime(match.group("seconds"), "%Y-%m-%dT%H:%M:%S").replace(
+            tzinfo=dt.timezone.utc,
+        )
     except ValueError:
         rk.fail("E_SCHEMA", f"{context} is not a real UTC timestamp")
-    return parsed.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return parsed.isoformat().replace("+00:00", "Z")
 
 
 def main() -> int:

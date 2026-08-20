@@ -76,7 +76,7 @@
     "xb-role-knowledge/references/upstream-role-sources.json": "e663b7015250c0004e3ccd4a54b8c33d77a728c8b32a0e7616b3425c4c75b943",
     "xb-role-knowledge/references/upstream-role-sources.schema.json": "2114d6726447101247aa0b8e358f5899d0a3adddb3fd03dc2c3186c702c51f57",
     "xb-role-knowledge/scripts/activate_catalog.py": "dd9ca46ca9347c624acd0822048c26b2c428dae3e435958b483ab79bc29ce373",
-    "xb-role-knowledge/scripts/assemble_evidence.py": "ebcd9a934004d43481fd914bf74172a6a6f178a8c2eb64aa3b43922ec9f5fd6d",
+    "xb-role-knowledge/scripts/assemble_evidence.py": "09da48d16b4930a69ca6c22013a2fe5f408bca20de1ed41fa9df3f3817e6bd13",
     "xb-role-knowledge/scripts/blind_fixture.py": "7ece11210708e4757257b009133d3c79b3451f91d828429be0ce7fa15cccdb5b",
     "xb-role-knowledge/scripts/deterministic_test.py": "3175a7c55823b707e32b8f6f8a0a5acc64592b9ac8a3a00aaf914cab6a0b0f41",
     "xb-role-knowledge/scripts/merge_incremental_evidence.py": "fc6941b37417b80053aca08b482e1683a9bc7f8acacc914f51b1f0bbec6a80d0",
