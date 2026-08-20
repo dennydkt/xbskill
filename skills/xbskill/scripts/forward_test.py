@@ -81,7 +81,7 @@ def markdown_section(text: str, heading: str) -> str:
 
 OUTPUT_COLLAB_CASE_IDS = tuple(f"X{i:02d}" for i in range(13, 20))
 COPY_FORBIDDEN_RE = re.compile(
-    r"不是.*而是|不在于|不需要.*需要|不会.*会|真正的|与其说"
+    r"不是.*而是|并不是.*而是|并非.*而是|不在于|不需要.*需要|无需.*只需|不会.*会|真正的|与其说|相比之下"
 )
 
 
@@ -468,6 +468,31 @@ def main() -> int:
         memory_consent_review = memory_consent_review_path.read_text(encoding="utf-8")
         memory_consent_release = memory_consent_release_path.read_text(encoding="utf-8")
         decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
+        decode_text = (receiver / "xb-decode" / "SKILL.md").read_text(encoding="utf-8")
+        decode_mechanisms = (receiver / "xb-decode" / "references" / "subtext-mechanisms.md").read_text(encoding="utf-8")
+        decode_codebook = (receiver / "xb-decode" / "references" / "subtext-method-codebook.md").read_text(encoding="utf-8")
+        discourse_path = receiver / "xb-decode" / "references" / "workplace-discourse-defense.md"
+        discourse_text = discourse_path.read_text(encoding="utf-8")
+        discourse_answers_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-blind-answers.md"
+        discourse_review_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-independent-review.md"
+        discourse_fixture_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-generalization-fixtures.md"
+        discourse_generalization_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-generalization-answers.md"
+        discourse_final_review_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-final-independent-review.md"
+        discourse_run_record_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-generalization-run-record.md"
+        discourse_recheck_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-final-recheck.md"
+        discourse_redaction_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-public-redaction-record.md"
+        discourse_publication_recheck_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-publication-recheck.md"
+        discourse_release_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-release-record.md"
+        discourse_answers = discourse_answers_path.read_text(encoding="utf-8")
+        discourse_review = discourse_review_path.read_text(encoding="utf-8")
+        discourse_fixture = discourse_fixture_path.read_text(encoding="utf-8")
+        discourse_generalization = discourse_generalization_path.read_text(encoding="utf-8")
+        discourse_final_review = discourse_final_review_path.read_text(encoding="utf-8")
+        discourse_run_record = discourse_run_record_path.read_text(encoding="utf-8")
+        discourse_recheck = discourse_recheck_path.read_text(encoding="utf-8")
+        discourse_redaction = discourse_redaction_path.read_text(encoding="utf-8")
+        discourse_publication_recheck = discourse_publication_recheck_path.read_text(encoding="utf-8")
+        discourse_release = discourse_release_path.read_text(encoding="utf-8")
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
         require(all(term in session_protocol for term in (
@@ -548,6 +573,168 @@ def main() -> int:
             "样本范围、观察窗口、关键动作的分母、基线、阈值、错误后果和停止条件",
             "任一项待定时只交付待校准方案，不启动外部验证",
         )), "xb-decision loses experiment disclosure, data minimization, or calibration gates")
+        require(all(term in decode_text for term in (
+            "话语防御分支", "冻结原题", "拆命题与动作", "检查权责与影响",
+            "保留竞争解释", "选择发声目标", "按权力与风险定级",
+            "有权表达、表达正确、表达合宜、有权决定",
+            "人物道德标签和动机断言一律不输出",
+            "有职责、有证据、有预先标准、有固定完成门",
+            "停止普通分析并转 `xb-boundary`",
+        )), "xb-decode loses the evidence-bound workplace discourse defense branch")
+        require(all(term in discourse_text for term in (
+            "有权表达 / 表达正确 / 表达合宜 / 有权决定",
+            "问句形式 / 问句完成的动作 / 举证责任",
+            "工作公开 / 接受质量评价 / 同意人格羞辱",
+            "可观察行为 / 可能动机 / 稳定身份",
+            "资格换轨", "判断藏进问句", "进度写成缺陷",
+            "评价权扩张", "责任倒置", "移动完成门",
+            "复位事实", "保护具体的人", "修复公共记录", "启动保护",
+            "L0 低利害", "L1 决定受影响", "L2 人身与持续压制", "L3 威胁与报复",
+            "逐字证据 / 用户转述", "竞争解释与翻转信号", "下一现实反馈点",
+        )), "workplace discourse defense loses its action, authority, safety, or reality gates")
+        active_decode_contract = "\n".join((decode_text, decode_mechanisms, decode_codebook, discourse_text))
+        forbidden_decode_shortcuts = (
+            "约六成", "约两成", "每句话的存在都有原因", "背后必有指向",
+            "取\"让发送者在自身位置上收益最大\"的那个", "~85%", "~10%", "~5%",
+            "道德身份类型", "小人识别",
+        )
+        require(not any(term in active_decode_contract for term in forbidden_decode_shortcuts),
+                "active decode contract retains unsupported motive or identity shortcuts")
+        require(all(term in decode_mechanisms for term in (
+            "候选生成启发，不是比例定律", "每次仍要用原话、行为、时机、元数据和后续结果验证",
+            "报告评价具体行为与影响，不给人分配道德身份",
+        )), "subtext mechanisms still present speculation as a deterministic law")
+        require(all(term in decode_codebook for term in (
+            "各部分没有固定权重", "允许“随口表达、习惯用语、表达笨拙”作为竞争解释",
+            "利益只参与生成候选，不能替代事实",
+        )), "subtext codebook loses weight, alternative-explanation, or evidence restraints")
+        discourse_a = markdown_section(discourse_answers, "A：资格换轨与责任倒置")
+        discourse_b = markdown_section(discourse_answers, "B：正常质量追问")
+        discourse_c = markdown_section(discourse_answers, "C：威胁与报复边界")
+        require(all(term in discourse_a for term in (
+            "退款口径是否造成重复计算", "资格换轨", "事实锚",
+            "验证人", "最终决定人", "竞争解释与翻转信号",
+        )), "discourse blind case A loses issue restoration, responsibility, or identity restraint")
+        require(all(term in discourse_b for term in (
+            "正常质量追问", "签字职责", "既有清单", "补齐后复核", "移动完成门",
+        )), "discourse blind case B misclassifies legitimate quality review")
+        require(all(term in discourse_c for term in (
+            "普通解码立即停止", "`$xb-boundary`", "连续三周", "项目群成员变化",
+            "考核标准修改前后版本", "现实支持者",
+        )), "discourse blind case C loses the protection-first boundary")
+        require("小人" not in discourse_answers and "嫉妒" not in discourse_answers and "自卑" not in discourse_answers,
+                "discourse blind answers use identity or motive labels")
+        initial_discourse_review = markdown_section(discourse_review, "终轮评审")
+        require("Status: BLOCKED" in initial_discourse_review and "V 陌生外测 = 1" in initial_discourse_review,
+                "workplace discourse iteration loses its preserved first external-test failure")
+
+        require(all(term in discourse_fixture for term in (
+            "A2：不当评价与有效反证并存", "B2：严厉语气与合法质量门并存",
+            "C2：不同渠道形成的报复风险", "自动删除日志", "RTO、RPO", "排班和奖金",
+        )), "workplace discourse generalization fixture loses its mixed-signal cases")
+        discourse_a2 = markdown_section(discourse_generalization, "A2：不当评价与有效反证并存")
+        discourse_b2 = markdown_section(discourse_generalization, "B2：严厉语气与合法质量门并存")
+        discourse_c2 = markdown_section(discourse_generalization, "C2：不同渠道形成的报复风险")
+        discourse_fields = (
+            "原始问题", "逐字证据", "有效业务证据", "话语动作",
+            "竞争解释", "事实锚", "风险等级", "现实反馈点",
+        )
+        require(all(term in discourse_a2 for term in discourse_fields) and
+                all(term in discourse_a2 for term in ("自动删除日志", "DPA", "10 个离职账号")) and
+                any(term in discourse_a2 for term in ("实质回应", "有效反证", "业务反证", "已经回应", "有分量的反证", "正面回应")) and
+                any(term in discourse_a2 for term in ("不当评价", "针对人的评价", "人格评价", "身份评价", "公开评价", "无关个人评价", "个人稳定工作风格")),
+                "generalization case A2 does not separate valid counterevidence from personal evaluation")
+        require(all(term in discourse_b2 for term in discourse_fields) and
+                all(term in discourse_b2 for term in ("验收表第 7 项", "RTO", "RPO", "补齐")) and
+                any(term in discourse_b2 for term in ("合法质量门", "正常质量追问", "签字条件成立", "质量要求成立", "合法验收", "固定的质量门", "正常审批")) and
+                any(term in discourse_b2 for term in ("语气不合宜", "不当语气", "表达不合宜", "羞辱性表达", "反问式批评", "带责备色彩", "当众压力")),
+                "generalization case B2 does not preserve a fixed quality gate while correcting delivery")
+        require(all(term in discourse_c2 for term in discourse_fields) and
+                all(term in discourse_c2 for term in ("夜班", "培训", "年终", "排班和奖金", "L3", "`$xb-boundary`")) and
+                any(term in discourse_c2 for term in ("停止普通解码", "停止普通话语分析", "普通解码立即停止", "停止普通话语解码")) and
+                any(term in discourse_c2 for term in ("证据目录", "固定证据", "证据保全", "保全证据")) and
+                any(term in discourse_c2 for term in ("尚未解决", "仍未解决", "待现实支持", "待保护安排")),
+                "generalization case C2 loses the L3 stop, evidence, handoff, or unresolved-reality boundary")
+        require(not any(term in discourse_generalization for term in ("小人", "嫉妒", "自卑", "人品差")),
+                "generalization answers use identity or motive labels")
+
+        second_discourse_review = markdown_section(discourse_final_review, "终轮评审")
+        require("Status: BLOCKED" in second_discourse_review and "V 陌生外测 = 1" in second_discourse_review,
+                "workplace discourse iteration loses its second external-test failure")
+        discourse_fixture_digest = hashlib.sha256(discourse_fixture_path.read_bytes()).hexdigest().upper()
+        discourse_answers_digest = hashlib.sha256(discourse_answers_path.read_bytes()).hexdigest().upper()
+        discourse_review_digest = hashlib.sha256(discourse_review_path.read_bytes()).hexdigest().upper()
+        discourse_generalization_digest = hashlib.sha256(discourse_generalization_path.read_bytes()).hexdigest().upper()
+        discourse_final_review_digest = hashlib.sha256(discourse_final_review_path.read_bytes()).hexdigest().upper()
+        discourse_run_record_digest = hashlib.sha256(discourse_run_record_path.read_bytes()).hexdigest().upper()
+        discourse_run_record_upper = discourse_run_record.upper()
+        original_discourse_answers_digest = "D9384D7212502BE0EAC02ED9D3BE3BF039C1C32AE39196AC60D0A3B3EBE1A55D"
+        original_discourse_generalization_digest = "4EDE4AD6B5E0FFE427F184510F4962D56619C49E2AD095174338B5325E9701A0"
+        original_discourse_run_record_digest = "8ECEE6231531678AEE9453B149DBB0414C76CED06120B4AB5C962E6EE86F6F23"
+        original_discourse_review_digest = "1DE42C69ACE0DBC93EA30019B4F77EEA769753A694D9A695AD74B9B0667243CD"
+        original_discourse_final_review_digest = "7F3337C7870BA20AA30EB6656BD291A37B139494209632F4DCDDA462C802F705"
+        original_discourse_recheck_digest = "6E13C0D6598A9552FCD4181C749FD74AA49173FC838401DE57EE3CF93CDABA3B"
+        require(all(term in discourse_run_record for term in (
+            "Actor: blind-discourse-answerer-02", "Isolation-Status: PASS",
+            "## 明确未读取的材料", "`internal/` 下任何文件", "任何 `forward_test.py`",
+            "任何首轮 answers 文件", "任何 review 文件", "任何 release 文件", "越界读取：无",
+        )) and discourse_fixture_digest in discourse_run_record_upper and
+                original_discourse_generalization_digest in discourse_run_record_upper,
+                "generalization receiver isolation record is missing, unbound, or incomplete")
+        pre_redaction_discourse_review = markdown_section(discourse_recheck, "终轮评审")
+        require("Status: PASS" in pre_redaction_discourse_review and
+                "| 分数 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |" in pre_redaction_discourse_review,
+                "workplace discourse final recheck is not all-two PASS")
+        discourse_recheck_digest = hashlib.sha256(discourse_recheck_path.read_bytes()).hexdigest().upper()
+        discourse_redaction_digest = hashlib.sha256(discourse_redaction_path.read_bytes()).hexdigest().upper()
+        discourse_redaction_upper = discourse_redaction.upper()
+        require(all(term in discourse_redaction_upper for term in (
+            original_discourse_answers_digest, discourse_answers_digest,
+            original_discourse_generalization_digest, discourse_generalization_digest,
+            original_discourse_run_record_digest, discourse_run_record_digest,
+            original_discourse_review_digest, discourse_review_digest,
+            original_discourse_final_review_digest, discourse_final_review_digest,
+            original_discourse_recheck_digest, discourse_recheck_digest,
+        )) and "<PROJECT>/MEMORY/XBSKILL/" in discourse_redaction_upper,
+                "public path redaction loses its original-to-published evidence binding")
+        legacy_copy_pairs = (
+            ("v0.5-blind-core-raw.md", "E5548FC85A0B74785D2B11747B7B496CB1C3344ED240B7DE41DB9608ED509D83"),
+            ("v0.5-retest-core-raw.md", "E31AA0B6962A8291E93C7B46201A76ADE89794A9A26FD5D050745BC296FEF9CB"),
+            ("v0.5-blind-people-raw.md", "81D9ACA8A0C88BFF0BFefd826615A58A2EB297BC060E408737648FA6C93DB122"),
+            ("v0.5-retest-x12b-raw.md", "C510525D17783E02FB1175A938C5D5C3C05CEDC969FBEB61458EB3ED84172876"),
+            ("v0.5-retest-x07b-raw.md", "0E36759023DB25F29A4D863EE0CDB51D0317F1FB1A72FD3312FDFC7D6757DF04"),
+            ("v0.5-retest-x01-raw.md", "F53F7D97C223F2C73EF307A843E33FD002387B3270C6F98A4CE46102045D1DD9"),
+        )
+        for name, original_digest in legacy_copy_pairs:
+            published_digest = hashlib.sha256((receiver / "xbskill" / "references" / name).read_bytes()).hexdigest().upper()
+            require(original_digest.upper() in discourse_redaction_upper and published_digest in discourse_redaction_upper,
+                    f"legacy copy redaction loses original-to-published binding: {name}")
+        final_discourse_review = markdown_section(discourse_publication_recheck, "终轮评审")
+        require("Status: PASS" in final_discourse_review and
+                "| 分数 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |" in final_discourse_review,
+                "workplace discourse publication recheck is not all-two PASS")
+        discourse_publication_recheck_digest = hashlib.sha256(discourse_publication_recheck_path.read_bytes()).hexdigest().upper()
+        require(all(term in discourse_release for term in (
+            f"Fixture-SHA256: {discourse_fixture_digest}",
+            f"Original-Initial-Answers-SHA256: {original_discourse_answers_digest}",
+            f"Initial-Answers-SHA256: {discourse_answers_digest}",
+            f"Original-Initial-Review-SHA256: {original_discourse_review_digest}",
+            f"Initial-Review-SHA256: {discourse_review_digest}",
+            f"Original-Answers-SHA256: {original_discourse_generalization_digest}",
+            f"Answers-SHA256: {discourse_generalization_digest}",
+            f"Original-Second-Review-SHA256: {original_discourse_final_review_digest}",
+            f"Second-Review-SHA256: {discourse_final_review_digest}",
+            f"Original-Run-Record-SHA256: {original_discourse_run_record_digest}",
+            f"Run-Record-SHA256: {discourse_run_record_digest}",
+            f"Original-Pre-Redaction-Review-SHA256: {original_discourse_recheck_digest}",
+            f"Pre-Redaction-Review-SHA256: {discourse_recheck_digest}",
+            f"Redaction-Record-SHA256: {discourse_redaction_digest}",
+            f"Review-SHA256: {discourse_publication_recheck_digest}",
+        )), "workplace discourse release record loses its frozen evidence binding")
+        require(all(term in discourse_release for term in (
+            "G/C/A/P/S/E/R/V 全 2", "不新增公开 Skill", "外部分享只作 discovery_only",
+            "0 added、0 modified、0 removed",
+        )), "workplace discourse release record loses scope, source, or publish evidence")
         direct_specialists = [path for path in receiver.iterdir() if path.is_dir() and path.name.startswith("xb-")]
         missing_contracts = [path.name for path in direct_specialists if "contracts.md" not in (path / "SKILL.md").read_text(encoding="utf-8")]
         require(not missing_contracts, f"direct specialists bypass the shared answer contract: {missing_contracts}")
@@ -1677,6 +1864,10 @@ def main() -> int:
         talk_text = (receiver / "xb-talk" / "SKILL.md").read_text(encoding="utf-8")
         for name, text in (("xb-writing", writing_text), ("xb-presentation", presentation_text)):
             require(COPY_FORBIDDEN_RE.search(text) is None, f"{name} still contains a forbidden copy pattern")
+        for path in receiver.rglob("*"):
+            if path.is_file() and path.suffix.lower() in {".md", ".yaml", ".yml"}:
+                require(COPY_FORBIDDEN_RE.search(path.read_text(encoding="utf-8")) is None,
+                        f"public copy scan found a forbidden pattern: {path.relative_to(receiver)}")
         require(
             all(term in talk_text for term in (
                 "回复点/截止", "等待窗口", "接收渠道", "对方回应权限",
