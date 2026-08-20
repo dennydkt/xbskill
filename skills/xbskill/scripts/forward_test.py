@@ -495,9 +495,23 @@ def main() -> int:
         memory_consent_answers_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-blind-answers.md"
         memory_consent_review_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-independent-review.md"
         memory_consent_release_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-release-record.md"
+        closing_format_fixtures_path = receiver / "xbskill" / "references" / "v1.7.3-closing-format-fixtures.md"
+        closing_format_review_path = receiver / "xbskill" / "references" / "v1.7.3-closing-format-independent-review.md"
+        closing_format_release_path = receiver / "xbskill" / "references" / "v1.7.3-closing-format-release-record.md"
+        boundary_reset_fixtures_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-fixtures.md"
+        boundary_reset_answers_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-blind-answers.md"
+        boundary_reset_review_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-independent-review.md"
+        boundary_reset_release_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-release-record.md"
         memory_consent_answers = memory_consent_answers_path.read_text(encoding="utf-8")
         memory_consent_review = memory_consent_review_path.read_text(encoding="utf-8")
         memory_consent_release = memory_consent_release_path.read_text(encoding="utf-8")
+        closing_format_fixtures = closing_format_fixtures_path.read_text(encoding="utf-8")
+        closing_format_review = closing_format_review_path.read_text(encoding="utf-8")
+        closing_format_release = closing_format_release_path.read_text(encoding="utf-8")
+        boundary_reset_fixtures = boundary_reset_fixtures_path.read_text(encoding="utf-8")
+        boundary_reset_answers = boundary_reset_answers_path.read_text(encoding="utf-8")
+        boundary_reset_review = boundary_reset_review_path.read_text(encoding="utf-8")
+        boundary_reset_release = boundary_reset_release_path.read_text(encoding="utf-8")
         decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
         decode_text = (receiver / "xb-decode" / "SKILL.md").read_text(encoding="utf-8")
         decode_mechanisms = (receiver / "xb-decode" / "references" / "subtext-mechanisms.md").read_text(encoding="utf-8")
@@ -527,7 +541,9 @@ def main() -> int:
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
         require(all(term in session_protocol for term in (
-            "保存提示｜要把本次会话的可见对话全文和自动分类结果保存到本地",
+            "记忆：当前未保存。若需要保存对话内容，请直接回复“保存对话”",
+            "每个检查点只在“记忆”项显示一次保存入口",
+            "用户回复“保存对话”只授权当前可见会话及本次分类写入",
             "下一个有新内容的会话仍照常提示",
             "既往 `auto_checkpoint: on` 不能替代本次授权",
             "assistant_inference", "needs_identity", "company_tone", "communication_style",
@@ -542,15 +558,20 @@ def main() -> int:
             "缺少材料，需要用户补充后才能继续",
             "同一最终回答仍在运行工具或继续分析",
         )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
-        require("session-memory-protocol.md" in shell_text and "在导航条后明确询问一次" in shell_text, "navigation shell does not enforce explicit save prompt")
+        require("session-memory-protocol.md" in shell_text and
+                "若需要保存对话内容，请直接回复‘保存对话’" in shell_text and
+                "并入“记忆”" in shell_text,
+                "navigation shell does not keep save consent inside memory")
         require(all(term in answer_format for term in (
-            "每个最终回答都在结尾显示一条紧凑导航",
-            "Skill：{$xb-* 或 $xbskill}",
-            "每轮必填且只能出现一个名称",
+            "每个最终回答都在结尾显示一个分行收尾块",
+            "调用子技能：{$xb-* 或 $xbskill}",
+            "“调用子技能”每轮必填且只能出现一个名称",
             "它必须是本轮唯一公开当前 Skill",
             "支持子调用、知识包、框架、内部维护专科和下一步候选均不进入",
-            "简单、一次性问题也保留导航条",
-            "记忆：待本次确认", "当前可见会话包含至少一条用户消息",
+            "名称后不加括号、职责解释",
+            "`本轮`、`已交付`、`反馈点` 各占一个独立 Markdown 段落",
+            "简单、一次性问题也保留收尾块",
+            "记忆：当前未保存", "当前可见会话包含至少一条用户消息",
             "缺少材料后请求用户补充", "预计分类为空均适用",
         )), "answer format loses the visible single-skill trace")
         active_memory_contract = "\n".join((session_protocol, answer_format, contracts_text, shell_text))
@@ -560,6 +581,107 @@ def main() -> int:
         )
         require(not any(term in active_memory_contract for term in forbidden_memory_shortcuts),
                 "active memory contract lets the model preempt user consent")
+        require("保存提示｜" not in active_memory_contract and "导航｜Skill：" not in active_memory_contract,
+                "active closing contract still exposes the legacy save prompt or horizontal navigation")
+        require(all(term in active_memory_contract for term in (
+            "调用子技能", "本轮：", "已交付：", "反馈点：",
+            "记忆：", "若需要保存对话内容，请直接回复",
+        )), "active closing contract loses a required field or the save instruction")
+        closing_sections = {
+            label: markdown_section(closing_format_fixtures, label)
+            for label in (
+                "A：正常交付", "B：简单问答", "C：缺少材料并交回用户",
+                "D：同一任务仍在连续执行",
+            )
+        }
+        for label in ("A：正常交付", "B：简单问答", "C：缺少材料并交回用户"):
+            section = closing_sections[label]
+            require(section.count("调用子技能：") == 1,
+                    f"closing format {label} must show exactly one child skill")
+            require("保存提示｜" not in section and "导航｜Skill：" not in section,
+                    f"closing format {label} exposes a legacy closing label")
+            require("记忆：当前未保存。若需要保存对话内容，请直接回复“保存对话”。" in section,
+                    f"closing format {label} loses the combined memory instruction")
+            require(not re.search(r"调用子技能：[^\n]+[（(]", section),
+                    f"closing format {label} adds a skill description")
+        for label in ("A：正常交付", "C：缺少材料并交回用户"):
+            section = closing_sections[label]
+            positions = [section.index(field) for field in ("调用子技能：", "本轮：", "已交付：", "反馈点：", "记忆：")]
+            require(positions == sorted(positions), f"closing format {label} field order drifted")
+            require(all(f"\n>\n> {field}" in section for field in ("本轮：", "已交付：", "反馈点：", "记忆：")),
+                    f"closing format {label} does not render fields as separate Markdown paragraphs")
+        require(not any(term in closing_sections["D：同一任务仍在连续执行"] for term in (
+            "调用子技能：", "本轮：", "已交付：", "反馈点：", "记忆：", "保存对话",
+        )), "closing format D interrupts active model-side work")
+        require("Verdict: PASS" in closing_format_review and "Release: ALLOW" in closing_format_review,
+                "closing format independent review does not allow release")
+        require(all(f"| {gate} | 2 |" in closing_format_review for gate in "GCAPSERV"),
+                "closing format independent review is not all-two")
+        closing_fixture_digest = hashlib.sha256(closing_format_fixtures_path.read_bytes()).hexdigest().upper()
+        closing_review_digest = hashlib.sha256(closing_format_review_path.read_bytes()).hexdigest().upper()
+        require(f"Fixtures-SHA256: {closing_fixture_digest}" in closing_format_release and
+                f"Review-SHA256: {closing_review_digest}" in closing_format_release,
+                "closing format release record loses its frozen evidence binding")
+        require(all(term in closing_format_release for term in (
+            "G/C/A/P/S/E/R/V 全 2", "33/33 receiver tests passed",
+            "活动契约中的 `导航｜Skill：` 与 `保存提示｜`：0 命中",
+        )), "closing format release record loses review, test, or legacy-label evidence")
+        boundary_cases = {
+            label: markdown_section(boundary_reset_answers, label)
+            for label in ("A", "B", "C", "D")
+        }
+        require(all(f"## {label}" in boundary_reset_fixtures for label in boundary_cases),
+                "boundary reset fixtures do not preserve all four frozen cases")
+        for label, section in boundary_cases.items():
+            require(section.count("调用子技能：$xb-boundary") == 1,
+                    f"boundary reset {label} must expose xb-boundary exactly once")
+            require("调用子技能：$xb-decode" not in section,
+                    f"boundary reset {label} leaks its hidden decode support")
+        boundary_a = boundary_cases["A"]
+        require(all(term in boundary_a for term in (
+            "委屈、自我怀疑", "团队意识", "决定者确认", "条件性承担", "主话术",
+            "话术已经交付，发送、领导确认和实际执行尚未发生",
+        )), "boundary reset A loses reception, logic reset, choice, script, or reality boundary")
+        require(boundary_a.index("委屈、自我怀疑") < boundary_a.index("决定者确认")
+                < boundary_a.index("条件性承担") < boundary_a.index("主话术"),
+                "boundary reset A does not stabilize before scripting")
+        boundary_b = boundary_cases["B"]
+        require(all(term in boundary_b for term in (
+            "正常质量复核", "第 7 项", "没有责任倒置或移动完成门的证据", "下午继续复核",
+        )), "boundary reset B loses the legitimate quality-review counterexample")
+        require(not any(term in boundary_b for term in ("强盗逻辑", "操控者", "人格障碍", "报复者")),
+                "boundary reset B inflates ordinary quality review into a moral or clinical label")
+        boundary_c = boundary_cases["C"]
+        require(all(term in boundary_c for term in (
+            "先暂停在大群公开", "保全证据", "独立、有权的复核渠道",
+            "由你在风险与证据核对后决定", "低暴露草稿",
+            "投诉、公开发言、正式提交、制度复核与结果验证均未发生",
+        )), "boundary reset C loses protection, user agency, or reality boundary")
+        require(boundary_c.index("先暂停在大群公开") < boundary_c.index("低暴露草稿"),
+                "boundary reset C scripts before protection")
+        boundary_d = boundary_cases["D"]
+        require(all(term in boundary_d for term in ("可以帮就回", "想拒绝就回", "一次性、低风险互助")),
+                "boundary reset D loses its direct low-risk handling")
+        require(not any(term in boundary_d for term in (
+            "LogicResetPacket", "权力—责任—成本账", "结构性", "制度边界", "心理诊断",
+        )), "boundary reset D over-analyzes a one-off low-risk request")
+        require("Verdict: PASS" in boundary_reset_review and "Release: ALLOW" in boundary_reset_review,
+                "boundary reset independent review does not allow release")
+        require(all(f"| {gate} | 2 |" in boundary_reset_review for gate in "GCAPSERV"),
+                "boundary reset independent review is not all-two")
+        require(all(term in boundary_reset_review for term in (
+            "前置平复效果：PASS", "未激化矛盾", "投诉、公开发言和辞职决定", "D：PASS",
+        )), "boundary reset review loses acceptance, agency, or restraint evidence")
+        boundary_fixture_digest = hashlib.sha256(boundary_reset_fixtures_path.read_bytes()).hexdigest().upper()
+        boundary_answer_digest = hashlib.sha256(boundary_reset_answers_path.read_bytes()).hexdigest().upper()
+        boundary_review_digest = hashlib.sha256(boundary_reset_review_path.read_bytes()).hexdigest().upper()
+        require(all(term in boundary_reset_release for term in (
+            f"Fixtures-SHA256: {boundary_fixture_digest}",
+            f"Answers-SHA256: {boundary_answer_digest}",
+            f"Review-SHA256: {boundary_review_digest}",
+            "G/C/A/P/S/E/R/V 全 2", "33/33 receiver tests passed",
+            "公开当前 Skill 保持 `$xb-boundary`", "真实使用者是否更愿意发送话术",
+        )), "boundary reset release record loses frozen evidence, review, routing, or reality boundary")
         answer_a = markdown_section(memory_consent_answers, "A：简单问答")
         answer_b = markdown_section(memory_consent_answers, "B：缺少材料并等待用户补充")
         answer_c = markdown_section(memory_consent_answers, "C：同一最终回答仍在执行")
@@ -587,16 +709,18 @@ def main() -> int:
             "G/C/A/P/S/E/R/V 全 2", "0 added、0 modified、0 removed",
         )), "memory consent release record loses correction or publish evidence")
         require(all(term in shell_text for term in (
-            "固定带一个公开当前 Skill 的准确调用名和本轮职责",
-            "每轮必填且只显示一个公开当前 Skill",
-            "全轮是否恰好一条结尾导航条",
+            "固定带一个公开当前 Skill 的准确调用名，不追加职责描述",
+            "“调用子技能”每轮必填且只显示一个公开当前 Skill",
+            "全轮是否恰好一个结尾收尾块",
+            "“本轮”“已交付”“反馈点”是否各占一段",
         )), "navigation shell does not enforce the visible single-skill trace")
         require(all(term in contracts_text for term in (
-            "每次回答都在结尾导航条显形唯一公开当前 Skill",
+            "每次回答都在结尾收尾块显形唯一公开当前 Skill",
+            "调用项只作简短提示，不追加 Skill 职责描述",
             "支持子调用、内部维护专科和下一步候选不得成为第二个署名",
             "当前可见会话包含至少一条用户消息",
             "模型必须把保存决定交给用户",
-            "内容重要性和预计分类结果不能取消询问",
+            "内容重要性和预计分类结果不能取消提示",
         )), "cross-skill contract allows ambiguous or hidden skill attribution")
         require(all(term in decision_text for term in (
             "向参与者明确标注“内测/验证中”和当前交付方式",
@@ -968,6 +1092,7 @@ def main() -> int:
         learning = (receiver / "xb-learning" / "SKILL.md").read_text(encoding="utf-8")
         automation = (receiver / "xb-automation" / "SKILL.md").read_text(encoding="utf-8")
         boundary = (receiver / "xb-boundary" / "SKILL.md").read_text(encoding="utf-8")
+        boundary_reset = (receiver / "xb-boundary" / "references" / "stabilize-before-script.md").read_text(encoding="utf-8")
         knowledge = (receiver / "xb-knowledge" / "SKILL.md").read_text(encoding="utf-8")
         require(all(term in decision for term in ("| 任务 | 截止 | 失败后果 | 卡住谁/哪一环 | 估时 |", "保留 / 降级 / 延后 / 待授权")), "workload triage still lacks concrete decision fields")
         require(all(term in meeting for term in ("组织者/主持人", "普通参会者", "不得替主持人定议程")), "meeting skill still assumes organizer authority")
@@ -980,6 +1105,23 @@ def main() -> int:
         require(all(term in learning for term in ("交付轨 / 能力轨双轨分账", "AI 生成 / 用户判断 / 用户复核 / 现实采用", "停止/补能力条件")), "delivery and capability help levels are not forced apart")
         require(all(term in automation for term in ("AI + 敏感数据 + 直接外发硬分支", "实际采用率", "实测净节省", "扩大阈值", "降级/停止阈值", "阶段阈值推导硬门", "代表性窗口与样本量", "人工基线及波动", "错误分级与单次后果", "最低净收益", "不得自创数值型上线门")), "AI automation can pass without an evidence-derived net-benefit gate")
         require(all(term in boundary for term in ("来源诚信与再利用硬分支", "公开可访问", "许可/网站条款", "个人信息/保密", "不能被默认视为许可", "来源与使用授权卡", "必测来源诚信用例")), "public source material can still bypass use authorization or independent review")
+        require(all(term in boundary for term in (
+            "承接体验 → 逻辑复位 → 恢复选择 → 边界话术",
+            "`LogicResetPacket`", "`$xb-boundary` 保持唯一公开当前 Skill",
+            "一次性低风险互助直接处理", "话术位于体验承接、逻辑复位和选择恢复之后",
+            "体验承接最多三小段",
+        )), "xb-boundary loses the stabilize-before-script order, restraint, or single-skill trace")
+        require(all(term in boundary_reset for term in (
+            "这里的“平复”指判断复位", "触发与反例门", "安全覆盖",
+            "LogicResetPacket", "被改写的对象", "正常要求的竞争解释",
+            "固定输出顺序", "承接具体体验", "复位被改写的逻辑", "恢复选择感",
+            "进入边界判断与话术", "A 单方面加活并道德化", "B 正常质量复核",
+            "C 报复风险", "D 一次性低风险互助",
+        )), "boundary reset protocol loses its trigger, counterexample, safety, output, or sample gates")
+        require(all(term in decode_text for term in (
+            "`$xb-boundary` 已经是唯一当前专科", "不执行上述反向转出",
+            "不生成第二个 Skill 署名", "不越过 `$xb-boundary` 直接给完整话术",
+        )), "xb-decode hidden support can loop, double-sign, or bypass xb-boundary")
         goal = (receiver / "xb-goal" / "SKILL.md").read_text(encoding="utf-8")
         plan = (receiver / "xb-plan" / "SKILL.md").read_text(encoding="utf-8")
         data = (receiver / "xb-data" / "SKILL.md").read_text(encoding="utf-8")
