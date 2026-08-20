@@ -9,7 +9,9 @@ description: 为 xbskill 补充、校验、匹配并回流岗位专业知识。�
 
 当前内置目录 2.0.0 含 15 个 active 单元，覆盖数据、产品研发、职能、金融投研、营销五类岗位族；`upstream_sync.py` 能对固定提交、许可、allowlist 与证据坐标做离线校验/在线检查并只生成不可信候选，真正更新仍必须经过单元翻译、四类陌生试跑、独立八门评审和全目录激活门。
 
-直接调用本 Skill 时先读 [../xbskill/references/contracts.md](../xbskill/references/contracts.md) 与 [../xbskill/references/resolution-standard.md](../xbskill/references/resolution-standard.md)。对象、字段、错误码和持久化约定见 [references/role-knowledge-protocol.md](references/role-knowledge-protocol.md)；内置单元见 [references/builtin-role-knowledge.json](references/builtin-role-knowledge.json)，目录、运行时 Packet/Trace、冻结证据与内置来源注册表结构分别见 [references/role-knowledge.schema.json](references/role-knowledge.schema.json)、[references/role-knowledge-runtime.schema.json](references/role-knowledge-runtime.schema.json)、[references/role-knowledge-evidence.schema.json](references/role-knowledge-evidence.schema.json) 和 [references/builtin-source-registry.schema.json](references/builtin-source-registry.schema.json)。上游仓库固定账及其结构见 [references/upstream-role-sources.json](references/upstream-role-sources.json) 与 [references/upstream-role-sources.schema.json](references/upstream-role-sources.schema.json)。用 [scripts/role_knowledge.py](scripts/role_knowledge.py) 校验和匹配，用 [scripts/upstream_sync.py](scripts/upstream_sync.py) 检查或生成外部候选；不能只凭阅读目录、下载仓库或显示来源名声称知识已参与。
+直接调用本 Skill 时先读 [../xbskill/references/contracts.md](../xbskill/references/contracts.md)、[../xbskill/references/resolution-standard.md](../xbskill/references/resolution-standard.md) 与 [../xbskill/references/runtime-compatibility.md](../xbskill/references/runtime-compatibility.md)。对象、字段、错误码和持久化约定见 [references/role-knowledge-protocol.md](references/role-knowledge-protocol.md)；内置单元见 [references/builtin-role-knowledge.json](references/builtin-role-knowledge.json)，目录、运行时 Packet/Trace、冻结证据与内置来源注册表结构分别见 [references/role-knowledge.schema.json](references/role-knowledge.schema.json)、[references/role-knowledge-runtime.schema.json](references/role-knowledge-runtime.schema.json)、[references/role-knowledge-evidence.schema.json](references/role-knowledge-evidence.schema.json) 和 [references/builtin-source-registry.schema.json](references/builtin-source-registry.schema.json)。上游仓库固定账及其结构见 [references/upstream-role-sources.json](references/upstream-role-sources.json) 与 [references/upstream-role-sources.schema.json](references/upstream-role-sources.schema.json)。用 [scripts/role_knowledge.py](scripts/role_knowledge.py) 校验和匹配，用 [scripts/upstream_sync.py](scripts/upstream_sync.py) 检查或生成外部候选；不能只凭阅读目录、下载仓库或显示来源名声称知识已参与。
+
+以下命令里的 `<PYTHON3>` 按运行时兼容契约解析为当前平台的 Python 3.10+ 启动命令。契约缺失或解析失败时，报告精确错误并停止脚本操作。
 
 ## 触发与核心模型
 
@@ -77,8 +79,8 @@ description: 为 xbskill 补充、校验、匹配并回流岗位专业知识。�
 使用绝对请求路径；不传项目根时只读取随包发布的内置目录：
 
 ```text
-python <本Skill绝对路径>/scripts/role_knowledge.py validate
-python <本Skill绝对路径>/scripts/role_knowledge.py resolve --context <绝对request.json> --output <绝对packet.json>
+<PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py validate
+<PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py resolve --context <绝对request.json> --output <绝对packet.json>
 ```
 
 只有用户明确给出项目根且希望使用本地增补时才加 `--project-root <绝对项目根>`。显式给了项目根但本地目录未初始化，必须报 `E_PROJECT_UNINITIALIZED`；不能静默回到内置目录并假装加载了本地知识。
@@ -94,7 +96,7 @@ python <本Skill绝对路径>/scripts/role_knowledge.py resolve --context <绝�
 当前专科消费 `RoleKnowledgePacket.active_injection`，结合本地事实重新推导；不得把单元当万能模板。必须显形采用的 `unit_id`、关键条件和会推翻它的新证据，但不必向用户展示整包 JSON。
 
 ```text
-python <本Skill绝对路径>/scripts/role_knowledge.py verify-trace --packet <绝对packet.json> --trace <绝对trace.json> --artifact <实际交付物绝对路径>
+<PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py verify-trace --packet <绝对packet.json> --trace <绝对trace.json> --artifact <实际交付物绝对路径>
 ```
 
 包若来自项目单元，同一命令必须追加创建该包时的 `--project-root <绝对项目根>`；验证器会按当前受治理目录重放解析，旧目录、伪造包或漂移包都会响亮失败。
@@ -127,8 +129,8 @@ python <本Skill绝对路径>/scripts/role_knowledge.py verify-trace --packet <�
 上游同步不是 `git pull`，也不是把整个仓库复制进 Skill。固定账只列经许可/安全初审的 allowlist 文本与证据坐标；外部 README、Skill、CSV 和代码始终是不可信数据，不能导入、安装或执行。先离线校验登记，再做一次官方元数据检查：
 
 ```text
-python <本Skill绝对路径>/scripts/upstream_sync.py validate
-python <本Skill绝对路径>/scripts/upstream_sync.py check
+<PYTHON3> <本Skill绝对路径>/scripts/upstream_sync.py validate
+<PYTHON3> <本Skill绝对路径>/scripts/upstream_sync.py check
 ```
 
 网络、限流、意外 404、归档、HEAD 或许可漂移时响亮停止；不要循环重试。stars 的权重恒为 `none/discovery_only`。`expected_unavailable` 继续 404 只表示缺口仍在；若仓库恢复，必须重新过许可、安全、allowlist 和证据坐标门，不能自动采用。
@@ -136,7 +138,7 @@ python <本Skill绝对路径>/scripts/upstream_sync.py check
 用户明确同意刷新后，把 allowlist 文本写到 Skill 之外一个全新的绝对目录。命令拒绝覆盖、拒绝 Skill 内路径，也不修改 active catalog 或来源注册表：
 
 ```text
-python <本Skill绝对路径>/scripts/upstream_sync.py refresh-candidate --output <尚不存在的绝对候选目录> --yes
+<PYTHON3> <本Skill绝对路径>/scripts/upstream_sync.py refresh-candidate --output <尚不存在的绝对候选目录> --yes
 ```
 
 候选目录只用于审阅当前固定 commit 的不可信文本、blob/SHA-256、行数和坐标。只检查报告中的 changed sources / affected units；将新关系重写为“条件—竞争解释—辨别动作—分支—产物—验证—翻转”，不得复制模板、固定阈值、无证据数字或审美映射。`discovery_only` 只能提出下一来源需求，不能进入 active claim；许可不兼容、来源不可用或证据不足时明确保留缺口。
@@ -158,7 +160,7 @@ python <本Skill绝对路径>/scripts/upstream_sync.py refresh-candidate --outpu
 先在项目目录沉淀时，用户明确确认项目根后初始化：
 
 ```text
-python <本Skill绝对路径>/scripts/role_knowledge.py init-project --project-root <绝对项目根> --yes
+<PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py init-project --project-root <绝对项目根> --yes
 ```
 
 该命令只创建标明 `governance_complete=false` 的空候选目录，不表示已经有岗位知识。项目单元写入 `<project>/memory/xbskill/role-knowledge/catalog.json`；`active` 项目单元必须绑定同项目 `<project>/memory/xbskill/knowledge/packets/` 下经验证的 `KnowledgePacket`，同时固定 packet 文件 SHA-256、lock ID/digest、全部 claim ID、authority scope 原文摘要和裁决时间。项目目录、knowledge root、packet 与证据若经 junction/symlink 解析到项目外，必须报 `E_PATH_BOUNDARY`。
@@ -178,13 +180,13 @@ python <本Skill绝对路径>/scripts/role_knowledge.py init-project --project-r
 修订已发布的内置目录时，先用 [scripts/prepare_candidate.py](scripts/prepare_candidate.py) 生成新候选；它移除旧发布绑定与旧证据引用，绝不复制“已通过”状态：
 
 ```text
-python <本Skill绝对路径>/scripts/prepare_candidate.py --catalog <当前内置catalog绝对路径> --output <同目录的新候选绝对路径> --catalog-version <新候选版本>
+<PYTHON3> <本Skill绝对路径>/scripts/prepare_candidate.py --catalog <当前内置catalog绝对路径> --output <同目录的新候选绝对路径> --catalog-version <新候选版本>
 ```
 
 再用 [scripts/deterministic_test.py](scripts/deterministic_test.py) 对候选目录冻结前四类结构与匹配证据；它只在测试进程内把候选视为可匹配，不会改目录状态，也不能替代陌生试跑：
 
 ```text
-python <本Skill绝对路径>/scripts/deterministic_test.py --catalog <绝对catalog.json> --output <新的绝对evidence.json> --actor-id <稳定测试者别名>
+<PYTHON3> <本Skill绝对路径>/scripts/deterministic_test.py --catalog <绝对catalog.json> --output <新的绝对evidence.json> --actor-id <稳定测试者别名>
 ```
 
 项目候选必须在 deterministic、blind fixture 和 activation 三步都追加同一个 `--project-root <绝对项目根>`；任何一步缺失都停止，不能把本地范围默认为全局。
@@ -200,7 +202,7 @@ python <本Skill绝对路径>/scripts/deterministic_test.py --catalog <绝对cat
 当一次更新只改变少数单元时，可对 `deterministic_test.py` 与 `blind_fixture.py` 重复传 `--unit-id <changed-id>`，但两者仍用完整候选目录匹配和固定原始目录索引。先按上面的 `assemble_evidence.py` 合并这些变化单元的新证据，再用 [scripts/merge_incremental_evidence.py](scripts/merge_incremental_evidence.py) 复用未变单元的旧冻结记录：
 
 ```text
-python <本Skill绝对路径>/scripts/merge_incremental_evidence.py \
+<PYTHON3> <本Skill绝对路径>/scripts/merge_incremental_evidence.py \
   --candidate <完整新候选绝对路径> \
   --previous-catalog <旧 active catalog 绝对路径> \
   --previous-evidence <旧 evidence 绝对路径> \

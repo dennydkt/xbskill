@@ -147,13 +147,15 @@ KnowledgePacket 先满足以下不可裁剪项，再填充可选证据：
 
 ## 命令契约
 
+先按 `runtime-compatibility.md` 把 `<PYTHON3>` 解析为当前平台的 Python 3.10+ 启动命令；解析失败时停止本节命令。
+
 ```text
-python knowledge_manager.py init --root ABSOLUTE_PATH --yes
-python knowledge_manager.py probe-github owner/repo
-python knowledge_manager.py validate --root ABSOLUTE_PATH
-python knowledge_manager.py packet --root ABSOLUTE_PATH --lock LOCK_ID --output ABSOLUTE_PATH_UNDER_PACKETS
-python knowledge_manager.py activate --root ABSOLUTE_PATH --lock LOCK_ID --yes
-python knowledge_manager.py rollback --root ABSOLUTE_PATH --yes
+<PYTHON3> knowledge_manager.py init --root ABSOLUTE_PATH --yes
+<PYTHON3> knowledge_manager.py probe-github owner/repo
+<PYTHON3> knowledge_manager.py validate --root ABSOLUTE_PATH
+<PYTHON3> knowledge_manager.py packet --root ABSOLUTE_PATH --lock LOCK_ID --output ABSOLUTE_PATH_UNDER_PACKETS
+<PYTHON3> knowledge_manager.py activate --root ABSOLUTE_PATH --lock LOCK_ID --yes
+<PYTHON3> knowledge_manager.py rollback --root ABSOLUTE_PATH --yes
 ```
 
 - `init` 必须同时收到显式绝对 `--root` 与 `--yes`；不从当前目录、环境变量或项目名称猜路径。

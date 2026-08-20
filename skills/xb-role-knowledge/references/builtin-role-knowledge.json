@@ -243,7 +243,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-data-analyst-metric-anomaly-negative",
               "det-data-analyst-metric-anomaly-overturn",
@@ -270,7 +270,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-0cc3c70dd1483f58",
               "blind-review-6e0dc7144bf07133",
@@ -522,7 +522,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-data-engineer-pipeline-recovery-negative",
               "det-data-engineer-pipeline-recovery-overturn",
@@ -549,7 +549,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-710da8035e50cac7",
               "blind-review-b3191caa6a12964c",
@@ -801,7 +801,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-data-governance-semantic-closure-negative",
               "det-data-governance-semantic-closure-overturn",
@@ -828,7 +828,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-54cc681c4cd7a9df",
               "blind-review-79b9583bbf1ab596",
@@ -1078,7 +1078,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-data-product-decision-adoption-negative",
               "det-data-product-decision-adoption-overturn",
@@ -1105,7 +1105,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-21e38e4031f2385e",
               "blind-review-97befd013b75571e",
@@ -1385,7 +1385,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-product-manager-result-experiment-negative",
               "det-product-manager-result-experiment-overturn",
@@ -1412,7 +1412,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-8317b31b489c1cbe",
               "blind-review-98201eed9c6cde87",
@@ -1689,7 +1689,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-ux-designer-journey-accessibility-negative",
               "det-ux-designer-journey-accessibility-overturn",
@@ -1716,7 +1716,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-0fde5a3559ef1d47",
               "blind-review-214f50512b861119",
@@ -1981,7 +1981,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-frontend-user-path-release-negative",
               "det-frontend-user-path-release-overturn",
@@ -2008,7 +2008,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-3df49e8c063d972c",
               "blind-review-a005e89be0643f5f",
@@ -2265,7 +2265,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-backend-contract-migration-negative",
               "det-backend-contract-migration-overturn",
@@ -2292,7 +2292,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-2627a630d1d20051",
               "blind-review-6be948addc66d001",
@@ -2549,7 +2549,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-architect-evolution-quality-negative",
               "det-architect-evolution-quality-overturn",
@@ -2576,7 +2576,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-5f8418fa4eab45f4",
               "blind-review-76e28378f2d469e2",
@@ -2852,7 +2852,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-project-manager-reforecast-benefits-negative",
               "det-project-manager-reforecast-benefits-overturn",
@@ -2879,7 +2879,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-8e8a165afdc72eda",
               "blind-review-a68c8c81ed1bcea1",
@@ -3136,7 +3136,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-admin-service-resource-negative",
               "det-admin-service-resource-overturn",
@@ -3163,7 +3163,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-09d6771305e9a0dc",
               "blind-review-550b3d0245a3c1a6",
@@ -3432,7 +3432,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-secretary-decision-authorization-negative",
               "det-secretary-decision-authorization-overturn",
@@ -3459,7 +3459,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-1e1961bb4a686e3d",
               "blind-review-78d7f6f018d370b6",
@@ -3736,7 +3736,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-office-formal-record-flow-negative",
               "det-office-formal-record-flow-overturn",
@@ -3763,7 +3763,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-4ac8bd13c57f3def",
               "blind-review-878206b0ae43b96a",
@@ -4039,7 +4039,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-finance-thesis-evidence-update-negative",
               "det-finance-thesis-evidence-update-overturn",
@@ -4066,7 +4066,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-70d33ffab9e2116d",
               "blind-review-ae0b46e7e6f395d9",
@@ -4350,7 +4350,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "det-marketing-evidence-experiment-negative",
               "det-marketing-evidence-experiment-overturn",
@@ -4377,7 +4377,7 @@
         "evidence_refs": [
           {
             "file": "role-knowledge-regression.json",
-            "sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+            "sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
             "record_ids": [
               "blind-review-68f8d5f1480c3054",
               "blind-review-8a4f03e0afa88f9a",
@@ -4397,7 +4397,7 @@
     "activated_catalog_version": "2.0.0",
     "activated_at": "2026-08-11T11:29:16Z",
     "evidence_file": "role-knowledge-regression.json",
-    "evidence_sha256": "2e231fbe380c1b9d184d91b8eaead38de8d041482717664199a7bd6f2a611638",
+    "evidence_sha256": "f025b0927c1767478ef79b75fc9a348ee6c624e3ede8b864d3ec85bcdc9c6d46",
     "source_registry_sha256": "6d15ec532ad9cc9537377d1f763e21463962109f3d05e3b0060c7d7492baa837"
   }
 }

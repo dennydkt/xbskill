@@ -96,6 +96,11 @@ def main() -> None:
         if not path.is_file() or ".git" in path.parts:
             continue
         relative = path.relative_to(ROOT)
+        raw = path.read_bytes()
+        if b"\x00" in raw:
+            fail(f"NUL byte found in public release file: {relative}")
+        if b"\r" in raw:
+            fail(f"non-LF line ending found in public release file: {relative}")
         if FORBIDDEN_PATH_PARTS.intersection(relative.parts):
             fail(f"private source path leaked into release: {relative}")
         if path.name == "LOCAL-LESSONS.md":
@@ -119,6 +124,46 @@ def main() -> None:
     install = "npx -y skills add dennydkt/xbskill -g --all"
     if install not in readme:
         fail("README is missing the stable ordinary-user install command")
+    for marker in (
+        "Node.js 22.20",
+        "DISABLE_TELEMETRY=1 npx -y skills add dennydkt/xbskill -g --all",
+        '$env:DISABLE_TELEMETRY = "1"',
+        "Python 3.10+",
+    ):
+        if marker not in readme:
+            fail(f"README is missing cross-platform prerequisite: {marker}")
+
+    runtime_path = ROOT / "skills/xbskill/references/runtime-compatibility.md"
+    if not runtime_path.is_file():
+        fail("runtime compatibility contract is missing")
+    runtime = runtime_path.read_text(encoding="utf-8")
+    for marker in (
+        "macOS / Linux：只接受 `python3`",
+        "Windows：优先 `py -3`",
+        "E_RUNTIME_PYTHON_MISSING",
+        "E_RUNTIME_PYTHON_VERSION",
+        "Node.js 22.20+",
+        "DISABLE_TELEMETRY=1",
+        "UTF-8 与 LF",
+    ):
+        if marker not in runtime:
+            fail(f"runtime compatibility contract is missing marker: {marker}")
+
+    workflow_path = ROOT / ".github/workflows/validate.yml"
+    workflow = workflow_path.read_text(encoding="utf-8")
+    for marker in (
+        "macos-latest",
+        '- "3.10"',
+        '- "3.12"',
+        'node-version: "22.20.0"',
+        'DISABLE_TELEMETRY: "1"',
+        "python3 -B .github/scripts/check_release.py",
+        "Smoke-test local Skills CLI installation",
+        'skills add "$GITHUB_WORKSPACE" -s \'*\' -a codex --copy -y',
+        "validate --target .agents/skills",
+    ):
+        if marker not in workflow:
+            fail(f"validation workflow is missing macOS gate: {marker}")
 
     license_map = (ROOT / "LICENSE").read_text(encoding="utf-8")
     for marker in ("AGPL-3.0-or-later", "CC BY-NC-SA 4.0", "TRADEMARKS.md"):

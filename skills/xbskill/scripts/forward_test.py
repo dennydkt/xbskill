@@ -457,6 +457,37 @@ def main() -> int:
         require(len(sm.skill_dirs(receiver)) == 35, "receiver did not discover all 35 skills")
         print("PASS clean install and discovery")
 
+        runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
+        runtime_text = runtime_path.read_text(encoding="utf-8")
+        require(all(term in runtime_text for term in (
+            "macOS / Linux：只接受 `python3`", "Windows：优先 `py -3`",
+            "Python 3.10+", "Node.js 22.20+", "DISABLE_TELEMETRY=1",
+            "E_RUNTIME_PYTHON_MISSING", "E_RUNTIME_PYTHON_VERSION", "UTF-8 与 LF",
+        )), "runtime compatibility contract misses a platform, dependency, error, telemetry, or LF gate")
+        command_contracts = (
+            receiver / "xb-save" / "SKILL.md",
+            receiver / "xb-knowledge" / "SKILL.md",
+            receiver / "xb-role-knowledge" / "SKILL.md",
+            receiver / "xbskill" / "references" / "knowledge-source-protocol.md",
+        )
+        for contract in command_contracts:
+            text = contract.read_text(encoding="utf-8")
+            require("runtime-compatibility.md" in text, f"script contract does not load runtime compatibility: {contract}")
+            require("<PYTHON3>" in text, f"script contract has no portable Python command: {contract}")
+            require(re.search(r"(?m)^\s*python\s+", text) is None,
+                    f"script contract still hardcodes the macOS-incompatible python command: {contract}")
+        user_guide = (receiver / "xbskill" / "references" / "user-guide.md").read_text(encoding="utf-8")
+        require(all(term in user_guide for term in (
+            "Node.js 22.20+", "Python 3.10+", "python3 -B", "py -3 -B", "DISABLE_TELEMETRY=1",
+        )), "user guide does not expose cross-platform prerequisites and commands")
+        held_runtime = runtime_path.with_suffix(".md.missing")
+        runtime_path.rename(held_runtime)
+        code, output = capture_validate(receiver)
+        require(code != 0 and str(runtime_path) in output,
+                "missing runtime compatibility contract did not fail with its exact path")
+        held_runtime.rename(runtime_path)
+        print("PASS macOS/Windows runtime commands, dependencies, telemetry, LF, and missing-contract failure are explicit")
+
         session_protocol = (receiver / "xbskill" / "references" / "session-memory-protocol.md").read_text(encoding="utf-8")
         answer_format = (receiver / "xbskill" / "references" / "answer-format.md").read_text(encoding="utf-8")
         contracts_text = (receiver / "xbskill" / "references" / "contracts.md").read_text(encoding="utf-8")
@@ -1963,7 +1994,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY 32/32 receiver tests passed")
+    print("SUMMARY 33/33 receiver tests passed")
     return 0
 
 

@@ -39,6 +39,7 @@ CORE_REFERENCES = (
     "resolution-standard.md",
     "intellectual-capabilities.md",
     "knowledge-source-protocol.md",
+    "runtime-compatibility.md",
     "knowledge-source.schema.json",
     "workplace-regression.md",
     "specialist-rewrite-method.md",
@@ -214,7 +215,11 @@ def load_manifest(root: Path) -> dict:
 def write_manifest(root: Path) -> None:
     data = current_manifest(root)
     path = root / MANIFEST
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     print(f"WROTE {path} ({len(data['files'])} managed files)")
 
 

@@ -5,7 +5,7 @@ description: 经用户对本次会话明确授权后，把可见对话全文、�
 
 # xb-save：工作状态快照
 
-直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md` 与 `../xbskill/references/session-memory-protocol.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。
+直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/session-memory-protocol.md` 与 `../xbskill/references/runtime-compatibility.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。
 
 ## 路径硬约定
 
@@ -44,7 +44,7 @@ description: 经用户对本次会话明确授权后，把可见对话全文、�
 准备好会话 bundle 后，调用：
 
 ```text
-python -B <xb-save目录>/scripts/session_store.py --project-root <项目绝对路径> --bundle <bundle.json绝对路径>
+<PYTHON3> -B <xb-save目录>/scripts/session_store.py --project-root <项目绝对路径> --bundle <bundle.json绝对路径>
 ```
 
 bundle 必须声明 `authorized_current_session=true`、`network_writes=false`，并包含连续轮次 transcript、完整性、分类字段、session/classification/progress Markdown 与可选 context_updates。脚本负责路径防穿越、凭据模式拦截、同目录暂存、失败回滚和写后重读。脚本缺失时报告绝对路径并停止保存，禁止手工降级后声称事务写入已验证。

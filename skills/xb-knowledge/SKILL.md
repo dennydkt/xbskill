@@ -7,9 +7,9 @@ description: 把工作文件夹变成可查找、可维护、可识别版本的�
 
 ## 启动必读
 
-处理外部或跨专科知识来源时，完整读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md` 与 `../xbskill/references/knowledge-source-protocol.md`；机器记录按 `../xbskill/references/knowledge-source.schema.json`。需要初始化、校验、生成最小知识包、激活或回滚来源锁时，使用 `../xbskill/scripts/knowledge_manager.py`，不得另造一个宽松流程。
+处理外部或跨专科知识来源时，完整读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/knowledge-source-protocol.md` 与 `../xbskill/references/runtime-compatibility.md`；机器记录按 `../xbskill/references/knowledge-source.schema.json`。需要初始化、校验、生成最小知识包、激活或回滚来源锁时，使用 `../xbskill/scripts/knowledge_manager.py`，不得另造一个宽松流程。
 
-以上三个文件任一缺失时，报告精确缺失路径并停止知识来源激活或打包。禁止凭模型先验补造简化协议继续运行。
+以上四个文件任一缺失时，报告精确缺失路径并停止知识来源激活或打包。禁止凭模型先验补造简化协议继续运行。
 
 ## 与岗位知识的边界
 
@@ -22,7 +22,7 @@ description: 把工作文件夹变成可查找、可维护、可识别版本的�
 知识来源注册表只能通过显式绝对路径初始化：
 
 ```text
-python ../xbskill/scripts/knowledge_manager.py init --root ABSOLUTE_PATH --yes
+<PYTHON3> ../xbskill/scripts/knowledge_manager.py init --root ABSOLUTE_PATH --yes
 ```
 
 固定结构为 `registry/`、`sources/`、`locks/`、`evidence/`、`packets/`、`update-journal/`。目录或登记表建立只代表机制可用，不代表资料已盘点、真源已裁决或现实治理完成。
@@ -63,10 +63,10 @@ discover、read、execute 是三道独立权限门。discover 不包含 read，r
 ## 激活、打包与回滚
 
 ```text
-python ../xbskill/scripts/knowledge_manager.py validate --root ABSOLUTE_PATH
-python ../xbskill/scripts/knowledge_manager.py packet --root ABSOLUTE_PATH --lock LOCK_ID --output ABSOLUTE_PATH_UNDER_PACKETS
-python ../xbskill/scripts/knowledge_manager.py activate --root ABSOLUTE_PATH --lock LOCK_ID --yes
-python ../xbskill/scripts/knowledge_manager.py rollback --root ABSOLUTE_PATH --yes
+<PYTHON3> ../xbskill/scripts/knowledge_manager.py validate --root ABSOLUTE_PATH
+<PYTHON3> ../xbskill/scripts/knowledge_manager.py packet --root ABSOLUTE_PATH --lock LOCK_ID --output ABSOLUTE_PATH_UNDER_PACKETS
+<PYTHON3> ../xbskill/scripts/knowledge_manager.py activate --root ABSOLUTE_PATH --lock LOCK_ID --yes
+<PYTHON3> ../xbskill/scripts/knowledge_manager.py rollback --root ABSOLUTE_PATH --yes
 ```
 
 - 激活前严格校验整个注册表和目标锁；锁定后不得原地修改，变化必须产生新锁。
