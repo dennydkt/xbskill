@@ -528,6 +528,10 @@ def main() -> int:
         discourse_redaction_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-public-redaction-record.md"
         discourse_publication_recheck_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-publication-recheck.md"
         discourse_release_path = receiver / "xbskill" / "references" / "v1.7-workplace-discourse-release-record.md"
+        discourse_dictionary_fixture_path = receiver / "xbskill" / "references" / "v1.7.5-discourse-dictionary-fixtures.md"
+        discourse_dictionary_answers_path = receiver / "xbskill" / "references" / "v1.7.5-discourse-dictionary-blind-answers.md"
+        discourse_dictionary_review_path = receiver / "xbskill" / "references" / "v1.7.5-discourse-dictionary-independent-review.md"
+        discourse_dictionary_release_path = receiver / "xbskill" / "references" / "v1.7.5-discourse-dictionary-release-record.md"
         discourse_answers = discourse_answers_path.read_text(encoding="utf-8")
         discourse_review = discourse_review_path.read_text(encoding="utf-8")
         discourse_fixture = discourse_fixture_path.read_text(encoding="utf-8")
@@ -538,6 +542,10 @@ def main() -> int:
         discourse_redaction = discourse_redaction_path.read_text(encoding="utf-8")
         discourse_publication_recheck = discourse_publication_recheck_path.read_text(encoding="utf-8")
         discourse_release = discourse_release_path.read_text(encoding="utf-8")
+        discourse_dictionary_fixture = discourse_dictionary_fixture_path.read_text(encoding="utf-8")
+        discourse_dictionary_answers = discourse_dictionary_answers_path.read_text(encoding="utf-8")
+        discourse_dictionary_review = discourse_dictionary_review_path.read_text(encoding="utf-8")
+        discourse_dictionary_release = discourse_dictionary_release_path.read_text(encoding="utf-8")
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
         require(all(term in session_protocol for term in (
@@ -747,6 +755,23 @@ def main() -> int:
             "L0 低利害", "L1 决定受影响", "L2 人身与持续压制", "L3 威胁与报复",
             "逐字证据 / 用户转述", "竞争解释与翻转信号", "下一现实反馈点",
         )), "workplace discourse defense loses its action, authority, safety, or reality gates")
+        discourse_dictionary = markdown_section(discourse_text, "3. 话语动作词典（六组 36 条）")
+        discourse_action_names = [
+            name.strip()
+            for name in re.findall(r"^\|\s*([^|\n]+?)\s*\|", discourse_dictionary, re.MULTILINE)
+            if name.strip() not in {"动作", "---"}
+        ]
+        expected_discourse_actions = {
+            "靶子偷换", "断章取义", "偷换概念", "原题带离", "极端化", "责任倒置",
+            "比较消解", "你也一样", "资格换轨", "动机换轨", "来源否证",
+            "标准偷换", "完美陷阱", "非黑即白", "双重标准", "内部不存在", "折中幻觉",
+            "进度写成缺陷", "移动完成门", "大词遮蔽", "扣帽子", "光环挪移", "从众压场",
+            "传统天然", "个人不信", "悲情压场", "以偏概全", "挑选证据", "先后当因果",
+            "类比失当", "循环论证", "判断藏进问句", "举证倒置", "连环轰炸", "谬误谬误",
+            "评价权扩张",
+        }
+        require(len(discourse_action_names) == 36 and set(discourse_action_names) == expected_discourse_actions,
+                "workplace discourse dictionary does not preserve exactly 36 unique governed actions")
         active_decode_contract = "\n".join((decode_text, decode_mechanisms, decode_codebook, discourse_text))
         forbidden_decode_shortcuts = (
             "约六成", "约两成", "每句话的存在都有原因", "背后必有指向",
@@ -890,6 +915,30 @@ def main() -> int:
             "G/C/A/P/S/E/R/V 全 2", "不新增公开 Skill", "外部分享只作 discovery_only",
             "0 added、0 modified、0 removed",
         )), "workplace discourse release record loses scope, source, or publish evidence")
+        require(all(f"## {label}" in discourse_dictionary_fixture and f"## {label}" in discourse_dictionary_answers
+                    for label in "ABCDEF"),
+                "v1.7.5 discourse dictionary fixtures or blind answers lose a frozen case")
+        require(all(term in discourse_dictionary_answers for term in (
+            "靶子偷换", "动机换轨", "来源否证", "双重标准", "原题带离", "光环挪移",
+            "先后当因果", "连环轰炸", "以偏概全", "竞争解释／翻转信号",
+            "最小复位／事实锚", "风险级别与现实反馈点",
+        )), "v1.7.5 discourse dictionary blind answers lose action, evidence, or feedback coverage")
+        require(all(f"| {label} | PASS | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |" in discourse_dictionary_review
+                    for label in "ABCDEF") and
+                "Verdict: PASS" in discourse_dictionary_review and
+                "Release: ALLOW" in discourse_dictionary_review and
+                "第一轮评审：输入包缺少完整题面" in discourse_dictionary_review and
+                "冻结答案均未改动" in discourse_dictionary_review,
+                "v1.7.5 discourse dictionary review loses failure preservation or all-two release evidence")
+        discourse_dictionary_fixture_digest = hashlib.sha256(discourse_dictionary_fixture_path.read_bytes()).hexdigest().upper()
+        discourse_dictionary_answers_digest = hashlib.sha256(discourse_dictionary_answers_path.read_bytes()).hexdigest().upper()
+        discourse_dictionary_review_digest = hashlib.sha256(discourse_dictionary_review_path.read_bytes()).hexdigest().upper()
+        require(all(term in discourse_dictionary_release for term in (
+            f"Fixtures-SHA256: {discourse_dictionary_fixture_digest}",
+            f"Answers-SHA256: {discourse_dictionary_answers_digest}",
+            f"Review-SHA256: {discourse_dictionary_review_digest}",
+            "六组 36 条", "G/C/A/P/S/E/R/V 全 2", "33/33 receiver tests passed",
+        )), "v1.7.5 discourse dictionary release record loses frozen evidence or validation binding")
         direct_specialists = [path for path in receiver.iterdir() if path.is_dir() and path.name.startswith("xb-")]
         missing_contracts = [path.name for path in direct_specialists if "contracts.md" not in (path / "SKILL.md").read_text(encoding="utf-8")]
         require(not missing_contracts, f"direct specialists bypass the shared answer contract: {missing_contracts}")

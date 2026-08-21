@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.7.4",
+  "version": "1.7.5",
   "files": {
     "xb-action/agents/openai.yaml": "44d392a8316d38bd602c4f870941df0e283aad107021c6c7c9ebe7d977700689",
     "xb-action/SKILL.md": "7b7b850fd40af17a975fc241ff0d21fd2bc6ee8ca8b3c83bd38f4f426ba57579",
@@ -35,7 +35,7 @@
     "xb-decode/references/subtext-cases-rmyd.md": "4fa788b84a1c033d379d36b7f39773de725bfb3ef4ce6541427f73aa17ea43ff",
     "xb-decode/references/subtext-mechanisms.md": "4cb3f44accfc2b7354469bd79a08e14bc9e6baf79debdadd8f61b34fb8ea8eef",
     "xb-decode/references/subtext-method-codebook.md": "3936ca6421c51bcd19ece3a0fcb58ca9d9f721b9f789d8e841e54ac3f70d1c55",
-    "xb-decode/references/workplace-discourse-defense.md": "456ce2d6d9bc8173a1ad2e0ba0181a659e8fcb3b85e63a06ae38cd0537c61ecd",
+    "xb-decode/references/workplace-discourse-defense.md": "ef9a419267ea9d17d1f39e5a318cb769356c88759135e47ec26766582bc2825f",
     "xb-decode/SKILL.md": "1d5a7199200b3b16e9f2da3da1632def958d4fd7073214205ff675866720aed2",
     "xb-goal/agents/openai.yaml": "fa6dcd3ce4a9868b5781288d1dab5e0994a0aeffa824711ab4dac747328f683a",
     "xb-goal/SKILL.md": "ab68cec535c9e74ca653f5b8186eeb2db4356cd3f43f1a241e6a6003fe57c5f8",
@@ -193,12 +193,16 @@
     "xbskill/references/v1.7.4-boundary-reset-fixtures.md": "ab29393ece774af65e5991425a780cab3f57d59316955d617a3851b710301168",
     "xbskill/references/v1.7.4-boundary-reset-independent-review.md": "af1d4b95bd0a01a59526a161e6ccd38deb22f1762c7a25b0d58e2658e9403d4b",
     "xbskill/references/v1.7.4-boundary-reset-release-record.md": "9bdcde067f200fc59a0fd819b6c9a6f50d09cb738cc8619131d493f188e00465",
+    "xbskill/references/v1.7.5-discourse-dictionary-blind-answers.md": "2b8443b041edec7436ab15b85d42e7bd6abb4e4c1466b49834db7fceb0ed2836",
+    "xbskill/references/v1.7.5-discourse-dictionary-fixtures.md": "43966e109f90219dff16fafa39c171cfb25ce16bd716bba75efe23455e80a934",
+    "xbskill/references/v1.7.5-discourse-dictionary-independent-review.md": "cc4adaa63a9297c13c379f410849386d83826799ee0648294ad6d0c27e751b9b",
+    "xbskill/references/v1.7.5-discourse-dictionary-release-record.md": "a87bade9cbb20ba1f01d3ed6a6dd2aba77d795ab5891a3fe8f6a50f48ccfd815",
     "xbskill/references/work-model.md": "f9119cfd8f16dfc167e75861640e4759c7982959a2fa2c908b5e0ed0c21a8059",
     "xbskill/references/workplace-regression.md": "8e686ff576d282e8c8a08eed94cdbd096dff631777557e576230ebde6483b73b",
-    "xbskill/scripts/forward_test.py": "eb8fd0dcb8ee4a7b9e029577e6de05758dd28c3da881d59ffae700001a27805b",
+    "xbskill/scripts/forward_test.py": "deb5deb376addde45d0dc77d3b8a374db6be47ab0ff2fcd074fddc057b9319cb",
     "xbskill/scripts/knowledge_manager.py": "386eaf5b55959eed1707ea72c3850d10fd425489791deb73db08676db9a9d959",
     "xbskill/scripts/suite_manager.py": "c8ecdcdc3e088668bc8a7d8881fcb96f231e83db40302eb75b72a71f1a68695f",
     "xbskill/SKILL.md": "a1006dc908619e2e701f7163fe6af4366b406774fbcc647dbe4d13a51fe0add7",
-    "xbskill/VERSION": "c0a5a6493b8efd6757e5fecc6fccd3dfc513b1963331f7c8af2c4d6854f9bf66"
+    "xbskill/VERSION": "908276d7e66deb879777e2b9dd045d61940606c46552e360af898b697ab792dd"
   }
 }
