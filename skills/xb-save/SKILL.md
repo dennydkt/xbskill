@@ -1,11 +1,11 @@
 ---
 name: xb-save
-description: 经用户对本次会话明确授权后，把可见对话全文、工作状态、产物、约束和自动分类结果保存到本地项目，供跨会话恢复。用于保存、留档、下次接着做。触发：$xb-save、保存这次、记下来、留个快照。
+description: 经用户对本次会话明确授权后，把可见对话全文、工作状态和会话本体保存到本地项目；结构化识别实体、关系、事件、决定、证据、时效与冲突，供跨会话检索和恢复。用于保存、留档、下次接着做。触发：$xb-save、保存这次、记下来、留个快照。
 ---
 
 # xb-save：工作状态快照
 
-直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/session-memory-protocol.md` 与 `../xbskill/references/runtime-compatibility.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。
+直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/session-memory-protocol.md`、`../xbskill/references/runtime-compatibility.md`、`../xb-memory/SKILL.md` 与 `../xb-memory/references/conversation-ontology.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。
 
 ## 路径硬约定
 
@@ -23,7 +23,7 @@ description: 经用户对本次会话明确授权后，把可见对话全文、�
 
 1. **授权检查**：当前上下文必须有用户对本次会话的保存同意；缺失即停止。`memory-settings.md` 只控制后续是否显示提示，不能替代本次同意。
 2. **路径异常分支**：`memory-settings.md` 或目标目录不可读、被文件占用、权限拒绝时，响亮报告具体错误，禁止自动修复、删除异常路径或改写到备用位置。
-3. **滚动文件**：会话全文与分类写入成功后更新 `<project>/memory/xbskill/progress.md`——单文件滚动。内容：更新时间、最近会话 ID、主目标、当前一步、已交付产物、反馈点、上下文档案清单、近况列表（新在前，最多 5 条）。用户原话和已确认事实直接记；默认转换或 AI 判断带“(推断)”标记，用户确认后才可去标。
+3. **滚动文件**：会话全文与本体写入成功后更新 `<project>/memory/xbskill/progress.md`——单文件滚动。内容：更新时间、最近会话 ID、主目标、当前一步、已交付产物、反馈点、本体状态、上下文档案清单、近况列表（新在前，最多 5 条）。用户原话和已确认事实直接记；默认转换或 AI 判断带“(推断)”标记，用户确认后才可去标。
 4. **隐私边界**：经用户同意的可见对话可进入全文档案；诊断式心理标签、无关健康细节、去留想法、凭据和公司秘密不进入长期分类档案。用户说“这句别记”的内容从全文与分类一并排除。
 5. **落盘显形**：每次更新后在结尾导航条“记忆”字段报告位置；progress.md 或 memory-settings.md 写入失败必须响亮报告，不得静默跳过后仍显示“已记”。
 6. progress.md 是滚动状态不是审计记录；重要节点、决策事件和需要留痕的完整上下文仍走完整快照流程。
@@ -33,11 +33,11 @@ description: 经用户对本次会话明确授权后，把可见对话全文、�
 1. 确认本次授权，解析项目 slug 与绝对目标目录；目标必须位于用户指定项目的 `memory/xbskill/`。
 2. 检查会话完整性，生成或沿用 session ID。发现上下文压缩、宿主只注入部分历史或压缩前消息缺失时，先按协议执行宿主风险分流。Windows 版 Codex Desktop 禁止调用任务/线程/会话历史接口，禁止寻找所谓“原始任务”或关联任务，也禁止触碰 Codex 私有数据库与 rollout；只用当前可见上下文和用户提供的完整导出。其他宿主只有在精确当前会话 ID 可证明、接口纯只读且无任务生命周期副作用时，才读取当前会话全部分页。任何安全门未通过、内容截断、附件缺失或分页未到头时，报告宿主、分支、已尝试入口与精确缺口，再请用户提供完整导出或接受“保存现有部分”；未经用户接受不得标完整。
 3. 生成 `session.md`：用户目标、当前价值需要、解决范围、用户侧变化、现实反馈点、事实、结论、产物/附件索引、否决项、待验证、风险、下一步、完整性与排除项。
-4. 生成 `classification.md`，逐项记录类别、主体、证据层级、来源轮次、置信度、目标、动作和推翻信号；空结果也要显式记录。
-5. 自动填充本地分类档案：自己/性格与说话风格写 `context/people/self.md`；领导/同事写对应人物档案；公司与公司调性写 `context/company-profile.md`；目标与进展写 `current-goals.md` 和 `progress.md`。单次事件、指代不明或助手推断只进候选区；每项保留会话 ID 和轮次。
+4. 支持调用 `xb-memory` 生成 `OntologyDelta`：先识别实体，再生成带来源、时间、作用域、置信度、生命周期、敏感级别、推翻条件和 `supersedes` 的断言。指代不明写 `needs_identity`；助手推断保持 candidate；空结果也要显式提交空列表。
+5. `classification.md` 由 `ontology.json` 自动投影，供人工浏览。跨会话真源是本体断言及其会话来源；旧版人物、公司和目标档案保留为兼容材料，新会话通过本体查询获取最小相关切片。
 6. 活动决策事件只保存现有事件引用；用户本轮明确作出长期决定并同意立案时才新建。保存授权不包含 Git、云同步、外发或删除。
-7. 按协议使用同目录临时文件完成事务写入；写后重读核对全文轮次、分类来源、绝对路径和敏感排除。
-8. 报告会话目录、全文完整性、分类项数量、已更新档案、候选项和未保存缺口。任一步失败都写“未完成”，保留可恢复现场。
+7. 按协议使用同目录临时文件完成事务写入；写后重读核对全文轮次、本体来源、索引摘要、绝对路径和敏感排除。
+8. 报告会话目录、全文完整性、实体/断言数量、长期/会话级数量、冲突、候选项和未保存缺口。任一步失败都写“未完成”，保留可恢复现场。
 
 ## 机械写入器
 
@@ -47,10 +47,12 @@ description: 经用户对本次会话明确授权后，把可见对话全文、�
 <PYTHON3> -B <xb-save目录>/scripts/session_store.py --project-root <项目绝对路径> --bundle <bundle.json绝对路径>
 ```
 
-bundle 必须声明 `authorized_current_session=true`、`network_writes=false`，并包含连续轮次 transcript、完整性、分类字段、session/classification/progress Markdown 与可选 context_updates。脚本负责路径防穿越、凭据模式拦截、同目录暂存、失败回滚和写后重读。脚本缺失时报告绝对路径并停止保存，禁止手工降级后声称事务写入已验证。
+新保存默认使用 bundle schema 2：必须声明 `authorized_current_session=true`、`network_writes=false`，并包含连续轮次 transcript、完整性、session/progress Markdown 与 `ontology_delta`。`ontology_delta` 中的每个来源片段必须逐字存在于对应 transcript 轮次；`authorized_sensitive_long_term` 与本次会话保存授权分别判断。脚本同时写 transcript、session、`ontology.json`、本体存储、索引、分类投影和 progress，负责路径防穿越、凭据拦截、同目录暂存、失败回滚和写后重读。
+
+schema 1 只用于读取与增量保存旧快照，继续接受旧 classification/context_updates。新会话禁止生成 schema 1 包。`session_store.py` 或 `../xb-memory/scripts/memory_ontology.py` 缺失时报告绝对路径并停止，禁止手工降级后声称事务写入已验证。
 
 ## 会话摘要模板
 
 标题；session ID；时间/项目/来源；完整性状态与缺口；用户目标与 G 层级；当前价值需要；选择门；H 帮助能级；问题类型与解决范围；用户侧变化；现实证据/下一反馈点；未解决部分；行动相关状态摘要；已确认事实；当前结论；产物与附件索引；知识锁与主张；活动决策事件引用；能力证据；人物/公司档案引用；分类账路径；排除项；待验证；风险；下一步；恢复提示。
 
-全文、摘要与长期档案分别治理。用户对本次全文归档的同意不授权把敏感内容固化为长期画像；分类写入继续遵守最小化、证据层级与可推翻要求。
+全文、摘要、会话本体与任务查询包分别治理。用户对本次全文归档的同意不授权把敏感内容固化为长期画像；本体写入继续遵守最小化、证据层级、时间范围、冲突显形与可推翻要求。

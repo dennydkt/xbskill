@@ -4,7 +4,7 @@
 
 ## 1. xbskill 是什么
 
-xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 34 个专科（`xb-*`）组成，共 35 个公开 Skill，整体发布、整体安装。
+xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 35 个专科（`xb-*`）组成，共 36 个公开 Skill，整体发布、整体安装。
 
 它的北极星：帮助你在可接受的身心与伦理成本下完成必要结果，同时保留或增加理解、能力、边界和选择权。最大化产出本身没有作为目标。
 
@@ -19,9 +19,9 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 
 ## 2. 安装
 
-依赖按功能分层：通过 Skills CLI 安装需要 Node.js 22.20+；套件校验、`xb-save`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+；其余纯文本专科没有 Python 或 Node.js 依赖。完整平台规则见 `runtime-compatibility.md`。
+依赖按功能分层：通过 Skills CLI 安装需要 Node.js 22.20+；套件校验、`xb-save`、`xb-memory`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+；其余纯文本专科没有 Python 或 Node.js 依赖。完整平台规则见 `runtime-compatibility.md`。
 
-1. 将发布包里 `skills/` 下的 35 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
+1. 将发布包里 `skills/` 下的 36 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
 2. 按平台解析 Python 3.10+，再在套件根目录运行校验：
 
    ```bash
@@ -81,9 +81,9 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 
 ## 5. 记忆：记到哪、谁做主
 
-- 记忆存放在**你的本地项目**：`<项目>/memory/xbskill/`，包含会话全文、摘要、分类账与进度档案。
+- 记忆存放在**你的本地项目**：`<项目>/memory/xbskill/`，包含会话全文、摘要、会话本体、分类投影、冲突索引与进度档案。
 - 每次会话收尾会在“记忆”项提示你回复“保存对话”；记与不记、何时停，都由你决定，不会静默写入。
-- 回头使用时，开场会引用上次的主目标与反馈点（标注日期）；完整恢复走 `xb-restore`。
+- 新会话只读取当前任务相关、仍有效且权限允许的最小本体切片；检查或纠正结构化记忆走 `xb-memory`，完整恢复走 `xb-restore`。
 - xbskill 运行期的全部数据只在本地，不含账号、遥测或回传。通过上游 Skills CLI 安装时，按 `runtime-compatibility.md` 显式设置 `DISABLE_TELEMETRY=1`。
 
 ## 6. 专科速查
@@ -145,6 +145,7 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 | 场景 | 专科 |
 |------|------|
 | 保存本次工作状态与会话全文 | `xb-save` |
+| 检查、纠正或查询结构化会话记忆 | `xb-memory` |
 | 接着上次继续 | `xb-restore` |
 | 更新 xbskill 本身 | `xb-update` |
 | 为新问题设计新专科 | `xb-builder` |

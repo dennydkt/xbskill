@@ -9,7 +9,7 @@ xbskill 模仿的是结构，不复制商业领域内容：
 | 主入口三模式 | `xbskill` 新手教程 / 任务前路由 / 任务后导航 |
 | 单步动态导航 | 每次只处理当前最影响用户净收益与可验证结果的一步 |
 | 专科 Skill | 工作问题专科，各自有边界、流程、交付、自检 |
-| save / restore / report | 跨会话状态快照、恢复与周期汇报 |
+| save / restore / report | 跨会话全文、本体记忆、恢复与周期汇报 |
 | knowledge / learning / decision | 长期知识、能力与决策资产 |
 | update / bridge / cleaner | 更新、跨端发现、审计与治理；本版用 update + audit 覆盖 |
 | beta framework builder | `xb-builder` 先拆动作、试跑、证伪，再沉淀专科 |
@@ -133,7 +133,7 @@ XB 的价值不成立于“职场问题很多”或“AI 什么都能答”，�
 4. 产出层：`xb-it`、`xb-data`、`xb-automation`、`xb-writing`、`xb-presentation`
 5. 协作层：`xb-meeting`、`xb-talk`、`xb-upward`、`xb-stakeholder`、`xb-conflict`、`xb-boundary`
 6. 续航与选择层：`xb-action`、`xb-wellbeing`、`xb-career`、`xb-learning`、`xb-knowledge`
-7. 基建层：`xb-review`、`xb-save`、`xb-restore`、`xb-report`、`xb-update`、`xb-builder`、`xb-audit`
+7. 基建层：`xb-review`、`xb-save`、`xb-memory`、`xb-restore`、`xb-report`、`xb-update`、`xb-builder`、`xb-audit`
 
 状态与主体性、用户侧价值和选择门横切七层，不属于单一层。
 

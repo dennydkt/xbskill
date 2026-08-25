@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -37,6 +38,16 @@ def require(condition: bool, message: str) -> None:
         raise StoreError(message)
 
 
+def load_ontology_module():
+    script = Path(__file__).resolve().parents[2] / "xb-memory" / "scripts" / "memory_ontology.py"
+    require(script.is_file(), f"E_DEPENDENCY: missing ontology writer: {script}")
+    spec = importlib.util.spec_from_file_location("xb_memory_ontology", script)
+    require(spec is not None and spec.loader is not None, f"E_DEPENDENCY: cannot load ontology writer: {script}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def load_bundle(path: Path) -> dict:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -59,7 +70,8 @@ def safe_target(root: Path, relative: str) -> Path:
 
 
 def validate_bundle(bundle: dict) -> None:
-    require(bundle.get("schema_version") == 1, "E_BUNDLE_SCHEMA: schema_version must be 1")
+    schema_version = bundle.get("schema_version")
+    require(schema_version in {1, 2}, "E_BUNDLE_SCHEMA: schema_version must be 1 or 2")
     session_id = bundle.get("session_id")
     require(isinstance(session_id, str) and SESSION_RE.fullmatch(session_id), "E_SESSION_ID: invalid session_id")
     require(bundle.get("authorized_current_session") is True, "E_AUTHORIZATION: current-session authorization missing")
@@ -83,7 +95,7 @@ def validate_bundle(bundle: dict) -> None:
             require(pattern.search(content) is None, "E_SECRET: transcript contains a credential/private-key pattern; exclude it first")
         expected_turn += 1
 
-    classification = bundle.get("classification")
+    classification = bundle.get("classification", [])
     require(isinstance(classification, list), "E_CLASSIFICATION: classification must be a list")
     seen_ids: set[str] = set()
     for item in classification:
@@ -99,6 +111,9 @@ def validate_bundle(bundle: dict) -> None:
 
     updates = bundle.get("context_updates", [])
     require(isinstance(updates, list), "E_CONTEXT: context_updates must be a list")
+    if schema_version == 2:
+        require(not classification, "E_ONTOLOGY_PROJECTION: schema 2 classification is generated from ontology_delta")
+        require(not updates, "E_ONTOLOGY_PROJECTION: schema 2 context_updates are replaced by ontology queries")
     for update in updates:
         require(isinstance(update, dict), "E_CONTEXT: update must be an object")
         target = update.get("target")
@@ -107,8 +122,28 @@ def validate_bundle(bundle: dict) -> None:
         require(target.endswith(".md"), "E_CONTEXT: target must be markdown")
         require(isinstance(content, str) and content.strip(), "E_CONTEXT: content must be non-empty")
 
-    for field in ("session_markdown", "classification_markdown", "progress_markdown"):
+    for field in ("session_markdown", "progress_markdown"):
         require(isinstance(bundle.get(field), str) and bundle[field].strip(), f"E_BUNDLE_SCHEMA: {field} missing")
+    if schema_version == 1:
+        require(isinstance(bundle.get("classification_markdown"), str) and bundle["classification_markdown"].strip(), "E_BUNDLE_SCHEMA: classification_markdown missing")
+    else:
+        delta = bundle.get("ontology_delta")
+        require(isinstance(delta, dict), "E_ONTOLOGY: ontology_delta missing")
+        require(delta.get("session_id") == session_id, "E_ONTOLOGY: ontology session_id differs from bundle")
+        require(delta.get("authorized_current_session") is True, "E_ONTOLOGY: ontology authorization missing")
+        try:
+            ontology = load_ontology_module()
+            ontology.validate_delta(delta, allow_unknown_supersedes=True)
+        except (ValueError, OSError) as exc:
+            raise StoreError(f"E_ONTOLOGY: {exc}") from exc
+        transcript_by_turn = {item["turn"]: item for item in transcript}
+        for group_name in ("entities", "assertions"):
+            for item in delta[group_name]:
+                for ref in item["source_refs"]:
+                    message = transcript_by_turn.get(ref["turn"])
+                    require(message is not None, f"E_ONTOLOGY_SOURCE: missing transcript turn {ref['turn']}")
+                    require(message["role"] == ref["role"], f"E_ONTOLOGY_SOURCE: role differs at turn {ref['turn']}")
+                    require(ref["excerpt"] in message["content"], f"E_ONTOLOGY_SOURCE: excerpt is not present at turn {ref['turn']}")
 
 
 def render_transcript(messages: list[dict], session_id: str, completeness: str, gaps: list[str]) -> str:
@@ -145,18 +180,36 @@ def atomic_store(project_root: Path, bundle: dict) -> dict:
     session_id = bundle["session_id"]
     session_rel = Path("sessions") / session_id
 
+    classification_markdown = bundle.get("classification_markdown", "")
+    ontology_summary: dict[str, object] = {}
+    ontology_writes: dict[Path, str] = {}
+    if bundle["schema_version"] == 2:
+        ontology = load_ontology_module()
+        try:
+            ontology_writes, ontology_summary = ontology.plan_ontology_writes(memory_root, bundle["ontology_delta"])
+            classification_markdown = ontology.render_classification(bundle["ontology_delta"])
+        except (ValueError, OSError) as exc:
+            raise StoreError(f"E_ONTOLOGY: {exc}") from exc
+
     writes: dict[Path, str] = {
         safe_target(memory_root, str(session_rel / "transcript.md")): render_transcript(
             bundle["transcript"], session_id, bundle["completeness"], bundle.get("completeness_gaps", [])
         ),
         safe_target(memory_root, str(session_rel / "session.md")): bundle["session_markdown"].rstrip() + "\n",
-        safe_target(memory_root, str(session_rel / "classification.md")): bundle["classification_markdown"].rstrip() + "\n",
+        safe_target(memory_root, str(session_rel / "classification.md")): classification_markdown.rstrip() + "\n",
         safe_target(memory_root, "progress.md"): bundle["progress_markdown"].rstrip() + "\n",
     }
     for update in bundle.get("context_updates", []):
         target = safe_target(memory_root, update["target"])
         existing = target.read_text(encoding="utf-8") if target.exists() else ""
         writes[target] = append_update(existing, session_id, update["content"])
+    for target, content in ontology_writes.items():
+        resolved = target.resolve()
+        try:
+            resolved.relative_to(memory_root)
+        except ValueError as exc:
+            raise StoreError(f"E_PATH: ontology target escapes memory root: {resolved}") from exc
+        writes[resolved] = content
 
     memory_root.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=".session-store-", dir=memory_root))
@@ -195,9 +248,14 @@ def atomic_store(project_root: Path, bundle: dict) -> dict:
         "session_id": session_id,
         "session_directory": str((memory_root / session_rel).resolve()),
         "completeness": bundle["completeness"],
-        "classification_count": len(bundle["classification"]),
+        "classification_count": (
+            len(bundle.get("classification", []))
+            if bundle["schema_version"] == 1
+            else len(bundle["ontology_delta"]["assertions"])
+        ),
         "updated_context": [update["target"] for update in bundle.get("context_updates", [])],
         "network_writes": False,
+        **ontology_summary,
     }
 
 

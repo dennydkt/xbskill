@@ -33,7 +33,7 @@ REQUIRED = {
 }
 FORBIDDEN_PATH_PARTS = {"internal", "evaluation", "memory"}
 FORBIDDEN_TEXT = re.compile(
-    r"不是.*而是|不在于|不需要.*需要|不会.*会|真正的|与其说"
+    r"不是.*而是|不在于|不需要.*需要|不会.*会|真正的|与其说|长在.{0,6}[上里]"
 )
 FORBIDDEN_RELEASE_CONTEXT = re.compile(
     r"C:\\Users|/home/|国药|sinopharm|数据中台|xb-iteration|"
@@ -89,8 +89,8 @@ def main() -> None:
     skill_dirs = sorted(
         path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md")
     )
-    if len(skill_dirs) != 35:
-        fail(f"expected 35 public skills, found {len(skill_dirs)}")
+    if len(skill_dirs) != 36:
+        fail(f"expected 36 public skills, found {len(skill_dirs)}")
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts:

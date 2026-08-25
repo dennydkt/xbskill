@@ -116,6 +116,7 @@
 | 交付前心里没底 | `xb-review` | 目标没有验收标准 → `xb-goal` |
 | 项目做完想复盘 | `xb-review` | 要形成周期报告 → `xb-report` |
 | 下次想接着这次继续 | `xb-save` | 已经有快照 → `xb-restore` |
+| 想检查、纠正或查询对话里的结构化记忆 | `xb-memory` | 只想保存当前会话 → `xb-save` |
 | 想汇总半年项目演进 | `xb-report` | 快照目录不明 → `xb-restore` |
 | 想更新整套 xbskill | `xb-update` | 只想审查现状 → `xb-audit` |
 | 发现常见问题没有专科 | `xb-builder` | 只是单个一次性问题 → `xb-triage` |

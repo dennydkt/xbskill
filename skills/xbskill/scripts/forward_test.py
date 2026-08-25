@@ -8,6 +8,7 @@ import datetime as dt
 import hashlib
 import io
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -48,6 +49,7 @@ def run_role_tool(root: Path, script_name: str, argv: list[str]) -> tuple[int, s
         errors="replace",
         capture_output=True,
         check=False,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
     )
     return completed.returncode, completed.stdout + completed.stderr
 
@@ -65,6 +67,21 @@ def run_session_store(root: Path, project_root: Path, bundle_path: Path) -> tupl
         errors="replace",
         capture_output=True,
         check=False,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
+    )
+    return completed.returncode, completed.stdout + completed.stderr
+
+
+def run_memory_ontology(root: Path, argv: list[str]) -> tuple[int, str]:
+    script = root / "xb-memory" / "scripts" / "memory_ontology.py"
+    completed = subprocess.run(
+        [sys.executable, str(script), *argv],
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        check=False,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
     )
     return completed.returncode, completed.stdout + completed.stderr
 
@@ -454,7 +471,7 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 35, "receiver did not discover all 35 skills")
+        require(len(sm.skill_dirs(receiver)) == 36, "receiver did not discover all 36 skills")
         print("PASS clean install and discovery")
 
         runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
@@ -466,6 +483,7 @@ def main() -> int:
         )), "runtime compatibility contract misses a platform, dependency, error, telemetry, or LF gate")
         command_contracts = (
             receiver / "xb-save" / "SKILL.md",
+            receiver / "xb-memory" / "SKILL.md",
             receiver / "xb-knowledge" / "SKILL.md",
             receiver / "xb-role-knowledge" / "SKILL.md",
             receiver / "xbskill" / "references" / "knowledge-source-protocol.md",
@@ -502,6 +520,10 @@ def main() -> int:
         boundary_reset_answers_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-blind-answers.md"
         boundary_reset_review_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-independent-review.md"
         boundary_reset_release_path = receiver / "xbskill" / "references" / "v1.7.4-boundary-reset-release-record.md"
+        ontology_fixtures_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-fixtures.md"
+        ontology_answers_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-clean-receiver-answers.md"
+        ontology_review_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-review-status.md"
+        ontology_record_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-candidate-record.md"
         memory_consent_answers = memory_consent_answers_path.read_text(encoding="utf-8")
         memory_consent_review = memory_consent_review_path.read_text(encoding="utf-8")
         memory_consent_release = memory_consent_release_path.read_text(encoding="utf-8")
@@ -512,6 +534,10 @@ def main() -> int:
         boundary_reset_answers = boundary_reset_answers_path.read_text(encoding="utf-8")
         boundary_reset_review = boundary_reset_review_path.read_text(encoding="utf-8")
         boundary_reset_release = boundary_reset_release_path.read_text(encoding="utf-8")
+        ontology_fixtures = ontology_fixtures_path.read_text(encoding="utf-8")
+        ontology_answers = ontology_answers_path.read_text(encoding="utf-8")
+        ontology_review = ontology_review_path.read_text(encoding="utf-8")
+        ontology_record = ontology_record_path.read_text(encoding="utf-8")
         decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
         decode_text = (receiver / "xb-decode" / "SKILL.md").read_text(encoding="utf-8")
         decode_mechanisms = (receiver / "xb-decode" / "references" / "subtext-mechanisms.md").read_text(encoding="utf-8")
@@ -547,6 +573,7 @@ def main() -> int:
         discourse_dictionary_review = discourse_dictionary_review_path.read_text(encoding="utf-8")
         discourse_dictionary_release = discourse_dictionary_release_path.read_text(encoding="utf-8")
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
+        memory_text = (receiver / "xb-memory" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
         require(all(term in session_protocol for term in (
             "记忆：当前未保存。若需要保存对话内容，请直接回复“保存对话”",
@@ -952,6 +979,17 @@ def main() -> int:
             "保存现有部分",
         )), "xb-save loses the Codex Windows containment or safe history fallback")
         require("默认不加载 transcript 全文" in restore_text, "xb-restore exposes full sensitive transcript by default")
+        ontology_digests = {
+            "Fixtures-SHA256": hashlib.sha256(ontology_fixtures_path.read_bytes()).hexdigest().upper(),
+            "Answers-SHA256": hashlib.sha256(ontology_answers_path.read_bytes()).hexdigest().upper(),
+            "Review-SHA256": hashlib.sha256(ontology_review_path.read_bytes()).hexdigest().upper(),
+            "Ontology-Script-SHA256": hashlib.sha256((receiver / "xb-memory" / "scripts" / "memory_ontology.py").read_bytes()).hexdigest().upper(),
+            "Session-Store-SHA256": hashlib.sha256((receiver / "xb-save" / "scripts" / "session_store.py").read_bytes()).hexdigest().upper(),
+        }
+        require(all(f"{name}: {value}" in ontology_record for name, value in ontology_digests.items()), "v1.8 ontology candidate record loses frozen evidence or implementation hashes")
+        require(all(f"## {label}：" in ontology_fixtures for label in "ABCDEF"), "v1.8 ontology fixtures lose a frozen case")
+        require(all(f"## {label}：PASS" in ontology_answers for label in "ABCDEF"), "v1.8 ontology clean receiver results lose a case")
+        require(all(term in ontology_review for term in ("Verdict: PASS", "Release: ALLOW", "| V | 2 |", "| R | 2 |", "邻文")), "v1.8 ontology review loses the real-dialog failure, repair, or independent PASS")
 
         session_project = sandbox / "session-project"
         session_project.mkdir()
@@ -1019,6 +1057,217 @@ def main() -> int:
         code, output = run_session_store(receiver, session_project, bundle_path)
         require(code != 0 and "E_COMPLETENESS" in output, "session writer labeled a gapped transcript complete")
         print("PASS per-session prompt, local transcript/classification, incremental update, authorization, path, secret, and completeness gates")
+
+        ontology_bundle_path = sandbox / "ontology-bundle.json"
+        ontology_bundle = {
+            "schema_version": 2,
+            "session_id": "2026-08-25-1000-ontology-loop",
+            "authorized_current_session": True,
+            "network_writes": False,
+            "completeness": "complete",
+            "completeness_gaps": [],
+            "transcript": [
+                {"turn": 1, "role": "user", "content": "我在阿波罗项目负责周报。领导周五只看结论。阿波罗项目当前还是草稿。"},
+                {"turn": 2, "role": "assistant", "content": "我会把项目、周报和偏好分别绑定来源与时效。"},
+            ],
+            "ontology_delta": {
+                "schema_version": 1,
+                "session_id": "2026-08-25-1000-ontology-loop",
+                "generated_at": "2026-08-25T10:00:00+08:00",
+                "authorized_current_session": True,
+                "authorized_sensitive_long_term": False,
+                "entities": [
+                    {"entity_id": "person:self", "entity_type": "person", "canonical_name": "用户本人", "aliases": [], "scope": "project:fixture", "sensitivity": "normal", "status": "active", "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "我在阿波罗项目负责周报"}]},
+                    {"entity_id": "project:apollo", "entity_type": "project", "canonical_name": "阿波罗项目", "aliases": [], "scope": "project:fixture", "sensitivity": "normal", "status": "active", "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "阿波罗项目"}]},
+                    {"entity_id": "artifact:weekly-report", "entity_type": "artifact", "canonical_name": "周报", "aliases": [], "scope": "project:fixture", "sensitivity": "normal", "status": "active", "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "负责周报"}]},
+                    {"entity_id": "person:leader-a", "entity_type": "person", "canonical_name": "领导A", "aliases": ["领导"], "scope": "project:fixture", "sensitivity": "normal", "status": "candidate", "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "领导周五只看结论"}]}
+                ],
+                "assertions": [
+                    {"assertion_id": "a:ontology-loop:001", "subject_id": "person:self", "predicate": "works_on", "object": {"kind": "entity", "entity_id": "project:apollo"}, "epistemic_status": "user_statement", "confidence": "high", "lifecycle": "active", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:00:00+08:00", "valid_from": None, "valid_until": None, "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "我在阿波罗项目负责周报"}], "reversal": "用户说明自己已离开阿波罗项目", "supersedes": [], "qualifiers": {}},
+                    {"assertion_id": "a:ontology-loop:002", "subject_id": "person:self", "predicate": "owns", "object": {"kind": "entity", "entity_id": "artifact:weekly-report"}, "epistemic_status": "user_statement", "confidence": "high", "lifecycle": "active", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:00:00+08:00", "valid_from": None, "valid_until": None, "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "负责周报"}], "reversal": "周报责任人发生变化", "supersedes": [], "qualifiers": {}},
+                    {"assertion_id": "a:ontology-loop:003", "subject_id": "person:leader-a", "predicate": "prefers", "object": {"kind": "literal", "value": "周五只看结论", "value_type": "string"}, "epistemic_status": "user_statement", "confidence": "medium", "lifecycle": "candidate", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:00:00+08:00", "valid_from": None, "valid_until": None, "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "领导周五只看结论"}], "reversal": "领导在后续周报场景要求查看完整过程", "supersedes": [], "qualifiers": {"dimension": "report_reading"}},
+                    {"assertion_id": "a:ontology-loop:004", "subject_id": "project:apollo", "predicate": "has_status", "object": {"kind": "literal", "value": "草稿", "value_type": "status"}, "epistemic_status": "user_statement", "confidence": "medium", "lifecycle": "active", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:00:00+08:00", "valid_from": None, "valid_until": None, "source_refs": [{"session_id": "2026-08-25-1000-ontology-loop", "turn": 1, "role": "user", "excerpt": "阿波罗项目当前还是草稿"}], "reversal": "项目状态发生变化", "supersedes": [], "qualifiers": {}}
+                ]
+            },
+            "session_markdown": "# 会话摘要\n\n- 完整性：complete",
+            "progress_markdown": "# 当前进度\n\n- 最近会话：2026-08-25-1000-ontology-loop"
+        }
+        write_json(ontology_bundle_path, ontology_bundle)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code == 0 and '"ontology_assertion_count": 4' in output, f"schema 2 ontology save failed:\n{output}")
+        ontology_root = session_project / "memory" / "xbskill" / "ontology"
+        require((ontology_root / "entities.json").is_file() and (ontology_root / "index.json").is_file(), "ontology store or index was not written")
+        require((session_project / "memory" / "xbskill" / "sessions" / ontology_bundle["session_id"] / "ontology.json").is_file(), "session ontology delta was not written")
+        assertion_count = len(json.loads((ontology_root / "assertions.json").read_text(encoding="utf-8"))["assertions"])
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code == 0 and len(json.loads((ontology_root / "assertions.json").read_text(encoding="utf-8"))["assertions"]) == assertion_count, "same-session ontology save was not idempotent")
+
+        request_path = sandbox / "ontology-request.json"
+        request = {
+            "schema_version": 1, "request_id": "apollo-weekly-report", "task": "继续阿波罗项目周报",
+            "entity_ids": [], "entity_types": [], "predicates": [], "as_of": None,
+            "max_assertions": 10, "include_candidates": True, "include_disputed": True,
+            "include_restricted": False, "authorized_sensitive_read": False,
+        }
+        write_json(request_path, request)
+        code, output = run_memory_ontology(receiver, ["query", "--project-root", str(session_project), "--request", str(request_path)])
+        require(code == 0 and '"status": "matched"' in output and "a:ontology-loop:001" in output and "a:ontology-loop:002" in output, f"task-relevant ontology query failed:\n{output}")
+        request["request_id"] = "no-match-task"
+        request["task"] = "量子花园完全无关事项"
+        write_json(request_path, request)
+        code, output = run_memory_ontology(receiver, ["query", "--project-root", str(session_project), "--request", str(request_path)])
+        require(code == 0 and '"status": "no_match"' in output, "irrelevant ontology query injected old memory")
+
+        ambiguous = json.loads(json.dumps(ontology_bundle, ensure_ascii=False))
+        ambiguous["session_id"] = "2026-08-25-1010-ambiguous-memory"
+        ambiguous["ontology_delta"]["session_id"] = ambiguous["session_id"]
+        ambiguous["transcript"] = [{"turn": 1, "role": "user", "content": "他让我继续。"}]
+        ambiguous["ontology_delta"]["entities"] = [
+            {"entity_id": "person:unknown-he", "entity_type": "person", "canonical_name": "待确认的他", "aliases": ["他"], "scope": "project:fixture", "sensitivity": "normal", "status": "needs_identity", "source_refs": [{"session_id": ambiguous["session_id"], "turn": 1, "role": "user", "excerpt": "他让我继续"}]},
+            {"entity_id": "work_item:continue", "entity_type": "work_item", "canonical_name": "继续当前事项", "aliases": [], "scope": "project:fixture", "sensitivity": "normal", "status": "candidate", "source_refs": [{"session_id": ambiguous["session_id"], "turn": 1, "role": "user", "excerpt": "让我继续"}]}
+        ]
+        ambiguous["ontology_delta"]["assertions"] = [{"assertion_id": "a:ambiguous:001", "subject_id": "person:unknown-he", "predicate": "owns", "object": {"kind": "entity", "entity_id": "work_item:continue"}, "epistemic_status": "user_statement", "confidence": "low", "lifecycle": "active", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:10:00+08:00", "valid_from": None, "valid_until": None, "source_refs": [{"session_id": ambiguous["session_id"], "turn": 1, "role": "user", "excerpt": "他让我继续"}], "reversal": "用户确认代词指向", "supersedes": [], "qualifiers": {}}]
+        write_json(ontology_bundle_path, ambiguous)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code != 0 and "E_IDENTITY" in output, "unresolved identity became an active long-term assertion")
+
+        sensitive = json.loads(json.dumps(ontology_bundle, ensure_ascii=False))
+        sensitive["ontology_delta"]["assertions"][0]["sensitivity"] = "restricted"
+        write_json(ontology_bundle_path, sensitive)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code != 0 and "E_SENSITIVE_AUTH" in output, "restricted long-term memory bypassed extra authorization")
+
+        false_user_source = json.loads(json.dumps(ontology_bundle, ensure_ascii=False))
+        false_user_source["ontology_delta"]["assertions"][0]["source_refs"] = [{"session_id": false_user_source["session_id"], "turn": 2, "role": "assistant", "excerpt": "项目、周报和偏好分别绑定来源与时效"}]
+        write_json(ontology_bundle_path, false_user_source)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code != 0 and "E_EPISTEMIC_SOURCE" in output, "user statement accepted an assistant-only source")
+
+        conflict_bundle = {
+            "schema_version": 2,
+            "session_id": "2026-08-25-1020-status-conflict",
+            "authorized_current_session": True,
+            "network_writes": False,
+            "completeness": "complete",
+            "completeness_gaps": [],
+            "transcript": [{"turn": 1, "role": "user", "content": "阿波罗项目状态已批准。"}],
+            "ontology_delta": {
+                "schema_version": 1,
+                "session_id": "2026-08-25-1020-status-conflict",
+                "generated_at": "2026-08-25T10:20:00+08:00",
+                "authorized_current_session": True,
+                "authorized_sensitive_long_term": False,
+                "entities": [{"entity_id": "project:apollo", "entity_type": "project", "canonical_name": "阿波罗项目", "aliases": [], "scope": "project:fixture", "sensitivity": "normal", "status": "active", "source_refs": [{"session_id": "2026-08-25-1020-status-conflict", "turn": 1, "role": "user", "excerpt": "阿波罗项目状态已批准"}]}],
+                "assertions": [{"assertion_id": "a:status-conflict:001", "subject_id": "project:apollo", "predicate": "has_status", "object": {"kind": "literal", "value": "已批准", "value_type": "status"}, "epistemic_status": "user_statement", "confidence": "high", "lifecycle": "active", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:20:00+08:00", "valid_from": None, "valid_until": None, "source_refs": [{"session_id": "2026-08-25-1020-status-conflict", "turn": 1, "role": "user", "excerpt": "阿波罗项目状态已批准"}], "reversal": "用户或一手材料说明批准状态无效", "supersedes": [], "qualifiers": {}}]
+            },
+            "session_markdown": "# 会话摘要\n\n- 完整性：complete",
+            "progress_markdown": "# 当前进度\n\n- 最近会话：2026-08-25-1020-status-conflict"
+        }
+        write_json(ontology_bundle_path, conflict_bundle)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code == 0 and '"conflict_count": 1' in output, f"functional-property conflict was not exposed:\n{output}")
+
+        correction_bundle = {
+            "schema_version": 2,
+            "session_id": "2026-08-25-1030-status-correction",
+            "authorized_current_session": True,
+            "network_writes": False,
+            "completeness": "complete",
+            "completeness_gaps": [],
+            "transcript": [{"turn": 1, "role": "user", "content": "确认：阿波罗项目当前已批准，以前两条状态记录作废。"}],
+            "ontology_delta": {
+                "schema_version": 1,
+                "session_id": "2026-08-25-1030-status-correction",
+                "generated_at": "2026-08-25T10:30:00+08:00",
+                "authorized_current_session": True,
+                "authorized_sensitive_long_term": False,
+                "entities": [{"entity_id": "project:apollo", "entity_type": "project", "canonical_name": "阿波罗项目", "aliases": [], "scope": "project:fixture", "sensitivity": "normal", "status": "active", "source_refs": [{"session_id": "2026-08-25-1030-status-correction", "turn": 1, "role": "user", "excerpt": "阿波罗项目当前已批准"}]}],
+                "assertions": [{"assertion_id": "a:status-correction:001", "subject_id": "project:apollo", "predicate": "has_status", "object": {"kind": "literal", "value": "已批准", "value_type": "status"}, "epistemic_status": "user_statement", "confidence": "high", "lifecycle": "active", "retention": "long_term", "sensitivity": "normal", "scope": "project:fixture", "observed_at": "2026-08-25T10:30:00+08:00", "valid_from": "2026-08-25T10:30:00+08:00", "valid_until": None, "source_refs": [{"session_id": "2026-08-25-1030-status-correction", "turn": 1, "role": "user", "excerpt": "阿波罗项目当前已批准"}], "reversal": "用户或一手材料说明批准状态已变化", "supersedes": ["a:ontology-loop:004", "a:status-conflict:001"], "qualifiers": {}}]
+            },
+            "session_markdown": "# 会话摘要\n\n- 完整性：complete",
+            "progress_markdown": "# 当前进度\n\n- 最近会话：2026-08-25-1030-status-correction"
+        }
+        write_json(ontology_bundle_path, correction_bundle)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code == 0 and '"conflict_count": 0' in output, f"superseding correction did not clear the effective conflict:\n{output}")
+        require(all(term in memory_text for term in ("needs_identity", "assistant_inference", "ContextPacket", "supersedes", "restricted")), "xb-memory loses identity, inference, retrieval, correction, or sensitivity gates")
+        print("PASS ontology entities, assertions, provenance, idempotence, relevance, ambiguity, conflict, and sensitive-memory gates")
+
+        legacy_project = sandbox / "legacy-project"
+        legacy_session_id = "2026-08-25-1350-选址助手515分销诊所合作"
+        legacy_session = legacy_project / "memory" / "xbskill" / "sessions" / legacy_session_id
+        legacy_session.mkdir(parents=True)
+        legacy_transcript = """# 会话全文
+
+## 第 1 轮
+
+**用户**：
+
+我们分销也在给诊所基层医疗机构供货，希望建立515新政后的合作试点。
+
+**助手**：
+
+先验证机构地址完整度，再决定试点省。
+
+## 第 2 轮
+
+**用户**：
+
+药店经纬度比较老旧，需要先更新。地址评估 SQL 稍后给你。
+
+**助手**：
+
+处方回流率可以作为候选指标，仍待你确认。邻近原文还提到一个未分类的三公里半径建议。
+"""
+        legacy_classification = """# 分类账
+
+| item_id | category | subject | content | evidence_level | source | confidence | target | action | reversal |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | project_progress | 515分销诊所合作试点 | 药店经纬度比较老旧，地址评估 SQL 待提供 | user_statement | R2 | 高 | progress.md | appended | 用户提供新数据 |
+| 2 | assistant_inference | 试点第一指标 | 处方回流率作为试点第一指标，仍待用户认可 | assistant_inference | R2 | 中 | session_only | candidate_only | 用户选择其他指标 |
+"""
+        (legacy_session / "transcript.md").write_text(legacy_transcript, encoding="utf-8")
+        (legacy_session / "classification.md").write_text(legacy_classification, encoding="utf-8")
+        legacy_candidate_path = sandbox / "legacy-candidate.json"
+        code, output = run_memory_ontology(receiver, [
+            "migrate-legacy", "--project-root", str(legacy_project), "--session-id", legacy_session_id,
+            "--output", str(legacy_candidate_path),
+        ])
+        require(code == 0 and '"status": "candidate_created"' in output, f"legacy migration candidate failed:\n{output}")
+        legacy_delta = json.loads(legacy_candidate_path.read_text(encoding="utf-8"))
+        require(len(legacy_delta["assertions"]) == 2, "legacy migration lost a classification row")
+        require(all(item["lifecycle"] == "candidate" and item["epistemic_status"] == "assistant_inference" and item["confidence"] == "low" for item in legacy_delta["assertions"]), "legacy classification bypassed candidate demotion")
+        require(all(item["qualifiers"]["review_required"] is True and item["qualifiers"]["legacy_content"] for item in legacy_delta["assertions"]), "legacy migration lost original row evidence")
+        require(all(item["source_refs"][0]["excerpt"] in legacy_transcript for item in legacy_delta["assertions"]), "legacy migration source is not an exact transcript excerpt")
+        code, output = run_memory_ontology(receiver, ["apply", "--project-root", str(legacy_project), "--delta", str(legacy_candidate_path)])
+        require(code == 0 and '"status": "applied"' in output, f"legacy migration apply failed:\n{output}")
+        legacy_request_path = sandbox / "legacy-request.json"
+        legacy_request = {
+            "schema_version": 1, "request_id": "legacy-new-dialog", "task": "继续515诊所合作，地址和试点指标还缺什么",
+            "entity_ids": [], "entity_types": [], "predicates": [], "as_of": None,
+            "max_assertions": 10, "include_candidates": False, "include_disputed": False,
+            "include_restricted": False, "authorized_sensitive_read": False,
+        }
+        write_json(legacy_request_path, legacy_request)
+        code, output = run_memory_ontology(receiver, ["query", "--project-root", str(legacy_project), "--request", str(legacy_request_path)])
+        require(code == 0 and '"status": "no_match"' in output, "legacy candidate was injected without an explicit candidate query")
+        legacy_request["include_candidates"] = True
+        write_json(legacy_request_path, legacy_request)
+        code, output = run_memory_ontology(receiver, ["query", "--project-root", str(legacy_project), "--request", str(legacy_request_path)])
+        require(code == 0 and '"status": "matched"' in output and "地址评估 SQL 待提供" in output and "处方回流率" in output, f"new-dialog query did not recover relevant legacy candidates:\n{output}")
+        require("legacy_candidate_provenance_only" in output and "三公里半径" not in output, "legacy transcript neighbor text leaked into the ContextPacket")
+        legacy_request["request_id"] = "legacy-unrelated"
+        legacy_request["task"] = "整理年度培训签到表"
+        write_json(legacy_request_path, legacy_request)
+        code, output = run_memory_ontology(receiver, ["query", "--project-root", str(legacy_project), "--request", str(legacy_request_path)])
+        require(code == 0 and '"status": "no_match"' in output, "unrelated new dialog received legacy candidates")
+        second_candidate = sandbox / "legacy-candidate-second.json"
+        code, output = run_memory_ontology(receiver, [
+            "migrate-legacy", "--project-root", str(legacy_project), "--session-id", legacy_session_id,
+            "--output", str(second_candidate),
+        ])
+        require(code != 0 and "E_ALREADY_MIGRATED" in output, "already migrated legacy session did not fail loudly")
+        print("PASS legacy classification migrates to reviewable candidates and reduces relevant new-dialog restatement without unrelated injection")
 
         ui = receiver / "xb-action" / "agents" / "openai.yaml"
         original_ui = ui.read_text(encoding="utf-8")
@@ -2185,7 +2434,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY 33/33 receiver tests passed")
+    print("SUMMARY 35/35 receiver tests passed")
     return 0
 
 

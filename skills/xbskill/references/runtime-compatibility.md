@@ -9,7 +9,7 @@
 | 使用场景 | Python 3.10+ | Node.js 22.20+ |
 |---|---:|---:|
 | 纯文本诊断、写作、沟通与决策专科 | 否 | 否 |
-| 套件校验、`xb-save`、`xb-knowledge`、`xb-role-knowledge` | 是 | 否 |
+| 套件校验、`xb-save`、`xb-memory`、`xb-knowledge`、`xb-role-knowledge` | 是 | 否 |
 | 通过 `npx skills` 安装或更新 | 否 | 是 |
 | 手动复制完整 `skills/` 套件 | 校验时使用 | 否 |
 

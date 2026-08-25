@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.7.5-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.8.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -10,7 +10,7 @@
 
 ## 安装
 
-通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 35 个 Skill：
+通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 36 个 Skill：
 
 ```bash
 DISABLE_TELEMETRY=1 npx -y skills add dennydkt/xbskill -g --all
@@ -25,7 +25,7 @@ npx -y skills add dennydkt/xbskill -g --all
 
 该命令保持普通试用路径：无需注册、许可申请、授权码或额外运行服务。`DISABLE_TELEMETRY=1` 关闭上游 Skills CLI 遥测；去掉 `--all` 可以交互式选择安装。
 
-套件校验、`xb-save`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+。其余纯文本专科没有 Python 或 Node.js 依赖。
+套件校验、`xb-save`、`xb-memory`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+。其余纯文本专科没有 Python 或 Node.js 依赖。
 
 macOS / Linux 手动安装：
 
@@ -64,7 +64,7 @@ $xb-career 比较留下、换组和外部机会，给我现实试验和翻转条
 
 ## 能力一览
 
-完整套件包含 35 个 Skill：
+完整套件包含 36 个 Skill：
 
 - 主入口：`xbskill`
 - 看懂：`xb-triage` `xb-analysis` `xb-people` `xb-decode` `xb-company` `xb-stakeholder`
@@ -72,7 +72,7 @@ $xb-career 比较留下、换组和外部机会，给我现实试验和翻转条
 - 执行：`xb-goal` `xb-plan` `xb-it` `xb-data` `xb-automation` `xb-review`
 - 关系与边界：`xb-conflict` `xb-boundary` `xb-action` `xb-wellbeing`
 - 成长与选择：`xb-decision` `xb-career` `xb-capability` `xb-learning` `xb-ai-native` `xb-knowledge`
-- 深度支持：`xb-role-knowledge` `xb-save` `xb-restore` `xb-update` `xb-builder` `xb-audit`
+- 深度支持：`xb-role-knowledge` `xb-save` `xb-memory` `xb-restore` `xb-update` `xb-builder` `xb-audit`
 
 ## 设计原则
 

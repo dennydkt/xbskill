@@ -46,7 +46,7 @@ description: |
 
 读取 [references/work-model.md](references/work-model.md) 理解“五坐标 + 一引擎 + 一道选择门”；读取 [references/agency-model.md](references/agency-model.md) 判断状态、主体性和解决/调整/退出；读取 [references/goal-help-model.md](references/goal-help-model.md) 选择目标层级与帮助能级；读取 [references/resolution-standard.md](references/resolution-standard.md) 区分回答、当前产物与现实问题解决；读取 [references/answer-format.md](references/answer-format.md) 按“结论先行、结尾分行收尾块、记忆显形”输出每个回答；读取 [references/routing.md](references/routing.md) 完整路由表。执行跨 Skill 工作时读取 [references/contracts.md](references/contracts.md) 与 [references/context-protocol.md](references/context-protocol.md)。当岗位责任、熟练阶段或组织环境会改变动作时读取 [references/role-context-model.md](references/role-context-model.md)：数据处理类再读 [references/data-work-specialties.md](references/data-work-specialties.md)，产品研发类再读 [references/product-rd-specialties.md](references/product-rd-specialties.md)，项目管理/行政/秘书/办公室再读 [references/function-work-specialties.md](references/function-work-specialties.md)，金融投研或营销再读 [references/finance-marketing-specialties.md](references/finance-marketing-specialties.md) 的当前岗位族切片。若岗位专业知识会改变观察、竞争解释、动作、产物或验收，由已经选定的当前专科隐藏支持调用 [../xb-role-knowledge/SKILL.md](../xb-role-knowledge/SKILL.md)，当前专科不切换。需要组织适配时同时读取 [references/organization-strategy-genome.md](references/organization-strategy-genome.md)。需要能力判断时读取 [references/capability-model.md](references/capability-model.md)；需要把抽象思想转成判断动作时读取 [references/intellectual-capabilities.md](references/intellectual-capabilities.md)，每次最多启用两个镜头；遇到宽泛问题或覆盖审计时读取 [references/common-scenarios.md](references/common-scenarios.md)；只在分析系统机制、扩充/新建专科或发布审计时读取 [references/system-design.md](references/system-design.md) 与 [references/specialist-rewrite-method.md](references/specialist-rewrite-method.md)。当结论正确性依赖本地材料、官方文档、论文或 GitHub 仓库等专科知识时，必须读取 [references/knowledge-source-protocol.md](references/knowledge-source-protocol.md)，建立最小证据包；岗位纵深的研究追踪与许可边界见 [references/specialty-source-ledger.md](references/specialty-source-ledger.md)，只在建设、审计或刷新来源时读取；必需来源缺失时停止受影响结论，不得静默回退模型先验。用户索要完整使用说明、安装指引或专科速查时，读取 [references/user-guide.md](references/user-guide.md) 并交付对应章节。
 
-会话收尾另需读取 [references/session-memory-protocol.md](references/session-memory-protocol.md)，执行每次会话收尾询问、本地全文保存与自动分类。
+会话收尾另需读取 [references/session-memory-protocol.md](references/session-memory-protocol.md)，执行每次会话收尾询问、本地全文保存与会话本体写入；检查、纠正或查询结构化记忆时读取 [../xb-memory/SKILL.md](../xb-memory/SKILL.md)。
 
 外部文件硬约定：以上文件必须位于本目录的 `references/`。任何必需文件缺失时，明确报出缺失路径并停止相关模式；不得凭记忆补造一个简化版继续运行。
 
@@ -54,7 +54,7 @@ description: |
 
 进入判断模式之前执行。目标：让回头用户第一眼感到“它记得我”，同时不编造、不打扰新用户。
 
-1. 能从当前会话或明确路径确定项目根，且该项目存在 `memory/xbskill/` 存档时：先读 `progress.md`（若存在）或最新快照的一句话摘要，然后用不超过两行开场——一行引用上次的主目标、当前一步和反馈点，一行问现状：“接着上次的 X 继续，还是今天有新的事？”引用旧内容时标注快照日期（“记自 MM-DD”），不要求换算星期；旧内容不冒充本轮事实。开场两行只负责接住；用户要完整恢复（时效核对、产物回读、决策事件回填）时路由 `xb-restore` 走完整流程。
+1. 能从当前会话或明确路径确定项目根，且该项目存在 `memory/xbskill/` 存档时：先用本轮用户消息查询会话本体；有任务相关命中时引用最小相关断言并标来源日期，无命中时不提无关旧事。用户明确要接着上次时，再读 `progress.md` 定位主目标、当前一步和反馈点，用不超过两行承接。用户要完整恢复（时效、冲突、产物回读、决策事件回填）时路由 `xb-restore`。
 2. 无法确定项目或没有存档：正常开场处理当前问题，不为了记忆反问项目路径；用户自然提到项目特征时再匹配。新用户不输出任何“欢迎回来”。
 3. 会话信息近乎为空（如用户只说“在吗”）：有档案时两行开场即本轮引导，不与模式 A 的空对话引导叠加；结尾收尾块只写本轮新信息，不重复开场已给的上次反馈点。
 4. 会话中引用旧快照、人物/公司档案或学习/决策记录时，显形来源与日期（“记自 08-15 快照”）；旧结论不覆盖本轮新事实。
@@ -165,7 +165,7 @@ description: |
 >
 > 记忆：【…】
 
-交接同时执行会话保存检查点：按 `session-memory-protocol.md` 把“若需要保存对话内容，请直接回复‘保存对话’”并入“记忆”。用户回复后，项目根未知再追问本地项目路径；项目根可确定则调用 `xb-save` 保存可见全文、会话摘要、分类账、progress 与分类目标档案。用户拒绝只结束本次检查点，不写设置、不追问理由。用户明确“以后别问”才关闭后续提示。
+交接同时执行会话保存检查点：按 `session-memory-protocol.md` 把“若需要保存对话内容，请直接回复‘保存对话’”并入“记忆”。用户回复后，项目根未知再追问本地项目路径；项目根可确定则调用 `xb-save` 保存可见全文、会话摘要、会话本体、分类投影和 progress。用户拒绝只结束本次检查点，不写设置、不追问理由。用户明确“以后别问”才关闭后续提示。
 
 ## 自检
 

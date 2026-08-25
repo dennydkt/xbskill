@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "predicates": {
+    "has_goal": {"subjects": ["person", "project", "organization"], "object": "entity", "objects": ["goal"], "cardinality": "many"},
+    "works_on": {"subjects": ["person"], "object": "entity", "objects": ["project", "work_item"], "cardinality": "many"},
+    "has_role": {"subjects": ["person"], "object": "either", "objects": ["role"], "cardinality": "many"},
+    "member_of": {"subjects": ["person"], "object": "entity", "objects": ["organization"], "cardinality": "many"},
+    "reports_to": {"subjects": ["person"], "object": "entity", "objects": ["person"], "cardinality": "many"},
+    "collaborates_with": {"subjects": ["person", "organization"], "object": "entity", "objects": ["person", "organization"], "cardinality": "many"},
+    "owns": {"subjects": ["person", "organization", "project"], "object": "entity", "objects": ["goal", "work_item", "artifact", "decision", "project"], "cardinality": "many"},
+    "decides": {"subjects": ["person", "organization"], "object": "entity", "objects": ["decision"], "cardinality": "many"},
+    "approves": {"subjects": ["person", "organization"], "object": "entity", "objects": ["decision", "artifact", "work_item"], "cardinality": "many"},
+    "depends_on": {"subjects": ["project", "goal", "work_item", "artifact", "decision"], "object": "entity", "objects": ["person", "organization", "project", "goal", "work_item", "artifact", "decision", "constraint"], "cardinality": "many"},
+    "produces": {"subjects": ["person", "project", "work_item"], "object": "entity", "objects": ["artifact", "event"], "cardinality": "many"},
+    "constrained_by": {"subjects": ["person", "project", "goal", "work_item", "decision"], "object": "entity", "objects": ["constraint"], "cardinality": "many"},
+    "prefers": {"subjects": ["person", "organization"], "object": "either", "objects": ["preference"], "cardinality": "many"},
+    "has_capability_evidence": {"subjects": ["person"], "object": "entity", "objects": ["capability", "event", "artifact"], "cardinality": "many"},
+    "has_status": {"subjects": ["project", "goal", "work_item", "artifact", "decision", "event"], "object": "literal", "objects": [], "cardinality": "one"},
+    "has_deadline": {"subjects": ["project", "goal", "work_item", "decision"], "object": "literal", "objects": [], "cardinality": "one"},
+    "about": {"subjects": ["work_item", "artifact", "decision", "event", "topic"], "object": "entity", "objects": ["person", "organization", "project", "goal", "work_item", "artifact", "decision", "event", "constraint", "capability", "preference", "role", "topic"], "cardinality": "many"},
+    "resulted_in": {"subjects": ["decision", "event", "work_item"], "object": "either", "objects": ["goal", "work_item", "artifact", "decision", "event", "constraint"], "cardinality": "many"},
+    "same_as": {"subjects": ["person", "organization", "project", "goal", "work_item", "artifact", "decision", "event", "constraint", "capability", "preference", "role", "topic"], "object": "entity", "objects": ["person", "organization", "project", "goal", "work_item", "artifact", "decision", "event", "constraint", "capability", "preference", "role", "topic"], "cardinality": "one"},
+    "different_from": {"subjects": ["person", "organization", "project", "goal", "work_item", "artifact", "decision", "event", "constraint", "capability", "preference", "role", "topic"], "object": "entity", "objects": ["person", "organization", "project", "goal", "work_item", "artifact", "decision", "event", "constraint", "capability", "preference", "role", "topic"], "cardinality": "many"}
+  }
+}
