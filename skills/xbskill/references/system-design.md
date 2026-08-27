@@ -119,17 +119,30 @@ XB 的价值不成立于“职场问题很多”或“AI 什么都能答”，�
 
 五对象不是每次全量加载。入口按 `context-protocol.md` 生成最小上下文包；简单任务不盘问心理，状态信息不默认持久化，避免公司资料、人物档案和敏感体验污染无关任务。
 
-## 为什么不新增 `xb-agency`
+## v0.3 为什么没有新增 `xb-agency`
 
 状态与主体性是跨所有问题的坐标和入口契约，不是一个独立任务专科。稳定、执行、理解、改变和选择已经分别由 `xb-wellbeing`、`xb-action`、`xb-triage`/`xb-analysis`、协作与边界专科、`xb-decision`/`xb-career` 承担。
 
 在没有至少两个现实样本证明现有专科之间存在不可覆盖的独立动作前，新增 `xb-agency` 会制造菜单膨胀，并让其他专科误以为主体性只由一个 Skill 负责。因此 v0.3 只新增引用模型和跨 Skill 契约。
 
+## v1.9：主体行动主义成为双态专科
+
+v1.9 得到两类差异材料：一类处理礼仪、资源、服从、拒绝和规则改造，另一类处理 Agent 行动能力、组织权限、人工监督与责任承担。它们共同证明了一个独立用户任务：用户会直接要求 xbskill 用自己的世界观判断“该适应、改变、拒绝、升级还是退出”，并要求 Agent 时代的行动与责任重新接合。
+
+因此新增 `xb-agency`：
+
+- 直接调用时，它交付主方向、规则与权力图、责任图、最小行动和翻转条件；
+- 其他专科已确定时，它只返回一个最小 `CreedPacket`，原专科继续保持唯一当前 Skill；
+- 主体性仍是全系统横切坐标，不归单一专科垄断；
+- 简单任务、纯事实任务及专业硬边界返回 `no_view`，防止主义常开。
+
+这次准入依据是两个差异场景、可复用的六种“观”、直接判断产物、隐藏支持协议、反例关闭门和高风险边界。早期关于菜单膨胀的否决条件因此被满足并保留为历史记录。
+
 ## 七层架构
 
 1. 导航层：`xbskill`
 2. 定位层：`xb-triage`、`xb-goal`、`xb-capability`、`xb-people`、`xb-company`
-3. 判断层：`xb-analysis`、`xb-decision`、`xb-plan`
+3. 判断层：`xb-analysis`、`xb-decision`、`xb-plan`、`xb-agency`
 4. 产出层：`xb-it`、`xb-data`、`xb-automation`、`xb-writing`、`xb-presentation`
 5. 协作层：`xb-meeting`、`xb-talk`、`xb-upward`、`xb-stakeholder`、`xb-conflict`、`xb-boundary`
 6. 续航与选择层：`xb-action`、`xb-wellbeing`、`xb-career`、`xb-learning`、`xb-knowledge`

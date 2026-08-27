@@ -47,7 +47,9 @@
 
 ## 留存和敏感级别
 
-`normal` 可在通过来源与证据门后进入长期本体。`restricted` 默认只能 `session_only`；长期保存需额外的 `authorized_sensitive_long_term=true`。用户明确排除的内容不进入 transcript 或本体增量。凭据和私钥模式始终阻断整笔事务。
+`normal` 可在通过来源与证据门后进入长期本体。`restricted` 默认使用 `session_only`，并完整保存在当前会话的 `ontology.json`；项目级 `ontology/assertions.json` 排除这类断言。用户明确允许跨会话长期检索选定受限断言后，才把这些断言改为 `long_term` 并设置 `authorized_sensitive_long_term=true`。这项授权只改变留存与检索作用域，证据层级、置信度、生命周期、来源、推翻条件和 `supersedes` 原样保留。用户明确排除的内容不进入 transcript 或本体增量。凭据和私钥模式始终阻断整笔事务。
+
+保存前必须显示本体作用域预览，至少包含会话实体、会话断言、普通长期、受限会话级、候选和冲突数量。没有跨会话敏感检索意图时，预览明确告知安全默认并继续写入；只有用户表达长期检索意图时，才逐条展示拟授权断言并询问一次。
 
 ## 未来会话检索
 

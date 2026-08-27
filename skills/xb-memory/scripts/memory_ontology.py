@@ -706,9 +706,17 @@ def plan_ontology_writes(memory_root: Path, delta: dict[str, Any]) -> tuple[dict
     return writes, {
         "ontology_entity_count": len(entities),
         "ontology_assertion_count": len(assertions),
+        "session_entity_count": len(delta["entities"]),
         "session_assertion_count": len(delta["assertions"]),
         "long_term_assertion_count": len(long_term_assertions),
         "session_only_assertion_count": len(delta["assertions"]) - len(long_term_assertions),
+        "restricted_assertion_count": sum(item["sensitivity"] == "restricted" for item in delta["assertions"]),
+        "restricted_long_term_assertion_count": sum(
+            item["sensitivity"] == "restricted" and item["retention"] == "long_term"
+            for item in delta["assertions"]
+        ),
+        "candidate_assertion_count": sum(item["lifecycle"] == "candidate" for item in delta["assertions"]),
+        "sensitive_long_term_authorized": delta["authorized_sensitive_long_term"],
         "conflict_count": len(index["conflicts"]),
     }
 

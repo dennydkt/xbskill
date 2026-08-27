@@ -39,6 +39,14 @@
 
 按 `context-protocol.md` 只加载当前任务相关的状态/主体性、能力、岗位责任、人物和公司信息。岗位上下文按 `role-context-model.md` 处理：阶段是当前任务/环境的帮助模式，不是身份；只加载一个相关岗位图谱。组织适配按 `organization-strategy-genome.md` 处理：公司类别只能生成候选问题，真实规则或近期案例才能激活动作。档案缺失不等于可以自由假设；档案存在也不等于内容仍然有效。当前状态和任务阶段优先使用本轮证据，不从长期档案推断；引用画像、岗位或公司信息时带层级、来源/日期与置信度。
 
+### 主体行动主义支持调用
+
+用户主结果是用 xbskill 的世界观判断规则、适应、改变、拒绝、退出或 Agent 责任时，`xb-agency` 可以成为唯一当前专科。其他专科已经确定，且用户材料出现规则正当性、主体性或责任错配信号时，当前专科可隐藏支持调用 `../xb-agency/SKILL.md`，只取得一个 `CreedPacket`。
+
+优先调用表示在优化效率和服从之前先检查人的尊严、选择、权力、成本与责任。事实、安全、法律、医疗、组织权限和用户明确决定仍是硬边界。简单任务或观点无法改变观察、动作、产物字段与翻转条件时返回 `no_view`。
+
+支持调用不得改写 `current_skill`，不得生成第二个收尾块。调用方必须把 `selected_view → trigger_evidence → changed_observation → changed_action → required_artifact_field → failure_or_flip_signal` 连到实际交付；只展示观点名称视为惰性调用。
+
 当 `RoleContext.job_family` 会改变当前专科的观察、责任、风险、产物或验收时，当前专科必须按需读取且只读取一套：`data → data-work-specialties.md`、`product_rd → product-rd-specialties.md`、`function → function-work-specialties.md`、`finance | marketing → finance-marketing-specialties.md`（只取当前岗位族切片）。若相应文件缺失，报出路径并明确“未加载岗位纵深”，停止依赖该纵深的结论；不得把通用答案冒充已适配答案。
 
 当图谱仍不足以给出当前任务的专业观察、竞争解释、辨别动作、分支、产物或验证时，已经选定的当前专科按 `../xb-role-knowledge/references/role-knowledge-protocol.md` 构造最小 `RoleKnowledgeRequest`，支持调用 `xb-role-knowledge`。普通任务中当前专科始终只有一个；支持子调用只返回 `RoleKnowledgePacket`，不得把 `xb-role-knowledge` 加为第二个 `current_skill`。只有用户主目标就是补充、修订、停用、回测岗位知识时，`xb-role-knowledge` 才能成为当前唯一专科。

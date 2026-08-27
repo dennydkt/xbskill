@@ -471,7 +471,9 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 36, "receiver did not discover all 36 skills")
+        require(len(sm.skill_dirs(receiver)) == 37, "receiver did not discover all 37 skills")
+        require(not any(receiver.rglob("__pycache__")),
+                "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
 
         runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
@@ -510,6 +512,9 @@ def main() -> int:
         answer_format = (receiver / "xbskill" / "references" / "answer-format.md").read_text(encoding="utf-8")
         contracts_text = (receiver / "xbskill" / "references" / "contracts.md").read_text(encoding="utf-8")
         shell_text = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
+        routing_text = (receiver / "xbskill" / "references" / "routing.md").read_text(encoding="utf-8")
+        agency_text = (receiver / "xb-agency" / "SKILL.md").read_text(encoding="utf-8")
+        agency_creed = (receiver / "xb-agency" / "references" / "subject-actionism.md").read_text(encoding="utf-8")
         memory_consent_answers_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-blind-answers.md"
         memory_consent_review_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-independent-review.md"
         memory_consent_release_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-release-record.md"
@@ -524,6 +529,21 @@ def main() -> int:
         ontology_answers_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-clean-receiver-answers.md"
         ontology_review_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-review-status.md"
         ontology_record_path = receiver / "xbskill" / "references" / "v1.8-memory-ontology-candidate-record.md"
+        scope_preview_fixtures_path = receiver / "xbskill" / "references" / "v1.8.1-memory-scope-preview-fixtures.md"
+        scope_preview_record_path = receiver / "xbskill" / "references" / "v1.8.1-memory-scope-preview-candidate-record.md"
+        agency_acceptance_fixtures_path = receiver / "xbskill" / "references" / "v1.9-subject-actionism-acceptance-fixtures.md"
+        agency_acceptance_answers_path = receiver / "xbskill" / "references" / "v1.9-subject-actionism-acceptance-answers.md"
+        agency_acceptance_review_path = receiver / "xbskill" / "references" / "v1.9-subject-actionism-acceptance-review.md"
+        agency_candidate_record_path = receiver / "xbskill" / "references" / "v1.9-subject-actionism-candidate-record.md"
+        agency_invalidated_answers_path = receiver / "xbskill" / "references" / "v1.9-subject-actionism-blind-answers.md"
+        agency_failure_review_paths = tuple(
+            receiver / "xbskill" / "references" / name for name in (
+                "v1.9-subject-actionism-retest-review-fail.md",
+                "v1.9-subject-actionism-final-review-fail.md",
+                "v1.9-subject-actionism-release-review-fail.md",
+                "v1.9-subject-actionism-rc-review-fail.md",
+            )
+        )
         memory_consent_answers = memory_consent_answers_path.read_text(encoding="utf-8")
         memory_consent_review = memory_consent_review_path.read_text(encoding="utf-8")
         memory_consent_release = memory_consent_release_path.read_text(encoding="utf-8")
@@ -538,6 +558,13 @@ def main() -> int:
         ontology_answers = ontology_answers_path.read_text(encoding="utf-8")
         ontology_review = ontology_review_path.read_text(encoding="utf-8")
         ontology_record = ontology_record_path.read_text(encoding="utf-8")
+        scope_preview_fixtures = scope_preview_fixtures_path.read_text(encoding="utf-8")
+        scope_preview_record = scope_preview_record_path.read_text(encoding="utf-8")
+        agency_acceptance_fixtures = agency_acceptance_fixtures_path.read_text(encoding="utf-8")
+        agency_acceptance_answers = agency_acceptance_answers_path.read_text(encoding="utf-8")
+        agency_acceptance_review = agency_acceptance_review_path.read_text(encoding="utf-8")
+        agency_candidate_record = agency_candidate_record_path.read_text(encoding="utf-8")
+        agency_invalidated_answers = agency_invalidated_answers_path.read_text(encoding="utf-8")
         decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
         decode_text = (receiver / "xb-decode" / "SKILL.md").read_text(encoding="utf-8")
         decode_mechanisms = (receiver / "xb-decode" / "references" / "subtext-mechanisms.md").read_text(encoding="utf-8")
@@ -575,6 +602,59 @@ def main() -> int:
         save_text = (receiver / "xb-save" / "SKILL.md").read_text(encoding="utf-8")
         memory_text = (receiver / "xb-memory" / "SKILL.md").read_text(encoding="utf-8")
         restore_text = (receiver / "xb-restore" / "SKILL.md").read_text(encoding="utf-8")
+        require(all(term in agency_text for term in (
+            "主体行动主义", "直接判断", "隐藏支持", "CreedRequest", "CreedPacket",
+            "current_skill` 不得改写", "no_view", "blocked_by_boundary",
+            "行动能力", "组织权限", "责任资格", "身份溯源", "看得见", "可持续接管",
+            "证据与申诉", "管理型 Agent", "自由选择充分", "第三方的同意",
+            "不向用户显示内部状态 `no_view`", "以 220 字为编写目标",
+            "责任与补救细节只写进带证据状态的表格", "语义解释放进普通列表仍然计入",
+        )), "xb-agency loses direct/support modes, single-current-skill gate, or Agent responsibility chain")
+        require(all(term in agency_creed for term in (
+            "人本规则观", "改造适应观", "权责对称观", "行动责任观", "拒绝生成观", "可回头勇气观",
+            "事实、安全、法律、医疗、权限和用户决定", "事实不足时不选观点",
+            "纸面/实际权力", "可持续接管", "证据/申诉",
+        )), "subject actionism loses a worldview, priority boundary, or no-view gate")
+        require("`xb-agency`" in routing_text and "原专科保持唯一当前 Skill" in routing_text,
+                "routing does not expose direct xb-agency use and hidden single-skill support")
+        require("主体行动主义支持调用" in contracts_text and "只展示观点名称视为惰性调用" in contracts_text,
+                "cross-skill contract does not require a material CreedPacket application")
+        require("[../xb-agency/SKILL.md](../xb-agency/SKILL.md)" in shell_text and "CreedPacket" in shell_text,
+                "navigation shell cannot route or support-call xb-agency")
+        print("PASS subject actionism direct use, hidden support, no-view, responsibility, and hard boundaries")
+        agency_expected_digests = {
+            "fixtures": "F727E8B501708AF9FA6A1D067999FDC8C1FFC51E2A1AC9E19E4926CF521914E6",
+            "answers": "E2736B1076320B1F3790BBF1DB3692CB31680A178914678A4501D20B9B30C59A",
+            "review": "C3D34D86B21EB6709C626BCE8BC381D175C2B002E4310DB15BA6CAD65D7D6684",
+            "record": "36FB56C1DFD26E9B112C6006DCC9ADF54A9A192BBB7847FB1A5B88462D0CD378",
+            "skill": "9C9A7F8E0BABE5475660219A03EA2ADF071E1DCF1A1136CB5443D1DED3337928",
+            "creed": "79E3887A598D19A01F9B53E7B9EF05EE8B3F00D976743E86FA997F1BD2972360",
+        }
+        agency_actual_digests = {
+            "fixtures": hashlib.sha256(agency_acceptance_fixtures_path.read_bytes()).hexdigest().upper(),
+            "answers": hashlib.sha256(agency_acceptance_answers_path.read_bytes()).hexdigest().upper(),
+            "review": hashlib.sha256(agency_acceptance_review_path.read_bytes()).hexdigest().upper(),
+            "record": hashlib.sha256(agency_candidate_record_path.read_bytes()).hexdigest().upper(),
+            "skill": hashlib.sha256((receiver / "xb-agency" / "SKILL.md").read_bytes()).hexdigest().upper(),
+            "creed": hashlib.sha256((receiver / "xb-agency" / "references" / "subject-actionism.md").read_bytes()).hexdigest().upper(),
+        }
+        require(agency_actual_digests == agency_expected_digests,
+                f"subject actionism frozen evidence drifted: {agency_actual_digests}")
+        require(all(term in agency_acceptance_review for term in (
+            "Verdict: PASS", "Release: ALLOW", "80/80", "31/31", "6/6", "5/5",
+        )), "subject actionism acceptance review lost its all-two verdict or boundary coverage")
+        require(all(term in agency_candidate_record for term in (
+            "invalidated_by_source_correction", "80/80", "37/37 receiver tests passed",
+            "DuplicateNames` 全部为 0", "GitHub 提交与发布不在本轮授权范围内",
+        )), "subject actionism candidate record lost source correction, validation, compatibility, or network boundary")
+        require("$xb-meeting" in agency_acceptance_answers and "no_view" not in agency_acceptance_answers,
+                "subject actionism simple-task closure leaked ideology state or lost the original specialist")
+        require("Validity: invalidated_by_source_correction" in agency_invalidated_answers,
+                "source-correction invalidation evidence was lost")
+        require(all(path.is_file() and "Verdict: FAIL" in path.read_text(encoding="utf-8")
+                    for path in agency_failure_review_paths),
+                "subject actionism failure history was removed or rewritten as a pass")
+        print("PASS subject actionism source correction, failure history, frozen acceptance hashes, and 80/80 review")
         require(all(term in session_protocol for term in (
             "记忆：当前未保存。若需要保存对话内容，请直接回复“保存对话”",
             "每个检查点只在“记忆”项显示一次保存入口",
@@ -592,7 +672,14 @@ def main() -> int:
             "模型必须把是否保存交给用户",
             "缺少材料，需要用户补充后才能继续",
             "同一最终回答仍在运行工具或继续分析",
+            "保存前本体作用域预览", "此处无需第二次授权",
+            "会话本体已生成", "允许跨会话长期检索",
         )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
+        require(all(term in save_text for term in (
+            "保存前本体作用域预览", "此处无需第二次授权",
+            "用户没有表达长期检索意图时，不追加授权问题",
+            "会话本体已生成", "授权只改变留存与检索作用域",
+        )), "save skill can still hide ontology scope or over-request sensitive authorization")
         require("session-memory-protocol.md" in shell_text and
                 "若需要保存对话内容，请直接回复‘保存对话’" in shell_text and
                 "并入“记忆”" in shell_text,
@@ -979,17 +1066,27 @@ def main() -> int:
             "保存现有部分",
         )), "xb-save loses the Codex Windows containment or safe history fallback")
         require("默认不加载 transcript 全文" in restore_text, "xb-restore exposes full sensitive transcript by default")
-        ontology_digests = {
+        historical_ontology_digests = {
             "Fixtures-SHA256": hashlib.sha256(ontology_fixtures_path.read_bytes()).hexdigest().upper(),
             "Answers-SHA256": hashlib.sha256(ontology_answers_path.read_bytes()).hexdigest().upper(),
             "Review-SHA256": hashlib.sha256(ontology_review_path.read_bytes()).hexdigest().upper(),
-            "Ontology-Script-SHA256": hashlib.sha256((receiver / "xb-memory" / "scripts" / "memory_ontology.py").read_bytes()).hexdigest().upper(),
-            "Session-Store-SHA256": hashlib.sha256((receiver / "xb-save" / "scripts" / "session_store.py").read_bytes()).hexdigest().upper(),
         }
-        require(all(f"{name}: {value}" in ontology_record for name, value in ontology_digests.items()), "v1.8 ontology candidate record loses frozen evidence or implementation hashes")
+        require(all(f"{name}: {value}" in ontology_record for name, value in historical_ontology_digests.items()), "v1.8 ontology candidate record loses frozen fixture, answer, or review hashes")
+        require(all(re.search(rf"{name}: [0-9A-F]{{64}}", ontology_record) for name in (
+            "Ontology-Script-SHA256", "Session-Store-SHA256",
+        )), "v1.8 ontology candidate record loses its historical implementation hashes")
         require(all(f"## {label}：" in ontology_fixtures for label in "ABCDEF"), "v1.8 ontology fixtures lose a frozen case")
         require(all(f"## {label}：PASS" in ontology_answers for label in "ABCDEF"), "v1.8 ontology clean receiver results lose a case")
         require(all(term in ontology_review for term in ("Verdict: PASS", "Release: ALLOW", "| V | 2 |", "| R | 2 |", "邻文")), "v1.8 ontology review loses the real-dialog failure, repair, or independent PASS")
+        scope_preview_digests = {
+            "Scope-Fixtures-SHA256": hashlib.sha256(scope_preview_fixtures_path.read_bytes()).hexdigest().upper(),
+            "Protocol-SHA256": hashlib.sha256((receiver / "xbskill" / "references" / "session-memory-protocol.md").read_bytes()).hexdigest().upper(),
+            "Save-Skill-SHA256": hashlib.sha256((receiver / "xb-save" / "SKILL.md").read_bytes()).hexdigest().upper(),
+            "Ontology-Reference-SHA256": hashlib.sha256((receiver / "xb-memory" / "references" / "conversation-ontology.md").read_bytes()).hexdigest().upper(),
+            "Ontology-Script-SHA256": hashlib.sha256((receiver / "xb-memory" / "scripts" / "memory_ontology.py").read_bytes()).hexdigest().upper(),
+        }
+        require(all(f"{name}: {value}" in scope_preview_record for name, value in scope_preview_digests.items()), "v1.8.1 scope preview candidate record loses implementation or fixture hashes")
+        require(all(f"## {label}：" in scope_preview_fixtures for label in "ABC"), "v1.8.1 scope preview fixtures lose normal, counterexample, or boundary coverage")
 
         session_project = sandbox / "session-project"
         session_project.mkdir()
@@ -1094,7 +1191,11 @@ def main() -> int:
         }
         write_json(ontology_bundle_path, ontology_bundle)
         code, output = run_session_store(receiver, session_project, ontology_bundle_path)
-        require(code == 0 and '"ontology_assertion_count": 4' in output, f"schema 2 ontology save failed:\n{output}")
+        require(code == 0 and all(term in output for term in (
+            '"ontology_assertion_count": 4', '"session_entity_count": 4',
+            '"session_assertion_count": 4', '"restricted_assertion_count": 0',
+            '"sensitive_long_term_authorized": false',
+        )), f"schema 2 ontology save failed or hid session scope:\n{output}")
         ontology_root = session_project / "memory" / "xbskill" / "ontology"
         require((ontology_root / "entities.json").is_file() and (ontology_root / "index.json").is_file(), "ontology store or index was not written")
         require((session_project / "memory" / "xbskill" / "sessions" / ontology_bundle["session_id"] / "ontology.json").is_file(), "session ontology delta was not written")
@@ -1136,6 +1237,29 @@ def main() -> int:
         write_json(ontology_bundle_path, sensitive)
         code, output = run_session_store(receiver, session_project, ontology_bundle_path)
         require(code != 0 and "E_SENSITIVE_AUTH" in output, "restricted long-term memory bypassed extra authorization")
+
+        sensitive_session_only = json.loads(json.dumps(ontology_bundle, ensure_ascii=False))
+        sensitive_session_only["session_id"] = "2026-08-25-1005-sensitive-session-only"
+        sensitive_session_only["ontology_delta"]["session_id"] = sensitive_session_only["session_id"]
+        sensitive_session_only["ontology_delta"]["entities"] = sensitive_session_only["ontology_delta"]["entities"][:2]
+        sensitive_session_only["ontology_delta"]["assertions"] = sensitive_session_only["ontology_delta"]["assertions"][:1]
+        for entity in sensitive_session_only["ontology_delta"]["entities"]:
+            for source_ref in entity["source_refs"]:
+                source_ref["session_id"] = sensitive_session_only["session_id"]
+        for index, assertion in enumerate(sensitive_session_only["ontology_delta"]["assertions"], start=1):
+            assertion["assertion_id"] = f"a:sensitive-session-only:{index:03d}"
+            for source_ref in assertion["source_refs"]:
+                source_ref["session_id"] = sensitive_session_only["session_id"]
+        sensitive_session_only["ontology_delta"]["assertions"][0]["sensitivity"] = "restricted"
+        sensitive_session_only["ontology_delta"]["assertions"][0]["retention"] = "session_only"
+        write_json(ontology_bundle_path, sensitive_session_only)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code == 0 and all(term in output for term in (
+            '"session_entity_count": 2', '"session_assertion_count": 1',
+            '"session_only_assertion_count": 1', '"restricted_assertion_count": 1',
+            '"restricted_long_term_assertion_count": 0',
+            '"sensitive_long_term_authorized": false',
+        )), f"restricted session-only ontology did not follow the safe default:\n{output}")
 
         false_user_source = json.loads(json.dumps(ontology_bundle, ensure_ascii=False))
         false_user_source["ontology_delta"]["assertions"][0]["source_refs"] = [{"session_id": false_user_source["session_id"], "turn": 2, "role": "assistant", "excerpt": "项目、周报和偏好分别绑定来源与时效"}]
@@ -2434,7 +2558,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY 35/35 receiver tests passed")
+    print("SUMMARY 37/37 receiver tests passed")
     return 0
 
 

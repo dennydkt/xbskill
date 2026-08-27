@@ -11,6 +11,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -537,6 +538,8 @@ def validate(root: Path) -> int:
     role_manager = role_scripts[0]
     if role_manager.is_file():
         try:
+            child_env = os.environ.copy()
+            child_env["PYTHONDONTWRITEBYTECODE"] = "1"
             completed = subprocess.run(
                 [sys.executable, str(role_manager), "validate"],
                 text=True,
@@ -544,6 +547,7 @@ def validate(root: Path) -> int:
                 errors="replace",
                 capture_output=True,
                 check=False,
+                env=child_env,
             )
             if completed.returncode:
                 detail = (completed.stdout + completed.stderr).strip()
