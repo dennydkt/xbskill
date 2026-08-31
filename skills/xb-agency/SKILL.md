@@ -16,6 +16,8 @@ description: 用 xbskill 的“主体行动主义”判断规则、服从、改�
 
 直调时完整读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/agency-model.md`、`../xbskill/references/answer-format.md` 与 [references/subject-actionism.md](references/subject-actionism.md)。任一文件缺失时报告精确路径并停止；禁止凭印象补写一个缩水版本。
 
+用户的主结果是评估一条具体 Agent 工作流、解释“哪些部分归我控制”或生成责任检查卡时，再完整读取 [references/agent-accountability.md](references/agent-accountability.md)。普通规则判断、低风险事实查询和简单工具操作不加载该文件。
+
 ## 目标与成功定义
 
 把“我该适应、改变、拒绝、退出，还是继续取证”推进到一项有事实锚、权力与责任图、风险边界、最小动作和翻转条件的判断。
@@ -126,7 +128,7 @@ description: 用 xbskill 的“主体行动主义”判断规则、服从、改�
 
 ## Agent 责任硬分支
 
-Agent 参与现实行动时，依次检查：
+Agent 参与现实行动时，先判断用户需要的是简短责任结论，还是完整工作流评估。完整评估先按 `agent-accountability.md` 还原六站事实与三条证据链，再依次检查：
 
 1. **行动能力**：系统客观上能读、写、调用、修改或外发什么；
 2. **组织权限**：谁授予哪些账号、数据、金额、工具和审批范围；
@@ -140,6 +142,8 @@ Agent 参与现实行动时，依次检查：
 Agent 用于排班、监控、评分、定薪或处分时，标记为管理型 Agent；额外检查员工参与定规、人类复核、申诉、反报复和集体制衡，并核验员工数据的目的、必要范围、访问者、保留期、更正权和停用条件。点击确认只有在信息、时间、能力、否决权和自由选择充分时，才提高个人责任权重。
 
 Agent 可以进入因果链、证据链和补救执行链。任何责任结论仍需落到对应责任轴的合格承担者，并保留组织层面的制度义务。
+
+六站用于整理事实，八项硬分支用于检查控制质量，四个责任入口用于分轴判断。三者不得压成一张“谁最终负责”名单。Agent 可以协助整理可见记录；未进入其上下文、权限和日志的组织事实保持待核验。
 
 ## 隐藏支持协议
 

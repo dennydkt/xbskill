@@ -515,6 +515,8 @@ def main() -> int:
         routing_text = (receiver / "xbskill" / "references" / "routing.md").read_text(encoding="utf-8")
         agency_text = (receiver / "xb-agency" / "SKILL.md").read_text(encoding="utf-8")
         agency_creed = (receiver / "xb-agency" / "references" / "subject-actionism.md").read_text(encoding="utf-8")
+        agency_accountability_path = receiver / "xb-agency" / "references" / "agent-accountability.md"
+        agency_accountability_acceptance_path = receiver / "xbskill" / "references" / "v1.9.1-agent-accountability-acceptance.md"
         memory_consent_answers_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-blind-answers.md"
         memory_consent_review_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-independent-review.md"
         memory_consent_release_path = receiver / "xbskill" / "references" / "v1.6.1-memory-consent-release-record.md"
@@ -565,6 +567,8 @@ def main() -> int:
         agency_acceptance_review = agency_acceptance_review_path.read_text(encoding="utf-8")
         agency_candidate_record = agency_candidate_record_path.read_text(encoding="utf-8")
         agency_invalidated_answers = agency_invalidated_answers_path.read_text(encoding="utf-8")
+        agency_accountability = agency_accountability_path.read_text(encoding="utf-8")
+        agency_accountability_acceptance = agency_accountability_acceptance_path.read_text(encoding="utf-8")
         decision_text = (receiver / "xb-decision" / "SKILL.md").read_text(encoding="utf-8")
         decode_text = (receiver / "xb-decode" / "SKILL.md").read_text(encoding="utf-8")
         decode_mechanisms = (receiver / "xb-decode" / "references" / "subtext-mechanisms.md").read_text(encoding="utf-8")
@@ -615,6 +619,18 @@ def main() -> int:
             "事实、安全、法律、医疗、权限和用户决定", "事实不足时不选观点",
             "纸面/实际权力", "可持续接管", "证据/申诉",
         )), "subject actionism loses a worldview, priority boundary, or no-view gate")
+        require(all(term in agency_accountability for term in (
+            "直接动作线", "采用后果线", "定：目标、标准与权限", "做：Agent 的实际行动",
+            "审：实质复核", "用：每一段采用", "救：停止、修复与补救", "分：收益、信用、成本与风险",
+            "结果链", "信息链", "控制链", "怪：可责性", "说：面向受影响者说明理由",
+            "审：接受有权论坛审查", "管：事前与持续治理", "分轴责任缺口",
+            "低风险缩短条件", "人工外发、转录任务或进入高影响用途", "有授权权角色应执行的组织动作",
+        )), "Agent accountability reference lost the six stations, three chains, four ports, gap gate, or shortened branch")
+        require(all(term in agency_accountability_acceptance for term in (
+            "状态：`PASS`", "AR01", "AR02", "AR03", "AR04", "AR05", "160/160",
+            "REWRITE_REQUIRED", "首轮答案和评审保留", "低风险草稿只输出局部责任卡",
+            "Agent 只说明可访问上下文和日志覆盖的事实", "GitHub 提交与发布未获本轮授权",
+        )), "Agent accountability acceptance lost its failure history, all-two verdict, public behavior lock, or publication boundary")
         require("`xb-agency`" in routing_text and "原专科保持唯一当前 Skill" in routing_text,
                 "routing does not expose direct xb-agency use and hidden single-skill support")
         require("主体行动主义支持调用" in contracts_text and "只展示观点名称视为惰性调用" in contracts_text,
@@ -627,7 +643,7 @@ def main() -> int:
             "answers": "E2736B1076320B1F3790BBF1DB3692CB31680A178914678A4501D20B9B30C59A",
             "review": "C3D34D86B21EB6709C626BCE8BC381D175C2B002E4310DB15BA6CAD65D7D6684",
             "record": "36FB56C1DFD26E9B112C6006DCC9ADF54A9A192BBB7847FB1A5B88462D0CD378",
-            "skill": "9C9A7F8E0BABE5475660219A03EA2ADF071E1DCF1A1136CB5443D1DED3337928",
+            "skill": "B1F29FA10A2474FDE49120D97362723EC24CBE16E5C94771B4F331EDC4F60B96",
             "creed": "79E3887A598D19A01F9B53E7B9EF05EE8B3F00D976743E86FA997F1BD2972360",
         }
         agency_actual_digests = {
@@ -655,6 +671,17 @@ def main() -> int:
                     for path in agency_failure_review_paths),
                 "subject actionism failure history was removed or rewritten as a pass")
         print("PASS subject actionism source correction, failure history, frozen acceptance hashes, and 80/80 review")
+        accountability_expected_digests = {
+            "reference": "2B0398808579CFB625B316C5F9A2728B947BC12C828C5BCB3EE1750C338F8621",
+            "acceptance": "649751288C64A0D05123308E34B0B92070EE81881E541AC2F85CBA9FF7AA840F",
+        }
+        accountability_actual_digests = {
+            "reference": hashlib.sha256(agency_accountability_path.read_bytes()).hexdigest().upper(),
+            "acceptance": hashlib.sha256(agency_accountability_acceptance_path.read_bytes()).hexdigest().upper(),
+        }
+        require(accountability_actual_digests == accountability_expected_digests,
+                f"Agent accountability frozen evidence drifted: {accountability_actual_digests}")
+        print("PASS Agent accountability six stations, three chains, four ports, shortened branch, failure history, and 160/160 review")
         require(all(term in session_protocol for term in (
             "记忆：当前未保存。若需要保存对话内容，请直接回复“保存对话”",
             "每个检查点只在“记忆”项显示一次保存入口",
