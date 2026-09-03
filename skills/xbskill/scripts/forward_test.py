@@ -471,7 +471,7 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 37, "receiver did not discover all 37 skills")
+        require(len(sm.skill_dirs(receiver)) == 38, "receiver did not discover all 38 skills")
         require(not any(receiver.rglob("__pycache__")),
                 "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
@@ -2484,6 +2484,8 @@ def main() -> int:
         writing_text = (receiver / "xb-writing" / "SKILL.md").read_text(encoding="utf-8")
         presentation_text = (receiver / "xb-presentation" / "SKILL.md").read_text(encoding="utf-8")
         talk_text = (receiver / "xb-talk" / "SKILL.md").read_text(encoding="utf-8")
+        anti_blame_text = (receiver / "xb-anti-blame" / "SKILL.md").read_text(encoding="utf-8")
+        anti_blame_pack = (receiver / "xb-anti-blame" / "references" / "response-pack.md").read_text(encoding="utf-8")
         for name, text in (("xb-writing", writing_text), ("xb-presentation", presentation_text)):
             require(COPY_FORBIDDEN_RE.search(text) is None, f"{name} still contains a forbidden copy pattern")
         for path in receiver.rglob("*"):
@@ -2499,6 +2501,32 @@ def main() -> int:
             "xb-talk can still escalate on repeated silence without reply point, waiting, reachability, and authority gates",
         )
         require("两次无回应" not in talk_text, "xb-talk still uses two non-responses as an independent gate")
+        require(all(term in anti_blame_text for term in (
+            "归责主张协议", "每轮最多问一个高信息量问题", "本人确认承担",
+            "当前有争议", "材料不足", "由有权者确认", "最强可发送版",
+            "不替他人定责", "报复、威胁、骚扰或重大合规风险",
+            "只可声明“反甩锅包／可发送回复／复核材料已交付”", "本轮原始记录优先",
+            "`matched`", "`no_match`", "`not_initialized`", "`not_checked`", "上下文命中说明",
+            "分开产物与现实状态", "现实完成门", "暂停签署", "未执行", "未验证",
+            "检查材料可见性", "可见性偏差候选", "相同时间范围、相同标准的对照材料",
+            "材料覆盖对照", "各角色材料位置、记录密度、缺失时段、拒绝访问",
+        )), "xb-anti-blame misses interaction, responsibility partition, safe pushback, or completion boundaries")
+        require(all(term in anti_blame_pack for term in (
+            "归责主张卡", "事实—证据—控制账", "责任分区", "L0：现场短句",
+            "L1：群聊、邮件或会议纪要确认", "L2：正式复核包摘要", "回应树", "现实反馈卡",
+            "上下文命中说明", "matched / no_match / not_initialized / not_checked",
+            "状态分账", "产物状态", "现实状态", "高风险首次回答回归断言",
+            "异议已经发送或固定", "组织已经受理", "已准备暂停签署所需的低暴露书面异议草案",
+            "材料覆盖对照", "可见性偏差候选", "同一时间范围、同一标准",
+            "只引用最近经手人或单一系统的记录",
+        )), "xb-anti-blame response pack is incomplete")
+        routing_text = (receiver / "xbskill" / "references" / "routing.md").read_text(encoding="utf-8")
+        guide_text = (receiver / "xbskill" / "references" / "user-guide.md").read_text(encoding="utf-8")
+        require("被要求承担缺少依据的责任" in routing_text and "`xb-anti-blame`" in routing_text,
+                "xb-anti-blame is missing from the main route")
+        require("37 个专科" in guide_text and "38 个公开 Skill" in guide_text,
+                "user guide public skill count is stale")
+        print("PASS anti-blame interaction, evidence, responsibility partition, route, and safety boundaries")
         print("PASS white-box rewrite, three-part reuse argument, nineteen-case regression, and X13-X19 release evidence are wired")
 
         task_patterns = (receiver / "xbskill" / "references" / "task-domain-patterns.md").read_text(encoding="utf-8")
@@ -2585,7 +2613,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY 37/37 receiver tests passed")
+    print("SUMMARY 38/38 receiver tests passed")
     return 0
 
 

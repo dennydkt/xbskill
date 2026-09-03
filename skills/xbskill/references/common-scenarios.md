@@ -85,8 +85,8 @@
 | 领导总问为什么没做完 | `xb-upward` | 计划本身失真 → `xb-plan` |
 | 想争取人手预算 | `xb-upward` | 多个部门竞争同一资源 → `xb-stakeholder` |
 | 跨部门项目推不动 | `xb-stakeholder` | 只差单次催办 → `xb-talk` |
-| 大家表面同意实际不动 | `xb-stakeholder` | 责任已明确但故意甩锅 → `xb-conflict` |
-| 同事公开甩锅 | `xb-conflict` | 存在报复/骚扰风险 → `xb-boundary` |
+| 大家表面同意实际不动 | `xb-stakeholder` | 已出现具体归责主张 → `xb-anti-blame` |
+| 同事公开甩锅、要求认错或签责任说明 | `xb-anti-blame` | 主要目标是关系修复 → `xb-conflict`；存在报复/骚扰风险 → `xb-boundary` |
 | 合作关系已经僵了 | `xb-conflict` | 只需修一句回复 → `xb-talk` |
 | 总被安排职责外工作 | `xb-boundary` | 需要领导重排优先级 → `xb-upward` |
 | 下班后持续被联系 | `xb-boundary` | 已造成严重失眠耗竭 → `xb-wellbeing` |

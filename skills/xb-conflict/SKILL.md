@@ -1,6 +1,6 @@
 ---
 name: xb-conflict
-description: 处理同事冲突、意见对立、甩锅、误解、合作破裂和关系修复；区分事实、责任、利益与情绪。触发：$xb-conflict、同事甩锅/针对我、吵起来了、怎么化解冲突。
+description: 处理同事冲突、意见对立、误解、合作破裂和关系修复；区分事实、责任、利益与情绪。触发：$xb-conflict、同事针对我、吵起来了、怎么化解冲突。用户的主结果是回应一项具体归责、认错或签署要求时使用 xb-anti-blame。
 ---
 
 # xb-conflict：冲突处理
@@ -10,6 +10,8 @@ description: 处理同事冲突、意见对立、甩锅、误解、合作破裂�
 完整读取 `../xbskill/references/context-protocol.md`、`../xbskill/references/agency-model.md`、`../xbskill/references/contracts.md` 与 `../xbskill/references/intellectual-capabilities.md`。任一文件缺失时，明确报出缺失路径并停止本专科；不得凭记忆补造。人物画像只能帮助形成可验证假设，不得替代事件事实或成为人格指控。
 
 冲突通常包含竞争解释，默认完整读取 `../xbskill/references/people-domain-patterns.md`，使用原子事件、四层归因、权力账与模式编号。文件缺失时报告精确路径并停止本专科，不得凭记忆补造；只有用户明确只要一句不涉及归因的低风险回复时，才可转 `xb-talk` 而不加载。
+
+用户已经面对具体归责主张，主结果是形成证据化回击、责任分区或正式复核材料时，路由 `xb-anti-blame`。用户主要想恢复任务、处理关系冲突、制止一般行为或修复合作时，本专科继续作为唯一当前 Skill。
 
 ## 触发与核心因果模型
 

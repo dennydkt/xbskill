@@ -128,6 +128,7 @@ DEPTH_ANCHORS: dict[str, tuple[str, ...]] = {
     "xb-meeting": ("触发与核心模型", "可观察信号词典", "模式与条件分支", "微型例", "验证、失败与翻转"),
     "xb-talk": ("触发与核心模型", "可观察信号词典", "模式与条件分支", "微型例", "验证、失败与翻转"),
     "xb-upward": ("触发与权力模型", "可观察信号词典", "模式与条件分支", "微型例", "验证、失败与翻转"),
+    "xb-anti-blame": ("核心模型：归责主张协议", "观察字段与竞争解释", "模式与条件分支", "正例、反例与边界例", "验证、失败与翻转"),
     "xb-stakeholder": ("触发与权力模型", "可观察信号词典", "模式与条件分支", "微型分支", "验证、失败与翻转"),
     "xb-conflict": ("触发与核心因果模型", "可观察信号词典", "模式与条件分支", "边界例", "验证、失败与翻转"),
     "xb-boundary": ("触发与核心因果模型", "可观察信号词典", "模式与条件分支", "边界例", "验证、失败与翻转"),
@@ -143,7 +144,7 @@ TASK_DEPTH_SKILLS = {
     "xb-it", "xb-data", "xb-automation", "xb-writing", "xb-presentation", "xb-report", "xb-review"
 }
 PEOPLE_DEPTH_SKILLS = {
-    "xb-meeting", "xb-talk", "xb-upward", "xb-stakeholder", "xb-conflict",
+    "xb-meeting", "xb-talk", "xb-upward", "xb-stakeholder", "xb-conflict", "xb-anti-blame",
     "xb-boundary", "xb-people", "xb-company", "xb-wellbeing", "xb-career",
 }
 

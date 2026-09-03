@@ -4,7 +4,7 @@
 
 ## 1. xbskill 是什么
 
-xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 36 个专科（`xb-*`）组成，共 37 个公开 Skill，整体发布、整体安装。
+xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 37 个专科（`xb-*`）组成，共 38 个公开 Skill，整体发布、整体安装。
 
 它的北极星：帮助你在可接受的身心与伦理成本下完成必要结果，同时保留或增加理解、能力、边界和选择权。最大化产出本身没有作为目标。
 
@@ -21,7 +21,7 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 
 依赖按功能分层：通过 Skills CLI 安装需要 Node.js 22.20+；套件校验、`xb-save`、`xb-memory`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+；其余纯文本专科没有 Python 或 Node.js 依赖。完整平台规则见 `runtime-compatibility.md`。
 
-1. 将发布包里 `skills/` 下的 37 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
+1. 将发布包里 `skills/` 下的 38 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
 2. 按平台解析 Python 3.10+，再在套件根目录运行校验：
 
    ```bash
@@ -126,7 +126,8 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 | 一句话怎么说、催进度、拒绝 | `xb-talk` |
 | 向领导汇报、请示、管理预期 | `xb-upward` |
 | 跨部门多方影响 | `xb-stakeholder` |
-| 同事冲突、被甩锅 | `xb-conflict` |
+| 被公开归责、被要求认错或承担缺少依据的责任 | `xb-anti-blame` |
+| 同事冲突、误解、关系修复 | `xb-conflict` |
 | 理解自己/同事/领导的工作方式 | `xb-people` |
 | 公司环境档案 | `xb-company` |
 
