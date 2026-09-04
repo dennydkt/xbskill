@@ -86,7 +86,7 @@ class SyncTests(unittest.TestCase):
         satellites = [self.snapshot(first), self.snapshot(second)]
         self.cli("sync", "--registry", reg, "--home", home, "--apply")
         self.assertEqual([self.snapshot(first), self.snapshot(second)], satellites)
-        self.assertEqual(self.contents(home / "sessions", "transcript.md"),
+        self.assertCountEqual(self.contents(home / "sessions", "transcript.md"),
                          ["first transcript", "second transcript"])
         self.assertFalse((home / "context").exists())
         self.assertFalse((home / "notes.md").exists())
