@@ -471,7 +471,7 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 38, "receiver did not discover all 38 skills")
+        require(len(sm.skill_dirs(receiver)) == 39, "receiver did not discover all 39 skills")
         require(not any(receiver.rglob("__pycache__")),
                 "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
@@ -2524,7 +2524,7 @@ def main() -> int:
         guide_text = (receiver / "xbskill" / "references" / "user-guide.md").read_text(encoding="utf-8")
         require("被要求承担缺少依据的责任" in routing_text and "`xb-anti-blame`" in routing_text,
                 "xb-anti-blame is missing from the main route")
-        require("37 个专科" in guide_text and "38 个公开 Skill" in guide_text,
+        require("38 个专科" in guide_text and "39 个公开 Skill" in guide_text,
                 "user guide public skill count is stale")
         print("PASS anti-blame interaction, evidence, responsibility partition, route, and safety boundaries")
         print("PASS white-box rewrite, three-part reuse argument, nineteen-case regression, and X13-X19 release evidence are wired")
@@ -2613,7 +2613,8 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY 38/38 receiver tests passed")
+    subprocess.run([sys.executable, "-B", str(source / "xb-sync/scripts/test_sync.py")], check=True)
+    print("SUMMARY 39/39 receiver tests passed")
     return 0
 
 

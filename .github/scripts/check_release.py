@@ -89,8 +89,8 @@ def main() -> None:
     skill_dirs = sorted(
         path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md")
     )
-    if len(skill_dirs) != 38:
-        fail(f"expected 38 public skills, found {len(skill_dirs)}")
+    if len(skill_dirs) != 39:
+        fail(f"expected 39 public skills, found {len(skill_dirs)}")
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts:

@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.10.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.11.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -10,7 +10,7 @@
 
 ## 安装
 
-通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 38 个 Skill：
+通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 39 个 Skill：
 
 ```bash
 DISABLE_TELEMETRY=1 npx -y skills add dennydkt/xbskill -g --all
@@ -65,7 +65,7 @@ $xb-agency 用 xbskill 的世界观判断这项规则该适应、改变还是拒
 
 ## 能力一览
 
-完整套件包含 38 个 Skill：
+完整套件包含 39 个 Skill：
 
 - 主入口：`xbskill`
 - 看懂：`xb-triage` `xb-analysis` `xb-people` `xb-decode` `xb-company` `xb-stakeholder`
@@ -121,3 +121,7 @@ npx -y skills add dennydkt/xbskill -g --all
 - 安全问题：[SECURITY.md](SECURITY.md)
 - 许可或署名问题：[LICENSE-ENFORCEMENT.md](LICENSE-ENFORCEMENT.md)
 - 引用方式：[CITATION.cff](CITATION.cff)
+
+### 多 Agent 记忆归集
+
+`xb-sync` 发现同机多个项目的记忆根，预览后归集完整会话；差异会话进入冲突收件箱，跨项目背景进入带来源的待核对区。本体保留原根，可按根并列查询。各宿主保存与恢复仍须明确项目路径，跨机器传输由用户另行安排。

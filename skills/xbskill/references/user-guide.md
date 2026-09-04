@@ -4,7 +4,7 @@
 
 ## 1. xbskill 是什么
 
-xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 37 个专科（`xb-*`）组成，共 38 个公开 Skill，整体发布、整体安装。
+xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 38 个专科（`xb-*`）组成，共 39 个公开 Skill，整体发布、整体安装。
 
 它的北极星：帮助你在可接受的身心与伦理成本下完成必要结果，同时保留或增加理解、能力、边界和选择权。最大化产出本身没有作为目标。
 
@@ -21,7 +21,7 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 
 依赖按功能分层：通过 Skills CLI 安装需要 Node.js 22.20+；套件校验、`xb-save`、`xb-memory`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+；其余纯文本专科没有 Python 或 Node.js 依赖。完整平台规则见 `runtime-compatibility.md`。
 
-1. 将发布包里 `skills/` 下的 38 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
+1. 将发布包里 `skills/` 下的 39 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
 2. 按平台解析 Python 3.10+，再在套件根目录运行校验：
 
    ```bash
@@ -169,3 +169,7 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 ---
 
 *本手册与 [SKILL.md](../SKILL.md)、[routing.md](routing.md) 保持一致；路由细节以 routing.md 为准，安装校验以 suite_manager.py 输出为准。*
+
+### 多 Agent 记忆归集
+
+`xb-sync` 发现同机多个项目的记忆根，预览后归集完整会话；差异会话进入冲突收件箱，跨项目背景进入带来源的待核对区。本体保留原根，可按根并列查询。各宿主保存与恢复仍须明确项目路径，跨机器传输由用户另行安排。
