@@ -2614,6 +2614,7 @@ def main() -> int:
         print("PASS backup rollback restores exact pre-update suite")
 
     subprocess.run([sys.executable, "-B", str(source / "xb-sync/scripts/test_sync.py")], check=True)
+    subprocess.run([sys.executable, "-B", str(source / "xbskill/scripts/test_workplace_evidence.py")], check=True)
     print("SUMMARY 39/39 receiver tests passed")
     return 0
 

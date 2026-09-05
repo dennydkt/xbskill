@@ -2,11 +2,13 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.11.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.12.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
 支持 Claude Code、Codex、ZCode、Kimi-CLI，以及其他支持 Skills 的 Agent。
+
+完整能力范围与本次增强见 [能力谱图](CAPABILITIES.md)。可选的工作记录精确检索需要 Python 3.10+；相关专科仍可对用户直接提供的材料执行文本核对。
 
 ## 安装
 
