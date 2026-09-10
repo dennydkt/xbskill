@@ -1,9 +1,11 @@
 ---
 name: xb-report
-description: 把项目快照、进度、数据和决策整理为周报、月报、项目报告、事故更新或管理层报告；保留证据、演进、风险和请求，不把活动或计划包装成结果。触发：$xb-report、出报告、写周报/月报、整理项目进展、汇总 xb-save。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。把项目快照、进度、数据和决策整理为周报、月报、项目报告、事故更新或管理层报告；保留证据、演进、风险和请求，不把活动或计划包装成结果。触发：$xb-report、出报告、写周报/月报、整理项目进展、汇总 xb-save。
 ---
 
 # xb-report：工作报告
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。报告结论依赖外部专科材料时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

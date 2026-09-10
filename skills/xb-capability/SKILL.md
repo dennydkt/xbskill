@@ -1,9 +1,11 @@
 ---
 name: xb-capability
-description: 评估和发展上班族的八类工作能力，以真实产物和行为证据判断当前等级、目标等级、关键差距和下一项挑战；可按数据、产品研发与职能岗位的任务族和生命周期建立角色—场景证据卡，并把新手/入门/老手帮助阶段与 L0–L4 能力等级分账。用于能力盘点、绩效发展、晋升准备、转岗差距、学习优先级和“我缺什么能力”。触发：$xb-capability、能力模型、能力盘点、能力差距、我该提升什么。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。评估和发展上班族的八类工作能力，以真实产物和行为证据判断当前等级、目标等级、关键差距和下一项挑战；可按数据、产品研发与职能岗位的任务族和生命周期建立角色—场景证据卡，并把新手/入门/老手帮助阶段与 L0–L4 能力等级分账。用于能力盘点、绩效发展、晋升准备、转岗差距、学习优先级和“我缺什么能力”。触发：$xb-capability、能力模型、能力盘点、能力差距、我该提升什么。
 ---
 
 # xb-capability：上班族能力坐标
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 先读取 `../xbskill/references/capability-model.md`、`../xbskill/references/role-context-model.md`、`../xbskill/references/agency-model.md`、`../xbskill/references/context-protocol.md`、`../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`。模板位于 [references/capability-profile-template.md](references/capability-profile-template.md)；缺失时报出精确路径，不临时发明另一套模型。命中数据、产品研发或职能岗位时，只再读取对应的 `data-work-specialties.md`、`product-rd-specialties.md` 或 `function-work-specialties.md`，不得一次加载三套。岗位要求依赖外部材料时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

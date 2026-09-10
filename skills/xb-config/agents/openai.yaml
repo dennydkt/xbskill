@@ -1,0 +1,4 @@
+interface:
+  display_name: "xb-config 设置｜调用与保存"
+  short_description: "自主选择 XB 调用强度与保存提示，查看或修改项目偏好"
+  default_prompt: "使用 $xb-config 配置调用强度与保存提示，由我自行选择，并说明生效范围。"

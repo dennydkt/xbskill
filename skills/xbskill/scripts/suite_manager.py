@@ -28,6 +28,7 @@ DEPENDENCY_RE = re.compile(
     r"(?<![A-Za-z0-9_./-])((?:\.\./xbskill/(?:references|scripts)|(?:references|scripts))/[A-Za-z0-9._/-]+\.(?:md|json|py))"
 )
 CORE_REFERENCES = (
+    "interaction-settings.md",
     "work-model.md",
     "agency-model.md",
     "goal-help-model.md",
@@ -83,6 +84,11 @@ TWO_NO_RESPONSE_RE = re.compile(r"(?:两次|2\s*次).{0,18}(?:无回应|未回�
 
 CRITICAL_MANIFEST_FILES = frozenset(
     {
+        "xb-config/SKILL.md",
+        "xb-config/references/config-contract.md",
+        "xb-config/references/configuration-guide.md",
+        "xb-config/scripts/config_manager.py",
+        "xb-config/scripts/test_config.py",
         "xbskill/references/specialty-source-ledger.md",
         "xb-role-knowledge/references/builtin-source-registry.json",
         "xb-role-knowledge/references/builtin-source-registry.schema.json",
@@ -110,6 +116,7 @@ CRITICAL_MANIFEST_FILES = frozenset(
 )
 
 DEPTH_ANCHORS: dict[str, tuple[str, ...]] = {
+    "xb-config": ("目标与边界", "初始化与修改", "调用门与用户选择", "样本与反馈"),
     "xb-sync": ("核心模型", "观察字段与竞争解释", "分支闸门", "正例、反例与边界例", "验证、失败与翻转"),
     "xb-triage": ("症状—候选解释词典", "分支与阈值", "归因记录卡", "边界例", "完成与回流"),
     "xb-goal": ("目标信号与竞争解释", "分支规则", "微型边界例", "现实验证"),
@@ -386,14 +393,67 @@ def _validate_output_collab_behavior(root: Path, errors: list[str]) -> None:
             errors.append(f"xb-talk misses {label}: {talk_path}")
 
 
+def validate_display_name(name: str, display_name: str, ui: Path,
+                          seen: dict[str, Path], errors: list[str]) -> None:
+    if not display_name:
+        return
+    if name == "xbskill":
+        if display_name != "xbskill 主入口｜从这里开始":
+            errors.append(f"root display_name must identify the unique main entry: {ui}")
+    else:
+        prefix = f"{name} 设置｜" if name == "xb-config" else f"{name} 子技能｜"
+        if not display_name.startswith(prefix) or not display_name[len(prefix):].strip():
+            errors.append(f"specialist display_name must start with canonical name and role {prefix!r}: {ui}")
+        if "主入口" in display_name or display_name.startswith("xbskill"):
+            errors.append(f"specialist display_name cannot impersonate main entry: {ui}")
+    if display_name in seen:
+        errors.append(f"duplicate display_name {display_name!r}: {seen[display_name]} and {ui}")
+    else:
+        seen[display_name] = ui
+
+
+def validate_configuration_guide(root: Path, errors: list[str]) -> None:
+    path = root / "xb-config" / "references" / "configuration-guide.md"
+    if not path.is_file():
+        errors.append(f"missing required configuration guide: {path}")
+        return
+    text = path.read_text(encoding="utf-8")
+    start, end = "<!-- concise-start -->", "<!-- concise-end -->"
+    if text.count(start) != 1 or text.count(end) != 1 or text.index(start) >= text.index(end):
+        errors.append(f"configuration guide misses concise default block: {path}")
+    else:
+        short = text.split(start, 1)[1].split(end, 1)[0].strip()
+        if len(short) > 320 or sum(line.startswith("- **") for line in short.splitlines()) != 5:
+            errors.append(f"configuration default exceeds concise five-option budget: {path}")
+        if not all(term in short for term in ("直接使用 XB", "先征求你同意", "明确说用 XB", "要求保存后才写入", "平时不提醒")):
+            errors.append(f"configuration concise default loses behavioral explanation: {path}")
+    groups = {
+        "explain before choice": ("说明与选项一并出现", "无默认值", "无推荐预选"),
+        "same task three outcomes": ("帮我把这些内容写成一份周报", "直接进入 XB 的周报处理流程", "你明确同意后才进入", "普通请求继续由原来的 AI 处理"),
+        "coexistence and activation": ("/code-review", "才开启当前任务", "换任务后重新按档位判断"),
+        "reminder versus actual write": ("每次 XB 最终回复", "你没有提出保存要求时不写入对话", "平时不出现保存提醒", "两档实际保存都需要本次明确指令", "保存成功或失败都会告知结果"),
+        "configuration scope": (".xbskill/config.json", "与保存对话分开处理", "只回答一项时", "$xb-config"),
+    }
+    for label, phrases in groups.items():
+        if not all(phrase in text for phrase in phrases):
+            errors.append(f"configuration guide loses {label}: {path}")
+
+
 def validate(root: Path) -> int:
     errors: list[str] = []
     warnings: list[str] = []
     dirs = skill_dirs(root)
     names = {p.name for p in dirs}
     display_names: dict[str, Path] = {}
+    validate_configuration_guide(root, errors)
     if "xbskill" not in names:
         errors.append(f"missing root skill: {root / 'xbskill'}")
+    for rel in (
+        "xb-config/SKILL.md", "xb-config/references/config-contract.md",
+        "xb-config/scripts/config_manager.py", "xb-config/scripts/test_config.py",
+    ):
+        if not (root / rel).is_file():
+            errors.append(f"missing required configuration dependency: {root / rel}")
     if len(dirs) < 2:
         errors.append("suite has no specialist skills")
 
@@ -441,16 +501,7 @@ def validate(root: Path) -> int:
                 if key not in ui_fields:
                     errors.append(f"missing quoted {key} in UI metadata: {ui}")
             display_name = ui_fields.get("display_name", "")
-            if display_name and not display_name.startswith("xbskill "):
-                errors.append(f"display_name must start with 'xbskill ': {ui}")
-            elif display_name == "xbskill ":
-                errors.append(f"display_name must include a user-facing function name: {ui}")
-            elif display_name:
-                previous = display_names.get(display_name)
-                if previous:
-                    errors.append(f"duplicate display_name {display_name!r}: {previous} and {ui}")
-                else:
-                    display_names[display_name] = ui
+            validate_display_name(directory.name, display_name, ui, display_names, errors)
             short_description = ui_fields.get("short_description", "")
             if short_description and not 25 <= len(short_description) <= 64:
                 errors.append(

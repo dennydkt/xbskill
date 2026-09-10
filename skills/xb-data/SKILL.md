@@ -1,9 +1,11 @@
 ---
 name: xb-data
-description: 处理 Excel、SQL、指标口径、数据清洗、对账、异常分析、统计分析、图表和数据结论；把业务问题连接到可复核口径、数据链路和现实决定。触发：$xb-data、帮我看数据、Excel/SQL、指标为什么变了、核对报表、做个图表。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。处理 Excel、SQL、指标口径、数据清洗、对账、异常分析、统计分析、图表和数据结论；把业务问题连接到可复核口径、数据链路和现实决定。触发：$xb-data、帮我看数据、Excel/SQL、指标为什么变了、核对报表、做个图表。
 ---
 
 # xb-data：数据工作
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。用户承担数据分析、数据工程、数据治理或数据产品责任，且岗位/生命周期/阶段会改变动作时，再读取 `../xbskill/references/role-context-model.md` 与 `../xbskill/references/data-work-specialties.md`；一次性低风险取数不加载全图谱。口径或方法结论依赖外部规范、论文或文档时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

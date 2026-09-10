@@ -1,9 +1,11 @@
 ---
 name: xb-writing
-description: 撰写和修改邮件、通知、方案、制度、说明、申请、总结等工作文档，使具体读者能正确理解并采取所需行动；保护用户已确认文字，显形事实、责任、条件和风险。触发：$xb-writing、帮我写邮件/方案/通知/申请、润色一下、改清楚、调整语气。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。撰写和修改邮件、通知、方案、制度、说明、申请、总结等工作文档，使具体读者能正确理解并采取所需行动；保护用户已确认文字，显形事实、责任、条件和风险。触发：$xb-writing、帮我写邮件/方案/通知/申请、润色一下、改清楚、调整语气。
 ---
 
 # xb-writing：工作写作
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。事实性内容依赖外部材料时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

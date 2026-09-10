@@ -1,9 +1,11 @@
 ---
 name: xb-anti-blame
-description: 处理工作中被要求承担缺少依据的责任、被公开归责、被要求认错或签署责任说明。通过少量交互提问形成归责主张卡、事实证据账、当时控制链、强力可发送回复与升级分支，同时承担有证据支持的本人责任。触发：$xb-anti-blame、被甩锅/让我背锅、责任全推给我、怎么强力回击。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。处理工作中被要求承担缺少依据的责任、被公开归责、被要求认错或签署责任说明。通过少量交互提问形成归责主张卡、事实证据账、当时控制链、强力可发送回复与升级分支，同时承担有证据支持的本人责任。触发：$xb-anti-blame、被甩锅/让我背锅、责任全推给我、怎么强力回击。
 ---
 
 # xb-anti-blame：反甩锅
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调契约：完整读取 `../xbskill/references/resolution-standard.md`、`../xbskill/references/context-protocol.md`、`../xbskill/references/agency-model.md` 与 `../xbskill/references/contracts.md`。任一文件缺失时，报告精确路径并停止，不得凭记忆补造。
 

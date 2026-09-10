@@ -1,9 +1,11 @@
 ---
 name: xb-stakeholder
-description: 分析跨部门与多方协作中的权力、利益、影响、支持和阻力，设计推进顺序。用于跨部门推动、资源争取、多人意见不一、项目政治复杂。触发：$xb-stakeholder、谁会反对、怎么推动跨部门。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。分析跨部门与多方协作中的权力、利益、影响、支持和阻力，设计推进顺序。用于跨部门推动、资源争取、多人意见不一、项目政治复杂。触发：$xb-stakeholder、谁会反对、怎么推动跨部门。
 ---
 
 # xb-stakeholder：利益相关者推进
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调契约：还必须读取 `../xbskill/references/resolution-standard.md`；缺失时停止，不得把推进设计写成多方已经行动。
 

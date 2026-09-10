@@ -9,11 +9,11 @@
 | 使用场景 | Python 3.10+ | Node.js 22.20+ |
 |---|---:|---:|
 | 纯文本诊断、写作、沟通与决策专科 | 否 | 否 |
-| 套件校验、`xb-save`、`xb-memory`、`xb-sync`、`xb-knowledge`、`xb-role-knowledge` | 是 | 否 |
+| 套件校验、`xb-config` 持久配置、`xb-save`、`xb-memory`、`xb-sync`、`xb-knowledge`、`xb-role-knowledge` | 是 | 否 |
 | 通过 `npx skills` 安装或更新 | 否 | 是 |
 | 手动复制完整 `skills/` 套件 | 校验时使用 | 否 |
 
-所有随包 Python 脚本只使用标准库。缺少 Node.js 时可改用手动复制；缺少 Python 3.10+ 时，纯文本专科仍可使用，脚本型功能与安装校验必须停止。
+所有随包 Python 脚本只使用标准库。缺少 Node.js 时可改用手动复制；缺少 Python 3.10+ 时，脚本型功能与安装校验必须停止。用户明确选择调用强度和保存提示后可仅在当前会话使用纯文本专科，并明确告知未持久化；持久配置已有但不能校验时须报告依赖缺口，禁止静默改成另一档。
 
 ## Python 3 解析
 

@@ -1,9 +1,11 @@
 ---
 name: xb-automation
-description: 评估并实现上班族重复流程、办公自动化和 AI 工作流；先判断是否值得、规则是否稳定和谁承担异常，再选择模板、脚本、RPA/API 或 Agent。触发：$xb-automation、能不能自动化、每天重复做、批量处理、做个脚本/流程、定时运行。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。评估并实现上班族重复流程、办公自动化和 AI 工作流；先判断是否值得、规则是否稳定和谁承担异常，再选择模板、脚本、RPA/API 或 Agent。触发：$xb-automation、能不能自动化、每天重复做、批量处理、做个脚本/流程、定时运行。
 ---
 
 # xb-automation：自动化工作流
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。方案依赖外部规范、工具文档或仓库时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

@@ -1,5 +1,5 @@
 interface:
-  display_name: "xbskill 会话本体记忆"
+  display_name: "xb-memory 子技能｜会话本体记忆"
   short_description: "识别、纠正和查询带来源、时效与冲突的结构化会话记忆"
   default_prompt: "使用 $xb-memory 检查或纠正项目中的会话本体，并为当前任务生成最小相关上下文包。"
 

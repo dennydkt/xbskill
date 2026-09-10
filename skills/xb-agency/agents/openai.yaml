@@ -1,4 +1,4 @@
 interface:
-  display_name: "xbskill 主体行动主义"
+  display_name: "xb-agency 子技能｜主体行动主义"
   short_description: "用人的主体性、规则正当性和权责相称判断适应、改变、拒绝与 Agent 责任"
   default_prompt: "使用 $xb-agency 按 xbskill 的主体行动主义判断这件事，给出方向、权力责任图、最小行动和翻转条件。"

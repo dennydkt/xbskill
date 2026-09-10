@@ -1,9 +1,11 @@
 ---
 name: xb-conflict
-description: 处理同事冲突、意见对立、误解、合作破裂和关系修复；区分事实、责任、利益与情绪。触发：$xb-conflict、同事针对我、吵起来了、怎么化解冲突。用户的主结果是回应一项具体归责、认错或签署要求时使用 xb-anti-blame。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。处理同事冲突、意见对立、误解、合作破裂和关系修复；区分事实、责任、利益与情绪。触发：$xb-conflict、同事针对我、吵起来了、怎么化解冲突。用户的主结果是回应一项具体归责、认错或签署要求时使用 xb-anti-blame。
 ---
 
 # xb-conflict：冲突处理
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调契约：还必须读取 `../xbskill/references/resolution-standard.md`；缺失时停止，不得把对话方案写成冲突已经解决。
 

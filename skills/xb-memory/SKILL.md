@@ -1,9 +1,11 @@
 ---
 name: xb-memory
-description: 用会话本体识别并治理可复用记忆：解析实体、关系、事件、目标、决定、证据、时效与冲突，支持检查、纠正、合并和按当前任务生成最小上下文包。触发：$xb-memory、整理结构化记忆、检查记忆本体、纠正记忆、这两个人是不是同一个、从记忆里找相关信息。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。用会话本体识别并治理可复用记忆：解析实体、关系、事件、目标、决定、证据、时效与冲突，支持检查、纠正、合并和按当前任务生成最小上下文包。触发：$xb-memory、整理结构化记忆、检查记忆本体、纠正记忆、这两个人是不是同一个、从记忆里找相关信息。
 ---
 
 # xb-memory：会话本体记忆
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/session-memory-protocol.md`、`../xbskill/references/context-protocol.md`、`../xbskill/references/runtime-compatibility.md`、`references/conversation-ontology.md` 与 `references/predicate-registry.json`；任何文件缺失时报告绝对路径并停止受影响步骤。机器结构按 `references/ontology.schema.json`，写入和查询统一调用 `scripts/memory_ontology.py`。
 

@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.12.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.13.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -12,7 +12,7 @@
 
 ## 安装
 
-通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 39 个 Skill：
+通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 40 个 Skill：
 
 ```bash
 DISABLE_TELEMETRY=1 npx -y skills add dennydkt/xbskill -g --all
@@ -38,19 +38,27 @@ cp -r xbskill/skills/* ~/.agents/skills/
 
 ## 快速开始
 
+**斜杠菜单选择 `xbskill 主入口｜从这里开始`。** 不知道该调用哪个子 Skill 时，问 xbskill。子功能按各自 `xb-*` 名称显示“子技能”或“设置”。 安装完成后调用 `$xbskill`，由你自行选择两项设置：
+
+| 配置项 | 可选值（无默认值） |
+|---|---|
+| 调用强度 | 高：自动参与，直接用 XB 处理相关工作请求；中：先问再参与，同意后进入；低：点名才参与，平时继续原来的 AI 工作流 |
+| 保存提示 | 高：每次回复提醒，用户发出保存指令后才写入；低：平时不提醒，想留存时主动说“保存对话” |
+
+初始化每个档位用一句话解释行为，详细案例与适用偏好等你追问再展开。详细解释见 [配置指南](skills/xb-config/references/configuration-guide.md)。档位与回答质量无关，保存提醒也不代表自动保存。
+
+以后通过 `$xb-config` 查看或修改。配置存于当前项目 `.xbskill/config.json`，独立于会话记忆。明确指定其他技能时，所有强度都让出控制权。
+
+问法举例：
+
 ```text
-$xbskill 我每天加班到十点，产出却总被否定。我想知道问题在方法、协作还是环境，也想判断要不要换组。
+$xbskill 同事栽赃我，帮我反击！
+$xbskill 领导PUA我，我该怎么办
 ```
 
-已经知道需求时，可以直接调用专科：
+**子 Skill 说明书：** 想查看时回复“查看子 Skill 说明书”，也可以点名某个子 Skill。Agent 等用户明确反馈后才展示说明，默认不报完整菜单。
 
-```text
-$xb-talk 帮我写一条催同事交材料的话，保留关系并明确截止时间
-$xb-data 帮我核对这份表的口径、异常和结论
-$xb-upward 把我的人力申请整理成领导可直接决策的信息包
-$xb-career 比较留下、换组和外部机会，给我现实试验和翻转条件
-$xb-agency 用 xbskill 的世界观判断这项规则该适应、改变还是拒绝
-```
+首次由 Agent 安装完成后或每次明确调用主入口时，展示主入口定位、问法和说明书查看邀请；内部回流不重复。无交互安装器只复制文件，安装后的首次主入口调用完成介绍与必选配置。调用强度约束 Agent 的派发与执行；宿主是否预先加载技能描述须另行验证。
 
 ## 你会得到什么
 
@@ -65,17 +73,11 @@ $xb-agency 用 xbskill 的世界观判断这项规则该适应、改变还是拒
 
 系统服务用户的长期净收益与选择权：在可接受的身心与伦理成本下完成必要结果，同时增加理解、能力、边界和可选择空间。
 
-## 能力一览
+## 子 Skill 说明书
 
-完整套件包含 39 个 Skill：
+完整套件包含 40 个 Skill。用户明确要求查看时，Agent 从 [使用手册](skills/xbskill/references/user-guide.md) 的专科速查定位，再读取对应 `SKILL.md` 说明输入、产物和边界。用户只发任务或选择配置时，直接推进该任务或配置。
 
-- 主入口：`xbskill`
-- 看懂：`xb-triage` `xb-analysis` `xb-people` `xb-decode` `xb-company` `xb-stakeholder`
-- 表达：`xb-talk` `xb-upward` `xb-writing` `xb-presentation` `xb-report` `xb-meeting`
-- 执行：`xb-goal` `xb-plan` `xb-it` `xb-data` `xb-automation` `xb-review`
-- 关系与边界：`xb-conflict` `xb-boundary` `xb-anti-blame` `xb-action` `xb-wellbeing`
-- 成长与选择：`xb-decision` `xb-career` `xb-capability` `xb-learning` `xb-ai-native` `xb-knowledge` `xb-agency`
-- 深度支持：`xb-role-knowledge` `xb-save` `xb-memory` `xb-restore` `xb-update` `xb-builder` `xb-audit`
+配置入口是 `$xb-config`，主入口是 `$xbskill`；完整目录按需展开。
 
 ## 设计原则
 

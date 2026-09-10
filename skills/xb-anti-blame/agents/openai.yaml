@@ -1,4 +1,4 @@
 interface:
-  display_name: "xbskill 反甩锅"
+  display_name: "xb-anti-blame 子技能｜反甩锅"
   short_description: "把职场归责争议转成证据化强力回复、责任分区和复核路径"
   default_prompt: "使用 $xb-anti-blame 帮我处理这次被甩锅，逐步问清事实并生成可以直接使用的强力回复。"

@@ -1,9 +1,11 @@
 ---
 name: xb-presentation
-description: 设计工作汇报、PPT、述职、提案、答辩和演讲的决策叙事；把材料变成听众能理解、质疑和作出决定的页面与讲述。触发：$xb-presentation、做 PPT、怎么汇报、述职/答辩、逐页结构、准备问答。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。设计工作汇报、PPT、述职、提案、答辩和演讲的决策叙事；把材料变成听众能理解、质疑和作出决定的页面与讲述。触发：$xb-presentation、做 PPT、怎么汇报、述职/答辩、逐页结构、准备问答。
 ---
 
 # xb-presentation：汇报与演示
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。内容结论依赖外部专科材料时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

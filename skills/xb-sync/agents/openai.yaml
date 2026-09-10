@@ -1,4 +1,4 @@
 interface:
-  display_name: "xbskill 多 Agent 记忆同步"
+  display_name: "xb-sync 子技能｜多 Agent 记忆同步"
   short_description: "发现本机散落的 xbskill 记忆根，登记入册并只增不覆盖地归集到唯一真源"
   default_prompt: "使用 $xb-sync 发现本机的 xbskill 记忆根，选定真源并做安全的记忆归集。"

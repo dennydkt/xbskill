@@ -6,6 +6,7 @@ from __future__ import annotations
 import contextlib
 import datetime as dt
 import hashlib
+import importlib.util
 import io
 import json
 import os
@@ -462,6 +463,153 @@ def install_local_knowledge_fixture(root: Path, authority_scope: str = "syntheti
     write_json(root / "evidence" / "evidence-local.json", evidence)
 
 
+INTERACTION_DESCRIPTION_PREFIX = "调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。"
+INTERACTION_ENTRY_GATE = "调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。"
+
+
+def historical_agency_body_digest(path: Path) -> str:
+    """Verify the frozen agency body beneath the exact, separately checked new call gate."""
+    require(path.parent.name == "xb-agency" and path.name == "SKILL.md",
+            "historical body projection is limited to the frozen xb-agency specialist")
+    content = path.read_bytes()
+    prefix = ("description: " + INTERACTION_DESCRIPTION_PREFIX).encode("utf-8")
+    gate = ("# xb-agency：主体行动主义\n\n" + INTERACTION_ENTRY_GATE + "\n\n").encode("utf-8")
+    require(content.count(prefix) == 1 and content.count(gate) == 1,
+            "agency current interaction gate is missing, duplicated, or changed")
+    historical = content.replace(prefix, b"description: ", 1).replace(
+        gate, "# xb-agency：主体行动主义\n\n".encode("utf-8"), 1)
+    return hashlib.sha256(historical).hexdigest().upper()
+
+
+def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
+    """Test menu identities and broken guidance in a separate minimal receiver tree."""
+    sandbox.mkdir()
+    errors: list[str] = []
+    seen: dict[str, Path] = {}
+    for directory in sm.skill_dirs(root):
+        source = directory / "agents" / "openai.yaml"
+        target = sandbox / directory.name / "agents" / "openai.yaml"
+        target.parent.mkdir(parents=True)
+        shutil.copyfile(source, target)
+        fields = dict(sm.UI_STRING_RE.findall(target.read_text(encoding="utf-8")))
+        sm.validate_display_name(directory.name, fields.get("display_name", ""), target, seen, errors)
+    require(not errors, f"current menu confuses entry identities: {errors}")
+    for invalid in ("xbskill 启动与执行", "xb-action 主入口｜从这里开始", "xbskill 主入口｜从这里开始"):
+        errors = []
+        sm.validate_display_name("xb-action", invalid, sandbox / "xb-action/agents/openai.yaml", {}, errors)
+        require(bool(errors), f"ambiguous entry label accepted: {invalid}")
+    errors = []
+    duplicate_seen = {}
+    for name in ("xbskill", "xb-action"):
+        sm.validate_display_name(name, "xbskill 主入口｜从这里开始", sandbox / name / "agents/openai.yaml", duplicate_seen, errors)
+    require(any("duplicate display_name" in message for message in errors) and
+            any("cannot impersonate" in message for message in errors), "two main entries were accepted")
+    guide = sandbox / "xb-config/references/configuration-guide.md"
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any(str(guide) in message for message in errors), "missing configuration guide did not fail loudly")
+    guide.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(root / "xb-config/references/configuration-guide.md", guide)
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(not errors, f"configuration explanation is incomplete: {errors}")
+    full_guide = guide.read_text(encoding="utf-8")
+    guide.write_text(full_guide.replace("<!-- concise-start -->", "<!-- concise-start -->" + "冗长解释" * 100), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("concise five-option budget" in message for message in errors),
+            "overlong default initialization was accepted")
+    guide.write_text("调用：高、中、低。保存：高、低。", encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("same task three outcomes" in message for message in errors) and
+            any("reminder versus actual write" in message for message in errors),
+            "bare choice labels pass as an explanation of invocation and saving")
+    print("PASS distinct menu identities, duplicate-entry rejection, and usable configuration explanations")
+
+
+def check_interaction_configuration(root: Path, project: Path) -> None:
+    """Exercise user choices in a clean receiver without touching a real preference file."""
+    for specialist in sm.skill_dirs(root):
+        if specialist.name in {"xbskill", "xb-config"}:
+            continue
+        text = (specialist / "SKILL.md").read_text(encoding="utf-8")
+        require(text.count("description: " + INTERACTION_DESCRIPTION_PREFIX) == 1 and
+                text.count(INTERACTION_ENTRY_GATE) == 1,
+                f"{specialist.name} bypasses the current discovery and entry configuration gates")
+    script = root / "xb-config" / "scripts" / "config_manager.py"
+    spec = importlib.util.spec_from_file_location("xb_receiver_config", script)
+    require(spec is not None and spec.loader is not None, "configuration runtime cannot be loaded")
+    config_api = importlib.util.module_from_spec(spec)
+    previous_bytecode = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        spec.loader.exec_module(config_api)
+    finally:
+        sys.dont_write_bytecode = previous_bytecode
+    project.mkdir()
+    config_path = project / ".xbskill" / "config.json"
+    missing = config_api.load_config(project)
+    require(not config_path.exists(), "reading missing configuration creates defaults")
+    gate_args = {"task_id": "review-1", "specialist": "xb-review", "natural_match": True}
+    gate = lambda config, **kwargs: config_api.decide_gate(config, **(gate_args | kwargs))["decision"]
+    require(gate(missing) == "deny" and gate(missing, explicit_xb=True) == "configure",
+            "unconfigured discovery takes over a task or explicit XB bypasses initialization")
+    require(gate(missing, explicit_external=True) == "deny", "configuration intercepts another explicit skill")
+    require(not config_api.should_prompt_save(missing), "unconfigured user receives a save prompt")
+    for partial in (
+        {"schema_version": 1, "call_intensity": "high"},
+        {"schema_version": 1, "save_prompt": "high"},
+    ):
+        require(gate(partial, explicit_xb=True) == "configure", "one choice silently completes initialization")
+        try:
+            config_api.write_config(project, partial, user_confirmed=True)
+        except config_api.ConfigError:
+            pass
+        else:
+            require(False, "partial initialization is persisted as a complete choice")
+    for intensity in ("high", "medium", "low"):
+        for prompt in ("high", "low"):
+            config = {"schema_version": 1, "call_intensity": intensity, "save_prompt": prompt}
+            require(gate(config) == {"high": "allow", "medium": "confirm", "low": "deny"}[intensity],
+                    f"natural-language gate violates {intensity}/{prompt}")
+            require(gate(config, explicit_xb=True) == "allow", "explicit XB intent is blocked or double-confirmed")
+            require(gate(config, explicit_external=True, explicit_xb=True) == "deny",
+                    "another explicitly selected skill does not take precedence")
+            require(gate(config, refused_xb=True, authorized_task="review-1", authorized_specialist="xb-review") == "deny",
+                    "task continuity overrides XB refusal")
+            require(gate(config, authorized_task="review-1", authorized_specialist="xb-review") == "allow",
+                    "same authorized task cannot continue")
+            if intensity != "high":
+                require(gate(config, authorized_task="old-task", authorized_specialist="xb-review") != "allow",
+                        "authorization leaks into a new task")
+                require(gate(config, authorized_task="review-1", authorized_specialist="xb-data") != "allow",
+                        "authorization leaks into another specialist")
+            require(config_api.should_prompt_save(config) is (prompt == "high"), "save frequency ignores user choice")
+            require(not config_api.should_prompt_save(config, final_response=False), "progress interrupts with save prompt")
+            require(not config_api.should_prompt_save(config, xb_active=False), "inactive XB adds a save prompt")
+            config_api.write_config(project, config, user_confirmed=True)
+            require(config_api.load_config(project) == config, "configuration write/read loses user choices")
+    before = config_path.read_bytes()
+    try:
+        config_api.write_config(project, {"schema_version": 1, "call_intensity": "high", "save_prompt": "high"})
+    except config_api.ConfigError:
+        pass
+    else:
+        require(False, "configuration writes without an explicit user-choice declaration")
+    require(config_path.read_bytes() == before, "rejected configuration write mutates existing preferences")
+    config_path.write_text("{broken", encoding="utf-8")
+    try:
+        config_api.load_config(project)
+    except config_api.ConfigError:
+        pass
+    else:
+        require(False, "corrupt configuration falls back silently")
+    require(config_path.read_text(encoding="utf-8") == "{broken", "corrupt configuration is silently replaced")
+    require(not (project / "memory").exists(), "configuration handling writes session memory")
+    print("PASS mandatory choices, six combinations, coexistence, scoped consent, persistence, and corruption gates")
+
+
 def main() -> int:
     source = Path(__file__).resolve().parents[2]
     with tempfile.TemporaryDirectory(prefix="xbskill-receiver-") as raw:
@@ -471,10 +619,12 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 39, "receiver did not discover all 39 skills")
+        require(len(sm.skill_dirs(receiver)) == 40, "receiver did not discover all 40 skills")
         require(not any(receiver.rglob("__pycache__")),
                 "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
+        check_interaction_configuration(receiver, sandbox / "config-project")
+        check_menu_and_configuration_guide(receiver, sandbox / "menu-guide-project")
 
         runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
         runtime_text = runtime_path.read_text(encoding="utf-8")
@@ -651,7 +801,7 @@ def main() -> int:
             "answers": hashlib.sha256(agency_acceptance_answers_path.read_bytes()).hexdigest().upper(),
             "review": hashlib.sha256(agency_acceptance_review_path.read_bytes()).hexdigest().upper(),
             "record": hashlib.sha256(agency_candidate_record_path.read_bytes()).hexdigest().upper(),
-            "skill": hashlib.sha256((receiver / "xb-agency" / "SKILL.md").read_bytes()).hexdigest().upper(),
+            "skill": historical_agency_body_digest(receiver / "xb-agency" / "SKILL.md"),
             "creed": hashlib.sha256((receiver / "xb-agency" / "references" / "subject-actionism.md").read_bytes()).hexdigest().upper(),
         }
         require(agency_actual_digests == agency_expected_digests,
@@ -684,9 +834,7 @@ def main() -> int:
         print("PASS Agent accountability six stations, three chains, four ports, shortened branch, failure history, and 160/160 review")
         require(all(term in session_protocol for term in (
             "记忆：当前未保存。若需要保存对话内容，请直接回复“保存对话”",
-            "每个检查点只在“记忆”项显示一次保存入口",
             "用户回复“保存对话”只授权当前可见会话及本次分类写入",
-            "下一个有新内容的会话仍照常提示",
             "既往 `auto_checkpoint: on` 不能替代本次授权",
             "assistant_inference", "needs_identity", "company_tone", "communication_style",
             "禁止把档案标为 `complete`", "本地保存阶段禁止联网",
@@ -694,11 +842,6 @@ def main() -> int:
             "list/read/resume/archive/unarchive/fork/rename/pin/send", "禁止查找“原始任务”",
             "用户主动提供的完整导出", "精确当前会话 ID", "副作用无法确认",
             "沿宿主分页游标持续读取", "hasMore=false", "已尝试入口", "任务摘要、压缩摘要",
-            "当前可见会话包含至少一条用户消息",
-            "缺少材料并请求用户补充", "提出澄清问题",
-            "模型必须把是否保存交给用户",
-            "缺少材料，需要用户补充后才能继续",
-            "同一最终回答仍在运行工具或继续分析",
             "保存前本体作用域预览", "此处无需第二次授权",
             "会话本体已生成", "允许跨会话长期检索",
         )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
@@ -707,10 +850,8 @@ def main() -> int:
             "用户没有表达长期检索意图时，不追加授权问题",
             "会话本体已生成", "授权只改变留存与检索作用域",
         )), "save skill can still hide ontology scope or over-request sensitive authorization")
-        require("session-memory-protocol.md" in shell_text and
-                "若需要保存对话内容，请直接回复‘保存对话’" in shell_text and
-                "并入“记忆”" in shell_text,
-                "navigation shell does not keep save consent inside memory")
+        require("session-memory-protocol.md" in shell_text and "interaction-settings.md" in shell_text,
+                "navigation shell bypasses save authorization or interaction preferences")
         require(all(term in answer_format for term in (
             "每个最终回答都在结尾显示一个分行收尾块",
             "调用子技能：{$xb-* 或 $xbskill}",
@@ -719,14 +860,13 @@ def main() -> int:
             "支持子调用、知识包、框架、内部维护专科和下一步候选均不进入",
             "名称后不加括号、职责解释",
             "`本轮`、`已交付`、`反馈点` 各占一个独立 Markdown 段落",
-            "简单、一次性问题也保留收尾块",
-            "记忆：当前未保存", "当前可见会话包含至少一条用户消息",
-            "缺少材料后请求用户补充", "预计分类为空均适用",
+            "简单、一次性问题保留一个准确调用名",
+            "interaction-settings.md",
         )), "answer format loses the visible single-skill trace")
         active_memory_contract = "\n".join((session_protocol, answer_format, contracts_text, shell_text))
         forbidden_memory_shortcuts = (
             "本轮无跨会话内容", "无跨会话价值", "无需保存", "不必保存",
-            "不值得保存", "无保存价值", "不追加保存提示", "可省略保存提示",
+            "不值得保存", "无保存价值",
         )
         require(not any(term in active_memory_contract for term in forbidden_memory_shortcuts),
                 "active memory contract lets the model preempt user consent")
@@ -736,6 +876,8 @@ def main() -> int:
             "调用子技能", "本轮：", "已交付：", "反馈点：",
             "记忆：", "若需要保存对话内容，请直接回复",
         )), "active closing contract loses a required field or the save instruction")
+        # Frozen v1.6.2 answers document the old high-frequency closing format.
+        # Preserve their evidence without applying today's low-prompt preference retroactively.
         closing_sections = {
             label: markdown_section(closing_format_fixtures, label)
             for label in (
@@ -860,16 +1002,14 @@ def main() -> int:
         require(all(term in shell_text for term in (
             "固定带一个公开当前 Skill 的准确调用名，不追加职责描述",
             "“调用子技能”每轮必填且只显示一个公开当前 Skill",
-            "全轮是否恰好一个结尾收尾块",
-            "“本轮”“已交付”“反馈点”是否各占一段",
+            "一轮只在**结尾**显示一个分行收尾块",
+            "“本轮”“已交付”“反馈点”各占一个独立 Markdown 段落",
         )), "navigation shell does not enforce the visible single-skill trace")
         require(all(term in contracts_text for term in (
             "每次回答都在结尾收尾块显形唯一公开当前 Skill",
             "调用项只作简短提示，不追加 Skill 职责描述",
             "支持子调用、内部维护专科和下一步候选不得成为第二个署名",
-            "当前可见会话包含至少一条用户消息",
-            "模型必须把保存决定交给用户",
-            "内容重要性和预计分类结果不能取消提示",
+            "interaction-settings.md", "save_prompt", "低档",
         )), "cross-skill contract allows ambiguous or hidden skill attribution")
         require(all(term in decision_text for term in (
             "向参与者明确标注“内测/验证中”和当前交付方式",
@@ -1107,12 +1247,18 @@ def main() -> int:
         require(all(term in ontology_review for term in ("Verdict: PASS", "Release: ALLOW", "| V | 2 |", "| R | 2 |", "邻文")), "v1.8 ontology review loses the real-dialog failure, repair, or independent PASS")
         scope_preview_digests = {
             "Scope-Fixtures-SHA256": hashlib.sha256(scope_preview_fixtures_path.read_bytes()).hexdigest().upper(),
-            "Protocol-SHA256": hashlib.sha256((receiver / "xbskill" / "references" / "session-memory-protocol.md").read_bytes()).hexdigest().upper(),
-            "Save-Skill-SHA256": hashlib.sha256((receiver / "xb-save" / "SKILL.md").read_bytes()).hexdigest().upper(),
             "Ontology-Reference-SHA256": hashlib.sha256((receiver / "xb-memory" / "references" / "conversation-ontology.md").read_bytes()).hexdigest().upper(),
             "Ontology-Script-SHA256": hashlib.sha256((receiver / "xb-memory" / "scripts" / "memory_ontology.py").read_bytes()).hexdigest().upper(),
         }
         require(all(f"{name}: {value}" in scope_preview_record for name, value in scope_preview_digests.items()), "v1.8.1 scope preview candidate record loses implementation or fixture hashes")
+        # The old protocol/skill hashes identify a historical implementation, not the active files.
+        scope_preview_historical_implementation = {
+            "Protocol-SHA256": "1FDA423EE2228FA9A772BE32A94E30FA1A5789C610F9DC26CFA79AE74745BB44",
+            "Save-Skill-SHA256": "DACD7AB18A190F880DF1E571BF35476EB7B5E72CB25CDCF991C72985785C143D",
+        }
+        require(all(f"{name}: {value}" in scope_preview_record
+                    for name, value in scope_preview_historical_implementation.items()),
+                "v1.8.1 scope preview record loses historical protocol or save-skill hashes")
         require(all(f"## {label}：" in scope_preview_fixtures for label in "ABC"), "v1.8.1 scope preview fixtures lose normal, counterexample, or boundary coverage")
 
         session_project = sandbox / "session-project"
@@ -1420,20 +1566,6 @@ def main() -> int:
         require(code != 0 and "E_ALREADY_MIGRATED" in output, "already migrated legacy session did not fail loudly")
         print("PASS legacy classification migrates to reviewable candidates and reduces relevant new-dialog restatement without unrelated injection")
 
-        ui = receiver / "xb-action" / "agents" / "openai.yaml"
-        original_ui = ui.read_text(encoding="utf-8")
-        ui.write_text(original_ui.replace('display_name: "xbskill ', 'display_name: "', 1), encoding="utf-8")
-        code, output = capture_validate(receiver)
-        require(code != 0 and "display_name must start with 'xbskill '" in output, "missing xbskill display prefix was not detected")
-        ui.write_text(original_ui, encoding="utf-8")
-        print("PASS inconsistent public display name is detected")
-
-        ui.write_text(original_ui.replace("xbskill 启动与执行", "xbskill 证据化分析", 1), encoding="utf-8")
-        code, output = capture_validate(receiver)
-        require(code != 0 and "duplicate display_name" in output, "duplicate public display name was not detected")
-        ui.write_text(original_ui, encoding="utf-8")
-        print("PASS duplicate public display name is detected")
-
         missing = receiver / "xbskill" / "references" / "work-model.md"
         held = missing.with_suffix(".md.missing")
         missing.rename(held)
@@ -1490,9 +1622,16 @@ def main() -> int:
         print("PASS goal, help, agency, capability, people, and company models are complete")
 
         root_skill = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
-        require("用户已给出真实需求时不得进入本模式" in root_skill, "tutorial can still block a real request")
-        require("只由显式询问触发" in root_skill, "tutorial is not limited to explicit capability questions")
-        require("用户说“新手入门”或第一次使用" not in root_skill, "first use still unconditionally triggers the full tutorial")
+        interaction_settings = (receiver / "xbskill" / "references" / "interaction-settings.md").read_text(encoding="utf-8")
+        require("interaction-settings.md" in root_skill and "xb-config" in root_skill,
+                "main entry bypasses configuration and introduction contract")
+        require(all(term in interaction_settings for term in (
+            "call_intensity", "save_prompt", "high / medium / low", "high / low",
+            "无默认值", "无预选值", ".xbskill/config.json", "/code-review",
+            "用户每次明确调用", "自然语言续问", "不重复展示",
+            "xbskill 是主入口", "问法举例", "子 Skill 说明书", "等待用户反馈",
+            "禁止默认展开", "初始化问题不追加保存提示",
+        )), "interaction contract loses explicit choices, coexistence, or progressive introduction")
         work_model = (receiver / "xbskill" / "references" / "work-model.md").read_text(encoding="utf-8")
         routing_text = routing.read_text(encoding="utf-8")
         contracts = (receiver / "xbskill" / "references" / "contracts.md").read_text(encoding="utf-8")
@@ -1673,7 +1812,7 @@ def main() -> int:
             and "RoleKnowledgePacket 1.1" not in role_skill,
             "runtime packet/trace schema or documented packet version drifted",
         )
-        require('display_name: "xbskill 岗位知识补充"' in role_ui and "$xb-role-knowledge" in role_ui, "role knowledge UI metadata is not suite-consistent")
+        require('display_name: "xb-role-knowledge 子技能｜岗位知识补充"' in role_ui and "$xb-role-knowledge" in role_ui, "role knowledge UI metadata is not suite-consistent")
         require("`xb-role-knowledge`" in routing.read_text(encoding="utf-8"), "role knowledge skill is not reachable from routing")
         code, output = run_role_tool(receiver, "upstream_sync.py", ["validate"])
         require(code == 0 and "VALID" in output and "sources=7" in output, f"upstream role registry failed offline validation:\n{output}")
@@ -2524,7 +2663,7 @@ def main() -> int:
         guide_text = (receiver / "xbskill" / "references" / "user-guide.md").read_text(encoding="utf-8")
         require("被要求承担缺少依据的责任" in routing_text and "`xb-anti-blame`" in routing_text,
                 "xb-anti-blame is missing from the main route")
-        require("38 个专科" in guide_text and "39 个公开 Skill" in guide_text,
+        require("39 个专科" in guide_text and "40 个公开 Skill" in guide_text,
                 "user guide public skill count is stale")
         print("PASS anti-blame interaction, evidence, responsibility partition, route, and safety boundaries")
         print("PASS white-box rewrite, three-part reuse argument, nineteen-case regression, and X13-X19 release evidence are wired")
@@ -2615,7 +2754,7 @@ def main() -> int:
 
     subprocess.run([sys.executable, "-B", str(source / "xb-sync/scripts/test_sync.py")], check=True)
     subprocess.run([sys.executable, "-B", str(source / "xbskill/scripts/test_workplace_evidence.py")], check=True)
-    print("SUMMARY 39/39 receiver tests passed")
+    print("SUMMARY receiver tests passed (40 public skills)")
     return 0
 
 

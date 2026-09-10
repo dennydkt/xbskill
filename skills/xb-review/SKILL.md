@@ -1,9 +1,11 @@
 ---
 name: xb-review
-description: 审查工作交付物或复盘已完成项目，按目标、证据、逻辑、可用性、风险和验收标准给出带位置的发现；区分真实缺陷、合理取舍和风格偏好。触发：$xb-review、帮我检查、能不能交、交付前把关、复盘一下。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。审查工作交付物或复盘已完成项目，按目标、证据、逻辑、可用性、风险和验收标准给出带位置的发现；区分真实缺陷、合理取舍和风格偏好。触发：$xb-review、帮我检查、能不能交、交付前把关、复盘一下。
 ---
 
 # xb-review：交付审查与复盘
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md` 与 `../xbskill/references/intellectual-capabilities.md`；任一文件缺失时报告精确路径并停止，不得凭记忆补造契约、完成状态或理论镜头。
 

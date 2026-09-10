@@ -1,9 +1,11 @@
 ---
 name: xb-update
-description: 安全检查和更新 xbskill 技能族：识别真源，预览差异，保留 LOCAL 补丁，备份后应用，验证失败则回滚。用于更新、升级、同步 xbskill。触发：$xb-update、更新 xbskill、检查新版本。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。安全检查和更新 xbskill 技能族：识别真源，预览差异，保留 LOCAL 补丁，备份后应用，验证失败则回滚。用于更新、升级、同步 xbskill。触发：$xb-update、更新 xbskill、检查新版本。
 ---
 
 # xb-update：系统更新
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md` 与 `../xbskill/references/specialist-rewrite-method.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。
 

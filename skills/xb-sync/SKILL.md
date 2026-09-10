@@ -1,9 +1,11 @@
 ---
 name: xb-sync
-description: 多 Agent / 多项目 xbskill 记忆同步。发现本机散落的 memory/xbskill 记忆根，登记入册，选定唯一真源（canonical home），做只增不覆盖的文件级归集，冲突进收件箱由用户裁决；跨根检索用扇出查询而非合并本体。触发：$xb-sync、「同步记忆」「多agent记忆」「记忆共享」「几个agent的记忆打通」「codex和kimi的记忆同步」。
+description: 调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。多 Agent / 多项目 xbskill 记忆同步。发现本机散落的 memory/xbskill 记忆根，登记入册，选定唯一真源（canonical home），做只增不覆盖的文件级归集，冲突进收件箱由用户裁决；跨根检索用扇出查询而非合并本体。触发：$xb-sync、「同步记忆」「多agent记忆」「记忆共享」「几个agent的记忆打通」「codex和kimi的记忆同步」。
 ---
 
 # xb-sync：多 Agent 记忆同步
+
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
 
 直调契约：完整读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/context-protocol.md`、`../xbskill/references/session-memory-protocol.md` 与 `../xbskill/references/runtime-compatibility.md`。任一文件缺失时，报告精确路径并停止，不得凭记忆补造。本体查询依赖 `../xb-memory/scripts/memory_ontology.py`；缺失时报 `E_DEPENDENCY` 并只停用 `query` 子命令。
 
