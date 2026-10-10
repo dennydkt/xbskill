@@ -104,6 +104,7 @@
 | 不知道该不该离职 | `xb-career` | 当下已不安全 → `xb-boundary`；处于急性失能 → `xb-wellbeing` |
 | 想晋升但没成果 | `xb-career` | 不知道组织标准 → `xb-goal` |
 | 想转岗但不知道缺什么 | `xb-career` | 需要系统学习 → `xb-learning` |
+| 担心离开平台就失去价值，想争取加薪 | `xb-career` | 单纯修改已决定发送的邮件 → `xb-writing`；急性失能优先 `xb-wellbeing` |
 | 新岗位快速上手 | `xb-learning` | 资料混乱找不到 → `xb-knowledge` |
 | 学了很多不会用 | `xb-learning` | 没有真实任务 → 先定义迁移任务 |
 

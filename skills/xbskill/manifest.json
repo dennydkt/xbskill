@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.13.0",
+  "version": "1.14.0",
   "files": {
     "xb-action/agents/openai.yaml": "59ea42349e520bea7dbeaceb40a38d975d8d3f46721ea532021f4ab19b5b97a8",
     "xb-action/SKILL.md": "fed9b0041d522f3ca309fdde8c06a69f0eb03358d7ce83348f70e52a92948d30",
@@ -28,8 +28,8 @@
     "xb-capability/agents/openai.yaml": "5c706885aab7bfc51dbe2d9778c3e0efa95449bc2ce3a15e73ed145d186308cb",
     "xb-capability/references/capability-profile-template.md": "4784656ca3f972323566ae8ae40245c32dfe91ee76a24e53b30e4927b3f25dfc",
     "xb-capability/SKILL.md": "87acdc94ea507b0c8fd927ee0e790d037857979e6d1996212024f0e27c65400b",
-    "xb-career/agents/openai.yaml": "00820ffd9774ea4f12f468301d791c12c58775dff60a3b305b9461f858612442",
-    "xb-career/SKILL.md": "293f549d64d0103dd944961eadba9a6cb70ea533cff3f2e53aeb6d069f6e1f56",
+    "xb-career/agents/openai.yaml": "d49c309e5f50cb27a8dc0fe0f0563e02116a641785c98b2157ddd1ce13d94531",
+    "xb-career/SKILL.md": "d131a990fe9a4605b6e71034e4da233c3563fb1953e14d50c83a50500398b964",
     "xb-company/agents/openai.yaml": "5b7d5e245e0f4c4e1d4d6d61d04fd16a7f4010f7fd34a7fa37a405d5cc801638",
     "xb-company/references/company-profile-template.md": "526afb8a0251748e7473a68aa6e75450b85c821e22fb8e4d378ae66379c9e053",
     "xb-company/SKILL.md": "bd6defe67d6ce1c6875693e88d11e2a6a414531777e9d2a6822d403fc26f60ff",
@@ -134,7 +134,7 @@
     "xbskill/references/answer-format.md": "7d3347b41277bd641e4d94032276c06d2b4ef98e3cb4a9fe57c82e92a0383d81",
     "xbskill/references/capability-model.md": "7f21877c0212df50e5f6aa9b067c0041cccdd37c3e53d790e3b2e4d58f23dd32",
     "xbskill/references/career-evidence-review.md": "85d1365dd74c82657332d04a0ba53adb53a77ef300a269602c67d6627ed09ec4",
-    "xbskill/references/common-scenarios.md": "c1c5eb501ae38ff1a82b72a801fe45a72d1b54c190e9a22c3c872185d57eec56",
+    "xbskill/references/common-scenarios.md": "93864dbcbbad62bf721579d5bfa5de5213fecb6c7b80a2c85146551c02e07edb",
     "xbskill/references/context-protocol.md": "7f05ddab88d779c530e980549e988670b6b3d767177ee737728ff0d11bfe4468",
     "xbskill/references/contracts.md": "54bc50e06e09fc734aeee110cae953a71e074f0b30d22d5d7fb67edffeefc933",
     "xbskill/references/data-conclusion-review.md": "de0939ad66e9352591c71a430ca2b8a00daa8935f35aab626ce2cd412cb7a9ee",
@@ -153,7 +153,7 @@
     "xbskill/references/resolution-standard.md": "442fb2c6895a1c244926914942901f8681abb061c13f8589a6c46a11ef4381ab",
     "xbskill/references/role-context-model.md": "5c48a46ba6b6d544d06048e4299ca22250efafe6b0713302528aebbb0fb1dec0",
     "xbskill/references/role-specialty-regression.md": "2679beabb401c4ed44cbbcd5b153c224ac0f44292e41405e96caf872914af65a",
-    "xbskill/references/routing.md": "aa15b46ca28e9402997854c6db769b6d1e45f38ea2d6b9aca24c08856deece7a",
+    "xbskill/references/routing.md": "815a64cab9b8803165414a184c8da25223c779ffe62e2b25d60c7616e9512dc2",
     "xbskill/references/runtime-compatibility.md": "6fa309d85a4fff6a29503f7be1abd7aac9bc127517a909d596008f80fdb70a2a",
     "xbskill/references/session-memory-protocol.md": "e86515ee9996ef1c5b6594defe9f144bd29486af32c9f55d6a12e9e48544665d",
     "xbskill/references/specialist-regression.md": "22f1cb84de3bd882a2e6b64b7b21632182a4dfca6ba2160b957d81d516ae1fc7",
@@ -261,6 +261,6 @@
     "xbskill/scripts/test_workplace_evidence.py": "c891942ee2a7edea66e93efc2c2bc0a9ee72a7277ec0f1776ad574dc3685a250",
     "xbskill/scripts/workplace-evidence.py": "793cb9b4005f182af702d59f4814acf4e2f19d32a73dafc545e4eaecb92291d8",
     "xbskill/SKILL.md": "9af3cc71bf61084812e6064d114e155d08e0b4614369aadc74d6468274800c8d",
-    "xbskill/VERSION": "b4a9545a385e9701482be56a0efee678d467d9c586ec476f2c5986cfaa24e96c"
+    "xbskill/VERSION": "bb0df1bd902faba507c15975eb9973e695f2732f760d851b4f9c7ba17068f5ff"
   }
 }
