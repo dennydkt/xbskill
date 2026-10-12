@@ -438,6 +438,24 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
         if not all(phrase in text for phrase in phrases):
             errors.append(f"configuration guide loses {label}: {path}")
 
+    interaction = root / "xbskill/references/interaction-settings.md"
+    portability = root / "xbskill/references/memory-portability.md"
+    if not interaction.is_file() or not portability.is_file():
+        errors.append(f"missing memory onboarding dependency: {interaction} / {portability}")
+        return
+    intro_text = interaction.read_text(encoding="utf-8")
+    intro_start, intro_end = "<!-- intro-start -->", "<!-- intro-end -->"
+    if intro_text.count(intro_start) != 1 or intro_text.count(intro_end) != 1 or intro_text.index(intro_start) >= intro_text.index(intro_end):
+        errors.append(f"missing memory introduction block: {interaction}")
+    elif start in text and end in text:
+        intro = intro_text.split(intro_start, 1)[1].split(intro_end, 1)[0].strip()
+        options = text.split(start, 1)[1].split(end, 1)[0].strip()
+        # Reserve scope, receipt and paragraph separators; file paths are excluded.
+        if len(intro) + len(options) + 40 > 450:
+            errors.append(f"complete initialization exceeds 450-character budget: {interaction}")
+        if not all(term in intro for term in ("xb-save", "保存对话", "本体记忆", "换对话", "Kimi", "DeepSeek", "可读记忆文件")):
+            errors.append(f"memory introduction loses value or handoff conditions: {interaction}")
+
 
 def validate(root: Path) -> int:
     errors: list[str] = []

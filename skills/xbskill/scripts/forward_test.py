@@ -41,10 +41,12 @@ def capture_knowledge(argv: list[str]) -> tuple[int, str]:
     return code, stream.getvalue()
 
 
+# Receiver scripts use only the standard library. Disable site-package startup
+# for their isolated test processes; preserve every test and assertion.
 def run_role_tool(root: Path, script_name: str, argv: list[str]) -> tuple[int, str]:
     script = root / "xb-role-knowledge" / "scripts" / script_name
     completed = subprocess.run(
-        [sys.executable, str(script), *argv],
+        [sys.executable, "-S", str(script), *argv],
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -62,7 +64,7 @@ def run_role_knowledge(root: Path, argv: list[str]) -> tuple[int, str]:
 def run_session_store(root: Path, project_root: Path, bundle_path: Path) -> tuple[int, str]:
     script = root / "xb-save" / "scripts" / "session_store.py"
     completed = subprocess.run(
-        [sys.executable, str(script), "--project-root", str(project_root), "--bundle", str(bundle_path)],
+        [sys.executable, "-S", str(script), "--project-root", str(project_root), "--bundle", str(bundle_path)],
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -76,7 +78,7 @@ def run_session_store(root: Path, project_root: Path, bundle_path: Path) -> tupl
 def run_memory_ontology(root: Path, argv: list[str]) -> tuple[int, str]:
     script = root / "xb-memory" / "scripts" / "memory_ontology.py"
     completed = subprocess.run(
-        [sys.executable, str(script), *argv],
+        [sys.executable, "-S", str(script), *argv],
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -510,9 +512,29 @@ def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
     require(any(str(guide) in message for message in errors), "missing configuration guide did not fail loudly")
     guide.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(root / "xb-config/references/configuration-guide.md", guide)
+    for rel in ("xbskill/references/interaction-settings.md", "xbskill/references/memory-portability.md"):
+        dep = sandbox / rel
+        dep.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(root / rel, dep)
     errors = []
     sm.validate_configuration_guide(sandbox, errors)
     require(not errors, f"configuration explanation is incomplete: {errors}")
+    portability = sandbox / "xbskill/references/memory-portability.md"
+    portable_text = portability.read_text(encoding="utf-8")
+    portability.unlink()
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("missing memory onboarding dependency" in message for message in errors),
+            "missing memory handoff instructions did not fail loudly")
+    portability.write_text(portable_text, encoding="utf-8")
+    interaction = sandbox / "xbskill/references/interaction-settings.md"
+    intro_text = interaction.read_text(encoding="utf-8")
+    interaction.write_text(intro_text.replace("<!-- intro-start -->", "<!-- intro-start -->" + "多余介绍" * 100), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("complete initialization exceeds" in message for message in errors),
+            "combined introduction and options budget was not enforced")
+    interaction.write_text(intro_text, encoding="utf-8")
     full_guide = guide.read_text(encoding="utf-8")
     guide.write_text(full_guide.replace("<!-- concise-start -->", "<!-- concise-start -->" + "冗长解释" * 100), encoding="utf-8")
     errors = []
@@ -610,9 +632,37 @@ def check_interaction_configuration(root: Path, project: Path) -> None:
     print("PASS mandatory choices, six combinations, coexistence, scoped consent, persistence, and corruption gates")
 
 
+@contextlib.contextmanager
+def independent_regressions(source: Path):
+    """Run fresh-temp-dir suites alongside core checks; require every exit code."""
+    children = []
+    try:
+        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py"):
+            output = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
+            process = subprocess.Popen(
+                [sys.executable, "-S", "-B", str(source / relative)],
+                stdout=output, stderr=subprocess.STDOUT,
+            )
+            children.append((relative, process, output))
+        yield
+        for relative, process, output in children:
+            code = process.wait(timeout=20)
+            output.seek(0)
+            captured = output.read()
+            print(captured, end="", flush=True)
+            require(code == 0, f"independent regression failed: {relative}: exit {code}")
+        print("PASS all independent regression suites", flush=True)
+    finally:
+        for _, process, output in children:
+            if process.poll() is None:
+                process.terminate()
+                process.wait(timeout=5)
+            output.close()
+
+
 def main() -> int:
     source = Path(__file__).resolve().parents[2]
-    with tempfile.TemporaryDirectory(prefix="xbskill-receiver-") as raw:
+    with independent_regressions(source), tempfile.TemporaryDirectory(prefix="xbskill-receiver-") as raw:
         sandbox = Path(raw)
 
         receiver = sandbox / "receiver" / "skills"
@@ -2752,8 +2802,6 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    subprocess.run([sys.executable, "-B", str(source / "xb-sync/scripts/test_sync.py")], check=True)
-    subprocess.run([sys.executable, "-B", str(source / "xbskill/scripts/test_workplace_evidence.py")], check=True)
     print("SUMMARY receiver tests passed (40 public skills)")
     return 0
 
