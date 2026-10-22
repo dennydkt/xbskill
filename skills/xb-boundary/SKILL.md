@@ -5,7 +5,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 # xb-boundary：职场边界
 
-调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；仅点名外部技能或拒绝 XB 时退出，明确联合调用按共享协议保留收尾与保存。未初始化时只允许配置、说明与用户主动保存；即时安全支持优先，禁止代选。
 
 直调契约：还必须读取 `../xbskill/references/resolution-standard.md`；缺失时停止，不得把边界方案写成规则已经被接受。
 

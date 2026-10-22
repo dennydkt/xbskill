@@ -120,19 +120,26 @@ def write_config(project, data, *, user_confirmed=False):
 
 
 def decide_gate(config, *, task_id, specialist, explicit_xb=False, explicit_external=False,
-                refused_xb=False, natural_match=False, authorized_task=None, authorized_specialist=None):
-    for flag in (explicit_xb, explicit_external, refused_xb, natural_match):
+                refused_xb=False, natural_match=False, authorized_task=None, authorized_specialist=None,
+                save_requested=False):
+    for flag in (explicit_xb, explicit_external, refused_xb, natural_match, save_requested):
         if type(flag) is not bool:
             raise ConfigError("E_GATE_TYPE", "Gate signals must be booleans")
-    if explicit_external or refused_xb:
-        return {"decision": "deny", "reason": "external_choice" if explicit_external else "user_refusal"}
+    if refused_xb:
+        return {"decision": "deny", "reason": "user_refusal"}
+    if save_requested:
+        if specialist != "xb-save":
+            raise ConfigError("E_GATE_SCOPE", "A save request may dispatch only xb-save")
+        return {"decision": "allow", "reason": "save_request"}
+    if explicit_external and not explicit_xb:
+        return {"decision": "deny", "reason": "external_choice"}
     checked = validate_config(config)
     if checked["call_intensity"] is None or checked["save_prompt"] is None:
         return {"decision": "configure" if explicit_xb else "deny", "reason": "unconfigured"}
     if not isinstance(task_id, str) or not task_id.strip() or not isinstance(specialist, str) or not specialist.strip():
         raise ConfigError("E_GATE_SCOPE", "Task and specialist identifiers are required")
     if explicit_xb:
-        return {"decision": "allow", "reason": "explicit_xb"}
+        return {"decision": "allow", "reason": "joint_request" if explicit_external else "explicit_xb"}
     if authorized_task == task_id and authorized_specialist == specialist:
         return {"decision": "allow", "reason": "authorized_continuation"}
     if not natural_match:
@@ -164,7 +171,7 @@ def main(argv=None):
         if name == "gate":
             command.add_argument("--task-id", required=True)
             command.add_argument("--specialist", required=True)
-            for flag in ("explicit-xb", "explicit-external", "refused-xb", "natural-match"):
+            for flag in ("explicit-xb", "explicit-external", "refused-xb", "natural-match", "save-requested"):
                 command.add_argument("--" + flag, action="store_true")
             command.add_argument("--authorized-task")
             command.add_argument("--authorized-specialist")
@@ -183,11 +190,13 @@ def main(argv=None):
                       "path": str(_config_path(args.project)), "config": config}
         elif args.command == "gate":
             # An explicit external choice must succeed even if XB configuration is broken.
-            config = empty_config() if args.explicit_external or args.refused_xb else load_config(args.project)
+            bypass_config = args.refused_xb or args.save_requested or (args.explicit_external and not args.explicit_xb)
+            config = empty_config() if bypass_config else load_config(args.project)
             result = decide_gate(config, task_id=args.task_id, specialist=args.specialist,
                                  explicit_xb=args.explicit_xb, explicit_external=args.explicit_external,
                                  refused_xb=args.refused_xb, natural_match=args.natural_match,
-                                 authorized_task=args.authorized_task, authorized_specialist=args.authorized_specialist)
+                                 authorized_task=args.authorized_task, authorized_specialist=args.authorized_specialist,
+                                 save_requested=args.save_requested)
         else:
             result = {"prompt_save": should_prompt_save(load_config(args.project),
                        final_response=not args.intermediate, xb_active=not args.inactive), "save_authorized": False}

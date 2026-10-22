@@ -5,7 +5,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 # xb-save：工作状态快照
 
-调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；仅点名外部技能或拒绝 XB 时退出，明确联合调用按共享协议保留收尾与保存。未初始化时只允许配置、说明与用户主动保存；即时安全支持优先，禁止代选。
 
 直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md`、`../xbskill/references/session-memory-protocol.md`、`../xbskill/references/runtime-compatibility.md`、`../xb-memory/SKILL.md` 与 `../xb-memory/references/conversation-ontology.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。
 
@@ -17,7 +17,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 每次会话单独授权。用户主动回复“保存”或等价表达后才允许写当前会话。保存提示由 `xb-config` 的 `save_prompt` 控制：高档每个 XB 最终回复提示，低档只响应用户主动保存；本次拒绝后零写入。明确“以后别问”由 `xb-config` 更新为低档，不在记忆目录另建提示真源。
 
-旧版 `auto_checkpoint: on|off` 和 `session_save_prompt` 保留为历史字段，不删除、不静默迁移。`on` 不能授权当前会话全文或分类写入；旧设置也不能代替用户选择调用强度与保存提示。缺少新配置时由 `xb-config` 让用户自行选择，禁止自动写入 `ask`。
+旧版 `auto_checkpoint: on|off` 和 `session_save_prompt` 保留为历史字段，不删除、不静默迁移。`on` 不能授权当前会话全文或分类写入；旧设置也不能代替用户选择调用强度与保存提示。缺少新配置时不生成提示档位，禁止自动写入 `ask`；本次主动保存直接执行授权保存流程，普通业务使用时再由 `xb-config` 补齐选择。
 
 ## 轻量检查点（兼容旧版 progress）
 
@@ -60,3 +60,5 @@ schema 1 只用于读取与增量保存旧快照，继续接受旧 classificatio
 标题；session ID；时间/项目/来源；完整性状态与缺口；用户目标与 G 层级；当前价值需要；选择门；H 帮助能级；问题类型与解决范围；用户侧变化；现实证据/下一反馈点；未解决部分；行动相关状态摘要；已确认事实；当前结论；产物与附件索引；知识锁与主张；活动决策事件引用；能力证据；人物/公司档案引用；分类账路径；排除项；待验证；风险；下一步；恢复提示。
 
 全文、摘要、会话本体与任务查询包分别治理。用户对本次全文归档的同意覆盖受限断言的会话级安全保存；受限断言进入跨会话长期检索仍需逐条明确授权。本体写入继续遵守最小化、证据层级、时间范围、冲突显形与可推翻要求。
+
+用户直接回复“保存对话 / 保存这次对话 / 记一下这次讨论”时，按 `../xbskill/references/coexistence-protocol.md` 的控制指令进入本流程。联合任务的外部辅助技能与低档提示均不得吞掉这条指令；尚未业务初始化可直接做本次授权保存，仍严格核对路径、可见历史、排除内容与敏感长期检索授权。

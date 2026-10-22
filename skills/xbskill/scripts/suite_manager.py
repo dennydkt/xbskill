@@ -469,6 +469,7 @@ def validate(root: Path) -> int:
     for rel in (
         "xb-config/SKILL.md", "xb-config/references/config-contract.md",
         "xb-config/scripts/config_manager.py", "xb-config/scripts/test_config.py",
+        "xbskill/references/coexistence-protocol.md", "xbskill/references/work-state-intake.md",
     ):
         if not (root / rel).is_file():
             errors.append(f"missing required configuration dependency: {root / rel}")

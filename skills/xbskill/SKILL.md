@@ -14,7 +14,7 @@ description: |
 
 ## 调用与初始化优先门
 
-先读 [references/interaction-settings.md](references/interaction-settings.md)，执行配置、显式外部技能优先和调用确认门。配置入口是 [../xb-config/SKILL.md](../xb-config/SKILL.md)。初始化选择前必须读取 [配置解释与选项](../xb-config/references/configuration-guide.md)，只展示默认短版，每个档位一句解释行为；详情等追问再展开。用户尚未自行选齐调用强度和保存提示时，保留原任务并等待选择，禁止代选；配置与说明书查看可先进行。已明确指定其他 Skill 时直接退出，不插入 XB 配置。
+先读 [references/interaction-settings.md](references/interaction-settings.md)，执行配置、显式外部技能优先和调用确认门。配置入口是 [../xb-config/SKILL.md](../xb-config/SKILL.md)。初始化选择前必须读取 [配置解释与选项](../xb-config/references/configuration-guide.md)，只展示默认短版，每个档位一句解释行为；详情等追问再展开。用户尚未自行选齐调用强度和保存提示时，保留原任务并等待选择，禁止代选；配置与说明书查看可先进行。仅点名外部 Skill 时退出；用户明确联合调用时按 `references/coexistence-protocol.md` 保留 XB 收尾与保存控制。用户主动保存独立处理，即时安全支持优先。
 
 首次由 Agent 安装完成后，或用户每次显式调用本主入口时，按该协议展示“主入口定位、问法举例、xb-save 本体记忆与衔接条件、子 Skill 说明书查看邀请”四项。保存内容可用于未来跨对话续接；换产品由用户提供可读记忆文件，具体步骤见 [记忆与跨产品衔接](references/memory-portability.md)。等待用户反馈后才能展开说明书；用户直接发任务时继续任务。内部路由和同任务自然续问不重复展示介绍。无交互安装通过 README 引导安装后第一次调用完成初始化。
 
@@ -78,11 +78,15 @@ description: |
 
 ## 模式 C：主入口介绍与按需说明书
 
-首次安装或显式调用主入口时，逐字展示 `interaction-settings.md` 的 `intro-start` 至 `intro-end` 四项短介绍，含主入口、问法、xb-save 本体记忆与衔接条件、说明书邀请。本处只引用唯一介绍来源，避免多份文案漂移。
+首次安装或显式调用主入口时，按首次条件展示 `interaction-settings.md` 的 `intro-start` 至 `intro-end` 四项常规短介绍及可选评估行，含主入口、问法、xb-save 本体记忆与衔接条件、说明书邀请。本处只引用唯一介绍来源，避免多份文案漂移。
 
 介绍后的用户反馈决定下一步：索要说明书才按需展开；选择配置时先处理配置，选齐后立即恢复因初始化暂停的已授权原任务；没有原任务则只报告配置结果；提供任务则推进任务。禁止默认展示完整菜单。用户已有真实需求时只给四项简短介绍，不增加长教程；未配置才暂停并让用户自行选择两项。已初始化的用户再次显式调用主入口仍展示介绍，不重复配置。内部回流与自然续问不触发本模式。
 
 查看说明书只由显式询问触发。读取 `references/user-guide.md` 的对应章节；明确要求全部才展示完整目录。参数选择、沉默、继续任务都不构成查看说明书的许可。
+
+## 可选工作状态评估
+
+首次沟通短介绍附可选“评估工作状态”；已明确选择时读取 `references/work-state-intake.md`，逐轮单问，按证据形成当前状态与急迫问题判断。可跳过、暂停或恢复原任务，不作为强制建档步骤。任何阶段出现安全信号先中断介绍、配置与问卷，连接当下支持；不等背景收集齐全。
 
 ## 模式 A：任务前路由
 

@@ -85,7 +85,7 @@ class ConfigTests(unittest.TestCase):
             self.assertEqual(gate(natural_match=True), {"high": "allow", "medium": "confirm", "low": "deny"}[call])
             self.assertEqual(gate(), "deny")
             self.assertEqual(gate(explicit_xb=True), "allow")
-            self.assertEqual(gate(explicit_external=True, explicit_xb=True, natural_match=True), "deny")
+            self.assertEqual(gate(explicit_external=True, explicit_xb=True, natural_match=True), "allow")
             self.assertEqual(gate(refused_xb=True, explicit_xb=True), "deny")
             self.assertEqual(gate(authorized_task="t1", authorized_specialist="xb-review"), "allow")
         self.assertEqual(manager.decide_gate({}, task_id="", specialist="", explicit_external=True)["decision"], "deny")
@@ -95,6 +95,40 @@ class ConfigTests(unittest.TestCase):
             result = manager.decide_gate(config("medium"), task_id="t1", specialist="xb-review", natural_match=True,
                                          authorized_task=task, authorized_specialist=specialist)
             self.assertEqual(result["decision"], "confirm")
+
+    def test_joint_save_and_refusal_sequence(self):
+        for call, save in itertools.product(("high", "medium", "low"), ("high", "low")):
+            value = config(call, save)
+            invoke = lambda **kw: manager.decide_gate(value, task_id="budget", specialist="xb-data", **kw)
+            self.assertEqual(invoke(explicit_xb=True, explicit_external=True)["reason"], "joint_request")
+            self.assertEqual(invoke(authorized_task="budget", authorized_specialist="xb-data")["decision"], "allow")
+            self.assertEqual(invoke(explicit_external=True, authorized_task="budget", authorized_specialist="xb-data")["decision"], "deny")
+            self.assert_error("E_GATE_SCOPE", invoke, save_requested=True, explicit_external=True)
+            self.assertEqual(manager.decide_gate(value, task_id="budget", specialist="xb-save",
+                                                 save_requested=True, explicit_external=True)["reason"], "save_request")
+            self.assertEqual(invoke(save_requested=True, refused_xb=True)["reason"], "user_refusal")
+        self.assertEqual(manager.decide_gate(manager.empty_config(), task_id="t", specialist="xbskill",
+                                            explicit_xb=True, explicit_external=True)["decision"], "configure")
+        self.assertEqual(manager.decide_gate({}, task_id="t", specialist="xb-save", save_requested=True)["decision"], "allow")
+        self.assert_error("E_GATE_TYPE", manager.decide_gate, config(), task_id="t", specialist="xb-save", save_requested="yes")
+
+    def test_cli_joint_reads_config_but_save_does_not_depend_on_it(self):
+        script = str(Path(manager.__file__).resolve())
+        folder = self.project / ".xbskill"
+        folder.mkdir()
+        path = folder / "config.json"
+        path.write_text("{broken", encoding="utf-8")
+        def run(*flags):
+            return subprocess.run([sys.executable, "-B", script, "gate", "--project", str(self.project),
+                                   "--task-id", "t", "--specialist", "xb-save", *flags],
+                                  text=True, capture_output=True, timeout=10)
+        self.assertEqual(run("--explicit-external").returncode, 0)
+        self.assertEqual(run("--explicit-external", "--explicit-xb").returncode, 2)
+        saved = run("--explicit-external", "--save-requested")
+        self.assertEqual(saved.returncode, 0, saved.stderr)
+        self.assertEqual(json.loads(saved.stdout)["reason"], "save_request")
+        self.assertEqual(path.read_text(encoding="utf-8"), "{broken")
+        self.assertFalse((self.project / "memory").exists())
 
     def test_unconfigured_never_natural_triggers(self):
         for value in (manager.empty_config(), config(None), config(save=None)):

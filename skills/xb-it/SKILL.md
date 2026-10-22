@@ -5,7 +5,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 # xb-it：IT 问题解决
 
-调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。
+调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；仅点名外部技能或拒绝 XB 时退出，明确联合调用按共享协议保留收尾与保存。未初始化时只允许配置、说明与用户主动保存；即时安全支持优先，禁止代选。
 
 直调时先读取 `../xbskill/references/contracts.md` 与 `../xbskill/references/resolution-standard.md`；任何文件缺失时报告精确路径并停止，不得凭记忆补造。数据管道或平台故障的责任/生命周期会改变动作时，读取 `../xbskill/references/role-context-model.md` 与 `../xbskill/references/data-work-specialties.md`；前端、后端或架构任务会改变测试、发布、观测或回滚时，读取 `../xbskill/references/role-context-model.md` 与 `../xbskill/references/product-rd-specialties.md`。简单单机问题不加载岗位全景。涉及实时官方文档、标准或 GitHub 仓库时，再读取 `../xbskill/references/knowledge-source-protocol.md`。
 

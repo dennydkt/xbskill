@@ -466,7 +466,7 @@ def install_local_knowledge_fixture(root: Path, authority_scope: str = "syntheti
 
 
 INTERACTION_DESCRIPTION_PREFIX = "调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。"
-INTERACTION_ENTRY_GATE = "调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；明确指定其他技能或拒绝 XB 时退出。未初始化时只允许配置与说明，禁止代选或先执行后确认。"
+INTERACTION_ENTRY_GATE = "调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；仅点名外部技能或拒绝 XB 时退出，明确联合调用按共享协议保留收尾与保存。未初始化时只允许配置、说明与用户主动保存；即时安全支持优先，禁止代选。"
 
 
 def historical_agency_body_digest(path: Path) -> str:
@@ -596,8 +596,8 @@ def check_interaction_configuration(root: Path, project: Path) -> None:
             require(gate(config) == {"high": "allow", "medium": "confirm", "low": "deny"}[intensity],
                     f"natural-language gate violates {intensity}/{prompt}")
             require(gate(config, explicit_xb=True) == "allow", "explicit XB intent is blocked or double-confirmed")
-            require(gate(config, explicit_external=True, explicit_xb=True) == "deny",
-                    "another explicitly selected skill does not take precedence")
+            require(gate(config, explicit_external=True, explicit_xb=True) == "allow",
+                    "explicit joint invocation loses XB participation")
             require(gate(config, refused_xb=True, authorized_task="review-1", authorized_specialist="xb-review") == "deny",
                     "task continuity overrides XB refusal")
             require(gate(config, authorized_task="review-1", authorized_specialist="xb-review") == "allow",
@@ -637,7 +637,7 @@ def independent_regressions(source: Path):
     """Run fresh-temp-dir suites alongside core checks; require every exit code."""
     children = []
     try:
-        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py"):
+        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py"):
             output = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
             process = subprocess.Popen(
                 [sys.executable, "-S", "-B", str(source / relative)],
