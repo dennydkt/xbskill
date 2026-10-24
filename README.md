@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.15.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.16.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -40,7 +40,7 @@ cp -r xbskill/skills/* ~/.agents/skills/
 
 **保存一次，换对话继续。** 使用 `xb-save` 保存对话与进度，并通过本体构建人物、事件、关系和决定的拟人化记忆系统。未来调用 xbskill 时，获得同一项目文件授权的 Agent 可以读取相关历史。换 Kimi、DeepSeek 等产品时，由你提供可读记忆文件继续使用；普通聊天仅恢复已经提供的材料。具体步骤与运行条件见 [记忆与跨产品衔接](skills/xbskill/references/memory-portability.md)。
 
-**斜杠菜单选择 `xbskill 主入口｜从这里开始`。** 不知道该调用哪个子 Skill 时，问 xbskill。子功能按各自 `xb-*` 名称显示“子技能”或“设置”。 安装完成后调用 `$xbskill`，由你自行选择两项设置：
+**斜杠菜单选择 `xbskill 主入口｜从这里开始`。** 不知道该调用哪个子 Skill 时，问 xbskill。子功能按各自 `xb-*` 名称显示“子技能”或“设置”。 安装完成后调用 `$xbskill`，先做可跳过的精神同步三阶段问答，再由你自行选择两项设置：
 
 | 配置项 | 可选值（无默认值） |
 |---|---|
@@ -131,3 +131,9 @@ npx -y skills add dennydkt/xbskill -g --all
 ### 多 Agent 记忆归集
 
 `xb-sync` 发现同机多个项目的记忆根，预览后归集完整会话；差异会话进入冲突收件箱，跨项目背景进入带来源的待核对区。本体保留原根，可按根并列查询。各宿主保存与恢复仍须明确项目路径，跨机器传输由用户另行安排。
+
+## 精神同步协调与作者答疑
+
+首次使用先聊 AI 工作思维、沟通提问、让 AI 了解你，每阶段约十轮，一次一个问题，包含小产物、纠错与迁移练习；可说“跳过”或随时暂停。也可主动说“精神同步协调”。之后根据回答给配置建议，两项偏好仍由你决定。安装器无对话回调时，请安装后调用主入口开始。
+
+有使用问题或疑惑，可到 [xbskill 官网购买社群版](https://xbskill.com)，加入微信社群直接向作者提问；免费使用可继续。想保留背景、纠正和进度时说“保存对话”，后续须提供或授权读取可读记录。

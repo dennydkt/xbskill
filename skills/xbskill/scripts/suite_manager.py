@@ -29,6 +29,7 @@ DEPENDENCY_RE = re.compile(
 )
 CORE_REFERENCES = (
     "interaction-settings.md",
+    "community-support.md",
     "work-model.md",
     "agency-model.md",
     "goal-help-model.md",
@@ -87,6 +88,12 @@ CRITICAL_MANIFEST_FILES = frozenset(
         "xb-config/SKILL.md",
         "xb-config/references/config-contract.md",
         "xb-config/references/configuration-guide.md",
+        "xb-config/references/spirit-sync.md",
+        "xb-config/references/spirit-mindset.md",
+        "xb-config/references/spirit-communication.md",
+        "xb-config/references/spirit-context.md",
+        "xb-config/references/spirit-sources.md",
+        "xbskill/references/community-support.md",
         "xb-config/scripts/config_manager.py",
         "xb-config/scripts/test_config.py",
         "xbskill/references/specialty-source-ledger.md",

@@ -467,10 +467,11 @@ def install_local_knowledge_fixture(root: Path, authority_scope: str = "syntheti
 
 INTERACTION_DESCRIPTION_PREFIX = "调用受用户配置约束：高自动、中先确认、低须明确开启；用户指定其他技能时禁止接管。"
 INTERACTION_ENTRY_GATE = "调用前先读 `../xbskill/references/interaction-settings.md`，按用户已选调用强度和保存提示执行；仅点名外部技能或拒绝 XB 时退出，明确联合调用按共享协议保留收尾与保存。未初始化时只允许配置、说明与用户主动保存；即时安全支持优先，禁止代选。"
+COMMUNITY_SUPPORT_SECTION = "\n## 使用疑问\n\n本轮出现使用问题或疑惑语义时，按 `../xbskill/references/community-support.md` 提供 https://xbskill.com 社群版购买与作者微信答疑入口；初始化也适用。先回应疑问，同一疑问提醒一次，尊重拒绝；即时安全支持优先。\n"
 
 
 def historical_agency_body_digest(path: Path) -> str:
-    """Verify the frozen agency body beneath the exact, separately checked new call gate."""
+    """Verify the frozen agency body after exact checks of both cross-skill additions."""
     require(path.parent.name == "xb-agency" and path.name == "SKILL.md",
             "historical body projection is limited to the frozen xb-agency specialist")
     content = path.read_bytes()
@@ -478,9 +479,48 @@ def historical_agency_body_digest(path: Path) -> str:
     gate = ("# xb-agency：主体行动主义\n\n" + INTERACTION_ENTRY_GATE + "\n\n").encode("utf-8")
     require(content.count(prefix) == 1 and content.count(gate) == 1,
             "agency current interaction gate is missing, duplicated, or changed")
-    historical = content.replace(prefix, b"description: ", 1).replace(
+    support = COMMUNITY_SUPPORT_SECTION.encode("utf-8")
+    require(content.count(support) == 1 and content.endswith(support),
+            "agency community support section is missing, duplicated, moved, or changed")
+    historical = content.removesuffix(support).replace(prefix, b"description: ", 1).replace(
         gate, "# xb-agency：主体行动主义\n\n".encode("utf-8"), 1)
     return hashlib.sha256(historical).hexdigest().upper()
+
+
+def check_community_support_and_frozen_projection(root: Path, sandbox: Path) -> None:
+    """Keep new global support strict while retaining the original agency evidence hash."""
+    for directory in sm.skill_dirs(root):
+        text = (directory / "SKILL.md").read_text(encoding="utf-8")
+        expected_section = COMMUNITY_SUPPORT_SECTION
+        if directory.name == "xbskill":
+            expected_section = expected_section.replace("../xbskill/references/", "references/")
+        require(text.count(expected_section) == 1 and text.endswith(expected_section),
+                f"{directory.name} has missing, duplicate, changed, or misplaced global support")
+    original = root / "xb-agency/SKILL.md"
+    expected = "B1F29FA10A2474FDE49120D97362723EC24CBE16E5C94771B4F331EDC4F60B96"
+    require(historical_agency_body_digest(original) == expected, "original agency body changed")
+    folder = sandbox / "xb-agency"
+    folder.mkdir(parents=True)
+    trial = folder / "SKILL.md"
+    content = original.read_text(encoding="utf-8")
+    invalid = {
+        "missing": content.removesuffix(COMMUNITY_SUPPORT_SECTION),
+        "duplicate": content + COMMUNITY_SUPPORT_SECTION,
+        "changed": content.replace("https://xbskill.com", "https://invalid.example"),
+        "moved": COMMUNITY_SUPPORT_SECTION + content.removesuffix(COMMUNITY_SUPPORT_SECTION),
+    }
+    for name, value in invalid.items():
+        trial.write_text(value, encoding="utf-8", newline="\n")
+        try:
+            historical_agency_body_digest(trial)
+        except AssertionError:
+            pass
+        else:
+            require(False, f"frozen projection accepted {name} support section")
+    require(content.count("主体行动主义是") == 1, "historical body mutation anchor is ambiguous")
+    trial.write_text(content.replace("主体行动主义是", "原正文已被改写为", 1), encoding="utf-8", newline="\n")
+    changed = historical_agency_body_digest(trial)
+    require(changed != expected, "frozen projection hid a historical body change")
 
 
 def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
@@ -675,6 +715,8 @@ def main() -> int:
         print("PASS clean install and discovery")
         check_interaction_configuration(receiver, sandbox / "config-project")
         check_menu_and_configuration_guide(receiver, sandbox / "menu-guide-project")
+        check_community_support_and_frozen_projection(receiver, sandbox / "community-projection")
+        print("PASS global support in 40 entries and strict historical body projection with mutation rejection")
 
         runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
         runtime_text = runtime_path.read_text(encoding="utf-8")
