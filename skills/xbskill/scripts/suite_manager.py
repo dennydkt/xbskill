@@ -643,6 +643,13 @@ def validate(root: Path) -> int:
     try:
         declared = load_manifest(root)
         actual = current_manifest(root)
+        declared_version = declared.get("version")
+        actual_version = actual["version"]
+        if declared_version != actual_version:
+            errors.append(
+                "manifest version mismatch: "
+                f"manifest={declared_version!r} VERSION={actual_version!r}"
+            )
         declared_files = declared.get("files", {})
         actual_files = actual.get("files", {})
         drifted = {
@@ -660,11 +667,14 @@ def validate(root: Path) -> int:
                 detail = "digest differs"
             errors.append(f"critical manifest drift ({detail}): {rel}")
         noncritical_drift = drifted - CRITICAL_MANIFEST_FILES
-        if noncritical_drift:
-            warnings.append(
-                "manifest differs for "
-                f"{len(noncritical_drift)} non-critical file(s); run the manifest command"
-            )
+        for rel in sorted(noncritical_drift):
+            if rel not in declared_files:
+                detail = "not declared in manifest"
+            elif rel not in actual_files:
+                detail = "declared file is missing"
+            else:
+                detail = "digest differs"
+            errors.append(f"manifest drift ({detail}): {rel}")
     except SystemExit:
         errors.append("manifest could not be read")
 

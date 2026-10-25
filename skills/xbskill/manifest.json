@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.16.0",
+  "version": "1.16.1",
   "files": {
     "xb-action/agents/openai.yaml": "59ea42349e520bea7dbeaceb40a38d975d8d3f46721ea532021f4ab19b5b97a8",
     "xb-action/SKILL.md": "c3a8e9e29bc6d7fa4a85417ee9761347bdce8b1135ed0ddab431d69a0b3e9cd2",
@@ -264,12 +264,12 @@
     "xbskill/references/work-state-intake.md": "375bd8e2e50ce322bbcf4a8009259e4192eabf3b9d3634a2fd119323e7c4bd49",
     "xbskill/references/workplace-evidence-review.md": "855682a074be4de55ee0dbe1f89ca4676fc41d22d0eae9ffb01e1c80d94bbc37",
     "xbskill/references/workplace-regression.md": "8e686ff576d282e8c8a08eed94cdbd096dff631777557e576230ebde6483b73b",
-    "xbskill/scripts/forward_test.py": "9e51ef9112885f40c207fcad3bc58cae57833e62cf1e5b2f35c507a25a7837e6",
+    "xbskill/scripts/forward_test.py": "0d0fd7b5fcf815f290987855c8c2c258ca5e3066e3fe234dc6cc77b74d3f043a",
     "xbskill/scripts/knowledge_manager.py": "386eaf5b55959eed1707ea72c3850d10fd425489791deb73db08676db9a9d959",
-    "xbskill/scripts/suite_manager.py": "7e703ef0518746ba38f317c897081963a52af5eb387449a46834c67020e4addb",
+    "xbskill/scripts/suite_manager.py": "b0ded2986db0ffc85948e6866d9f18c0efcbfc0e2891760d0e48c813c5cd2c9a",
     "xbskill/scripts/test_workplace_evidence.py": "c891942ee2a7edea66e93efc2c2bc0a9ee72a7277ec0f1776ad574dc3685a250",
     "xbskill/scripts/workplace-evidence.py": "793cb9b4005f182af702d59f4814acf4e2f19d32a73dafc545e4eaecb92291d8",
     "xbskill/SKILL.md": "baa4f26ade85ee8039223cc65b75f902fd1d513b8a2212f0a6b82399ef493c64",
-    "xbskill/VERSION": "46081fd90571a274160408ebc81fc91b78ffca4049d477998e3b6909ac245e05"
+    "xbskill/VERSION": "32575309a6ef3fb5bf608f27d6867cb87a8a8abb2605d4a19f3d918401cc2756"
   }
 }

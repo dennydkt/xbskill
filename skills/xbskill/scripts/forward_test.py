@@ -15,6 +15,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 import knowledge_manager as km
@@ -701,6 +702,7 @@ def independent_regressions(source: Path):
 
 
 def main() -> int:
+    test_started = time.perf_counter()
     source = Path(__file__).resolve().parents[2]
     with independent_regressions(source), tempfile.TemporaryDirectory(prefix="xbskill-receiver-") as raw:
         sandbox = Path(raw)
@@ -1694,6 +1696,58 @@ def main() -> int:
         require(code != 0 and "xb-does-not-exist" in output, "broken route was not detected")
         routing.write_text(original, encoding="utf-8")
         print("PASS broken route is detected")
+
+        manifest_version = receiver / "xbskill" / "manifest.json"
+        version_file = receiver / "xbskill" / "VERSION"
+        declared_version = json.loads(manifest_version.read_text(encoding="utf-8"))["version"]
+        mismatched_version = f"{declared_version}-probe"
+        original_version = version_file.read_bytes()
+        noncritical = receiver / "xb-talk" / "SKILL.md"
+        original_noncritical = noncritical.read_bytes()
+        unregistered = receiver / "xb-talk" / "manifest-probe.txt"
+        try:
+            version_file.write_text(f"{mismatched_version}\n", encoding="utf-8")
+            noncritical.write_bytes(original_noncritical + b"\n<!-- integrity probe -->\n")
+            unregistered.write_text("integrity probe\n", encoding="utf-8")
+            code, output = capture_validate(receiver)
+            require(
+                code != 0
+                and "manifest version mismatch" in output
+                and f"manifest={declared_version!r}" in output
+                and f"VERSION={mismatched_version!r}" in output,
+                f"manifest/VERSION mismatch did not block validation with both values:\n{output}",
+            )
+            require(
+                "manifest drift (digest differs): xb-talk/SKILL.md" in output,
+                f"non-critical digest drift did not block validation with its path:\n{output}",
+            )
+            require(
+                "manifest drift (not declared in manifest): xb-talk/manifest-probe.txt" in output,
+                f"unregistered managed file did not block validation with its path:\n{output}",
+            )
+        finally:
+            version_file.write_bytes(original_version)
+            noncritical.write_bytes(original_noncritical)
+            if unregistered.exists():
+                unregistered.unlink()
+        print("PASS manifest/VERSION mismatch blocks validation")
+        print("PASS non-critical digest drift blocks validation with its path")
+        print("PASS unregistered managed file blocks validation with its path")
+        print(f"PROGRESS manifest integrity probes elapsed={time.perf_counter() - test_started:.1f}s")
+
+        missing_noncritical = receiver / "xb-talk" / "SKILL.md"
+        held_noncritical = missing_noncritical.with_suffix(".md.missing")
+        missing_noncritical.rename(held_noncritical)
+        try:
+            code, output = capture_validate(receiver)
+            require(
+                code != 0
+                and "manifest drift (declared file is missing): xb-talk/SKILL.md" in output,
+                f"missing non-critical manifest file did not block validation with its path:\n{output}",
+            )
+        finally:
+            held_noncritical.rename(missing_noncritical)
+        print("PASS missing non-critical manifest file blocks validation with its path")
 
         goal_model = (receiver / "xbskill" / "references" / "goal-help-model.md").read_text(encoding="utf-8")
         agency_model = (receiver / "xbskill" / "references" / "agency-model.md").read_text(encoding="utf-8")
@@ -2844,7 +2898,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print("SUMMARY receiver tests passed (40 public skills)")
+    print(f"SUMMARY receiver tests passed (40 public skills) elapsed={time.perf_counter() - test_started:.1f}s")
     return 0
 
 
