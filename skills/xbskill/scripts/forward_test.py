@@ -17,6 +17,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from unittest.mock import patch
 
 import knowledge_manager as km
 import suite_manager as sm
@@ -25,7 +26,7 @@ import suite_manager as sm
 def copy_receiver(source: Path, target: Path) -> None:
     target.mkdir(parents=True)
     for directory in sm.skill_dirs(source):
-        shutil.copytree(directory, target / directory.name)
+        shutil.copytree(directory, target / directory.name, ignore=shutil.ignore_patterns("__pycache__"))
 
 
 def capture_validate(root: Path) -> tuple[int, str]:
@@ -471,8 +472,8 @@ INTERACTION_ENTRY_GATE = "调用前先读 `../xbskill/references/interaction-set
 COMMUNITY_SUPPORT_SECTION = "\n## 使用疑问\n\n本轮出现使用问题或疑惑语义时，按 `../xbskill/references/community-support.md` 提供 https://xbskill.com 社群版购买与作者微信答疑入口；初始化也适用。先回应疑问，同一疑问提醒一次，尊重拒绝；即时安全支持优先。\n"
 
 
-def historical_agency_body_digest(path: Path) -> str:
-    """Verify the frozen agency body after exact checks of both cross-skill additions."""
+def agency_projection_body_digest(path: Path) -> str:
+    """Bind the current agency projection body while checking its support overlay."""
     require(path.parent.name == "xb-agency" and path.name == "SKILL.md",
             "historical body projection is limited to the frozen xb-agency specialist")
     content = path.read_bytes()
@@ -498,8 +499,8 @@ def check_community_support_and_frozen_projection(root: Path, sandbox: Path) -> 
         require(text.count(expected_section) == 1 and text.endswith(expected_section),
                 f"{directory.name} has missing, duplicate, changed, or misplaced global support")
     original = root / "xb-agency/SKILL.md"
-    expected = "B1F29FA10A2474FDE49120D97362723EC24CBE16E5C94771B4F331EDC4F60B96"
-    require(historical_agency_body_digest(original) == expected, "original agency body changed")
+    expected = "3A646BE5B681492AC36844D9F7DF113077C9DA7ED296EC692CB6071D213A020A"
+    require(agency_projection_body_digest(original) == expected, "agency projection body differs from the accepted candidate")
     folder = sandbox / "xb-agency"
     folder.mkdir(parents=True)
     trial = folder / "SKILL.md"
@@ -513,15 +514,15 @@ def check_community_support_and_frozen_projection(root: Path, sandbox: Path) -> 
     for name, value in invalid.items():
         trial.write_text(value, encoding="utf-8", newline="\n")
         try:
-            historical_agency_body_digest(trial)
+            agency_projection_body_digest(trial)
         except AssertionError:
             pass
         else:
             require(False, f"frozen projection accepted {name} support section")
-    require(content.count("主体行动主义是") == 1, "historical body mutation anchor is ambiguous")
+    require(content.count("主体行动主义是") == 1, "agency body mutation anchor is ambiguous")
     trial.write_text(content.replace("主体行动主义是", "原正文已被改写为", 1), encoding="utf-8", newline="\n")
-    changed = historical_agency_body_digest(trial)
-    require(changed != expected, "frozen projection hid a historical body change")
+    changed = agency_projection_body_digest(trial)
+    require(changed != expected, "projection check hid a body change")
 
 
 def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
@@ -718,7 +719,7 @@ def main() -> int:
         check_interaction_configuration(receiver, sandbox / "config-project")
         check_menu_and_configuration_guide(receiver, sandbox / "menu-guide-project")
         check_community_support_and_frozen_projection(receiver, sandbox / "community-projection")
-        print("PASS global support in 40 entries and strict historical body projection with mutation rejection")
+        print("PASS global support in 40 entries and strict projection body with mutation rejection")
 
         runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
         runtime_text = runtime_path.read_text(encoding="utf-8")
@@ -756,6 +757,14 @@ def main() -> int:
         answer_format = (receiver / "xbskill" / "references" / "answer-format.md").read_text(encoding="utf-8")
         contracts_text = (receiver / "xbskill" / "references" / "contracts.md").read_text(encoding="utf-8")
         shell_text = (receiver / "xbskill" / "SKILL.md").read_text(encoding="utf-8")
+        update_text = (receiver / "xb-update" / "SKILL.md").read_text(encoding="utf-8")
+        sync_text = (receiver / "xb-sync" / "SKILL.md").read_text(encoding="utf-8")
+        memory_portability = (receiver / "xbskill" / "references" / "memory-portability.md").read_text(encoding="utf-8")
+        runtime_compatibility = (receiver / "xbskill" / "references" / "runtime-compatibility.md").read_text(encoding="utf-8")
+        spirit_sync_text = (receiver / "xb-config" / "references" / "spirit-sync.md").read_text(encoding="utf-8")
+        config_guide_text = (receiver / "xb-config" / "references" / "configuration-guide.md").read_text(encoding="utf-8")
+        goal_text = (receiver / "xb-goal" / "SKILL.md").read_text(encoding="utf-8")
+        triage_text = (receiver / "xb-triage" / "SKILL.md").read_text(encoding="utf-8")
         routing_text = (receiver / "xbskill" / "references" / "routing.md").read_text(encoding="utf-8")
         agency_text = (receiver / "xb-agency" / "SKILL.md").read_text(encoding="utf-8")
         agency_creed = (receiver / "xb-agency" / "references" / "subject-actionism.md").read_text(encoding="utf-8")
@@ -855,8 +864,8 @@ def main() -> int:
             "current_skill` 不得改写", "no_view", "blocked_by_boundary",
             "行动能力", "组织权限", "责任资格", "身份溯源", "看得见", "可持续接管",
             "证据与申诉", "管理型 Agent", "自由选择充分", "第三方的同意",
-            "不向用户显示内部状态 `no_view`", "以 220 字为编写目标",
-            "责任与补救细节只写进带证据状态的表格", "语义解释放进普通列表仍然计入",
+            "不向用户显示内部状态 `no_view`", "用户要求完整判断报告时，再展开成结构化材料",
+            "面向用户用日常语言，不照抄内部字段名", "风险、责任边界和会改变用户选择的信息应清楚说明",
         )), "xb-agency loses direct/support modes, single-current-skill gate, or Agent responsibility chain")
         require(all(term in agency_creed for term in (
             "人本规则观", "改造适应观", "权责对称观", "行动责任观", "拒绝生成观", "可回头勇气观",
@@ -887,7 +896,7 @@ def main() -> int:
             "answers": "E2736B1076320B1F3790BBF1DB3692CB31680A178914678A4501D20B9B30C59A",
             "review": "C3D34D86B21EB6709C626BCE8BC381D175C2B002E4310DB15BA6CAD65D7D6684",
             "record": "36FB56C1DFD26E9B112C6006DCC9ADF54A9A192BBB7847FB1A5B88462D0CD378",
-            "skill": "B1F29FA10A2474FDE49120D97362723EC24CBE16E5C94771B4F331EDC4F60B96",
+            "skill": "3A646BE5B681492AC36844D9F7DF113077C9DA7ED296EC692CB6071D213A020A",
             "creed": "79E3887A598D19A01F9B53E7B9EF05EE8B3F00D976743E86FA997F1BD2972360",
         }
         agency_actual_digests = {
@@ -895,7 +904,7 @@ def main() -> int:
             "answers": hashlib.sha256(agency_acceptance_answers_path.read_bytes()).hexdigest().upper(),
             "review": hashlib.sha256(agency_acceptance_review_path.read_bytes()).hexdigest().upper(),
             "record": hashlib.sha256(agency_candidate_record_path.read_bytes()).hexdigest().upper(),
-            "skill": historical_agency_body_digest(receiver / "xb-agency" / "SKILL.md"),
+            "skill": agency_projection_body_digest(receiver / "xb-agency" / "SKILL.md"),
             "creed": hashlib.sha256((receiver / "xb-agency" / "references" / "subject-actionism.md").read_bytes()).hexdigest().upper(),
         }
         require(agency_actual_digests == agency_expected_digests,
@@ -936,27 +945,57 @@ def main() -> int:
             "list/read/resume/archive/unarchive/fork/rename/pin/send", "禁止查找“原始任务”",
             "用户主动提供的完整导出", "精确当前会话 ID", "副作用无法确认",
             "沿宿主分页游标持续读取", "hasMore=false", "已尝试入口", "任务摘要、压缩摘要",
-            "保存前本体作用域预览", "此处无需第二次授权",
-            "会话本体已生成", "允许跨会话长期检索",
+            "保存前内容预览", "敏感内容默认只保留在本次会话存档中",
+            "用日常语言报告保存成功与否", "允许跨会话长期检索",
         )), "session memory protocol loses prompt, consent, completeness, locality, or safe host-history gates")
         require(all(term in save_text for term in (
-            "保存前本体作用域预览", "此处无需第二次授权",
+            "保存前内容预览", "不向用户展示实体/断言计数或内部分类名",
             "用户没有表达长期检索意图时，不追加授权问题",
-            "会话本体已生成", "授权只改变留存与检索作用域",
+            "用户要求技术明细时再展示内部分类和数量", "授权只改变留存与检索作用域",
         )), "save skill can still hide ontology scope or over-request sensitive authorization")
         require("session-memory-protocol.md" in shell_text and "interaction-settings.md" in shell_text,
                 "navigation shell bypasses save authorization or interaction preferences")
         require(all(term in answer_format for term in (
+            "普通答复直接结束",
+            "每轮不附固定尾栏、技能名称、阶段编号或内部状态标签",
+            "普通答复不先抛协议名、英文缩写、机器字段或内部概念",
+            "用户确实需要采取行动或等待现实结果时",
+            "专科中的字段表、责任图、检查表和回流记录用于组织判断",
+            "save_prompt=high", "save_prompt=low",
+        )), "answer format exposes internal routing or loses the user-selected save prompt")
+        require(all(term in sync_text for term in (
+            "同一台电脑上整理多个 AI 工具和项目中的 xbskill 记忆",
+            "长期保存位置/其他来源", "对话记录、背景资料和记忆保存位置",
+            "不把数字当成用户需要操作的设置", "正式复制前的预览",
+        )), "memory sync exposes unexplained internal labels or scan settings")
+        require("普通说明不需要展开内部分类计数" in memory_portability,
+                "memory portability asks ordinary users to inspect internal ontology counts")
+        require(all(term in runtime_compatibility for term in (
+            "用日常语言说明需要安装或启用 Python 3.10 及以上版本",
+            "诊断代码 `E_RUNTIME_PYTHON_MISSING` 与已检查命令写入日志",
+            "诊断代码 `E_RUNTIME_NODE_VERSION` 或 `E_RUNTIME_NODE_MISSING` 留在日志",
+        )), "runtime failures expose unexplained diagnostic codes to ordinary users")
+        require(not any(term in answer_format for term in (
             "每个最终回答都在结尾显示一个分行收尾块",
             "调用子技能：{$xb-* 或 $xbskill}",
-            "“调用子技能”每轮必填且只能出现一个名称",
-            "它必须是本轮唯一公开当前 Skill",
-            "支持子调用、知识包、框架、内部维护专科和下一步候选均不进入",
-            "名称后不加括号、职责解释",
-            "`本轮`、`已交付`、`反馈点` 各占一个独立 Markdown 段落",
-            "简单、一次性问题保留一个准确调用名",
-            "interaction-settings.md",
-        )), "answer format loses the visible single-skill trace")
+            "调用子技能”每轮必填",
+        )), "answer format still requires the legacy footer")
+        require(all(term in update_text for term in (
+            "https://github.com/dennydkt/xbskill", "只读访问该官方来源",
+            "只读访问该官方来源", "写入安装目录前必须取得用户确认",
+            "不要要求用户提供另一份“更新来源”",
+        )), "xb-update fails to default to a read-only official-source check")
+        require(all(term in spirit_sync_text for term in (
+            "不展示技能命令或内部单元号", "现在聊第二部分：怎么向 AI 说明问题",
+        )), "spirit-sync leaks the command name or internal lesson indices")
+        require("当前：$xb-config，阶段 X / 单元 Y" not in spirit_sync_text and
+                "调用中，保存低" not in config_guide_text and
+                "自动参与，保存提醒每次都要" in config_guide_text,
+                "configuration guidance exposes internal fields instead of user-facing choices")
+        require(all(term in goal_text for term in (
+            "不展示 G/H 编号或逐项空表", "目标卡、计划或正式确认材料",
+        )) and "G/H 定位`、`当前价值需要`" not in triage_text,
+                "goal or triage output mandates internal field labels")
         active_memory_contract = "\n".join((session_protocol, answer_format, contracts_text, shell_text))
         forbidden_memory_shortcuts = (
             "本轮无跨会话内容", "无跨会话价值", "无需保存", "不必保存",
@@ -966,10 +1005,12 @@ def main() -> int:
                 "active memory contract lets the model preempt user consent")
         require("保存提示｜" not in active_memory_contract and "导航｜Skill：" not in active_memory_contract,
                 "active closing contract still exposes the legacy save prompt or horizontal navigation")
-        require(all(term in active_memory_contract for term in (
-            "调用子技能", "本轮：", "已交付：", "反馈点：",
-            "记忆：", "若需要保存对话内容，请直接回复",
-        )), "active closing contract loses a required field or the save instruction")
+        require("若需要保存对话内容，请直接回复" in active_memory_contract and
+                "每个 XB 最终答复" in active_memory_contract,
+                "active memory contract loses the user-selected save prompt")
+        require(not any(term in active_memory_contract for term in (
+            "调用子技能：{$xb-* 或 $xbskill}", "本轮：", "已交付：", "反馈点：",
+        )), "active answer contract still requires a fixed footer")
         # Frozen v1.6.2 answers document the old high-frequency closing format.
         # Preserve their evidence without applying today's low-prompt preference retroactively.
         closing_sections = {
@@ -1094,17 +1135,16 @@ def main() -> int:
             "G/C/A/P/S/E/R/V 全 2", "0 added、0 modified、0 removed",
         )), "memory consent release record loses correction or publish evidence")
         require(all(term in shell_text for term in (
-            "固定带一个公开当前 Skill 的准确调用名，不追加职责描述",
-            "“调用子技能”每轮必填且只显示一个公开当前 Skill",
-            "一轮只在**结尾**显示一个分行收尾块",
-            "“本轮”“已交付”“反馈点”各占一个独立 Markdown 段落",
-        )), "navigation shell does not enforce the visible single-skill trace")
+            "技能路由用于内部组织答复，普通回复不展示调用名称或内部状态标签",
+            "内部路由、阶段和验证状态默认不进入答复",
+            "用户需要采取行动或等待现实变化时，才用一句日常语言说明下一步",
+        )), "navigation shell exposes internal routing or adds a mandatory footer")
         require(all(term in contracts_text for term in (
-            "每次回答都在结尾收尾块显形唯一公开当前 Skill",
-            "调用项只作简短提示，不追加 Skill 职责描述",
-            "支持子调用、内部维护专科和下一步候选不得成为第二个署名",
+            "当前专科与调用轨迹保留为内部状态",
+            "普通答复不附固定尾栏、路由名或空状态字段",
+            "需在答复末尾用一句自然语言提供保存入口",
             "interaction-settings.md", "save_prompt", "低档",
-        )), "cross-skill contract allows ambiguous or hidden skill attribution")
+        )), "cross-skill contract exposes internal routing or loses save preferences")
         require(all(term in decision_text for term in (
             "向参与者明确标注“内测/验证中”和当前交付方式",
             "只收集完成本次验证所需的数据",
@@ -1841,7 +1881,7 @@ def main() -> int:
         require(all(term in boundary for term in ("来源诚信与再利用硬分支", "公开可访问", "许可/网站条款", "个人信息/保密", "不能被默认视为许可", "来源与使用授权卡", "必测来源诚信用例")), "public source material can still bypass use authorization or independent review")
         require(all(term in boundary for term in (
             "承接体验 → 逻辑复位 → 恢复选择 → 边界话术",
-            "`LogicResetPacket`", "`$xb-boundary` 保持唯一公开当前 Skill",
+            "`LogicResetPacket`", "当前任务由 `$xb-boundary` 负责",
             "一次性低风险互助直接处理", "话术位于体验承接、逻辑复位和选择恢复之后",
             "体验承接最多三小段",
         )), "xb-boundary loses the stabilize-before-script order, restraint, or single-skill trace")
@@ -1853,8 +1893,8 @@ def main() -> int:
             "C 报复风险", "D 一次性低风险互助",
         )), "boundary reset protocol loses its trigger, counterexample, safety, output, or sample gates")
         require(all(term in decode_text for term in (
-            "`$xb-boundary` 已经是唯一当前专科", "不执行上述反向转出",
-            "不生成第二个 Skill 署名", "不越过 `$xb-boundary` 直接给完整话术",
+            "当前任务由 `$xb-boundary` 负责", "不执行上述反向转出",
+            "不并行启用第二个专科", "不越过 `$xb-boundary` 直接给完整话术",
         )), "xb-decode hidden support can loop, double-sign, or bypass xb-boundary")
         goal = (receiver / "xb-goal" / "SKILL.md").read_text(encoding="utf-8")
         plan = (receiver / "xb-plan" / "SKILL.md").read_text(encoding="utf-8")
@@ -1946,7 +1986,7 @@ def main() -> int:
             and upstream_by_id["upstream-awesome-agent-skills"]["intended_use"] == "discovery_only",
             "license/curation-limited upstream repositories can become active evidence",
         )
-        require(all(term in role_skill for term in ("岗位知识参与闭环", "RoleKnowledgePacket", "E_NO_MATCH", "真实片段", "均视为未参与", "企业类别完全不参与专业单元得分")), "role knowledge runtime or anti-stereotype contract is incomplete")
+        require(all(term in role_skill for term in ("岗位知识参与闭环", "RoleKnowledgePacket", "诊断代码留在日志", "真实片段", "均视为未参与", "企业类别完全不参与专业单元得分")), "role knowledge runtime or anti-stereotype contract is incomplete")
         require(all(term in role_skill for term in ("upstream_sync.py", "refresh-candidate", "不可信数据", "内化完成", "merge_incremental_evidence.py")), "upstream update or differential evidence contract is not wired into the role knowledge skill")
         require(all(term in role_protocol for term in ("RoleKnowledgeUnit", "RoleKnowledgeRequest", "RoleKnowledgePacket", "ApplicationTrace", "governance_complete=false")), "role knowledge object or project contract is incomplete")
         require(
@@ -2769,6 +2809,7 @@ def main() -> int:
         writing_text = (receiver / "xb-writing" / "SKILL.md").read_text(encoding="utf-8")
         presentation_text = (receiver / "xb-presentation" / "SKILL.md").read_text(encoding="utf-8")
         talk_text = (receiver / "xb-talk" / "SKILL.md").read_text(encoding="utf-8")
+        ai_native_text = (receiver / "xb-ai-native" / "SKILL.md").read_text(encoding="utf-8")
         anti_blame_text = (receiver / "xb-anti-blame" / "SKILL.md").read_text(encoding="utf-8")
         anti_blame_pack = (receiver / "xb-anti-blame" / "references" / "response-pack.md").read_text(encoding="utf-8")
         for name, text in (("xb-writing", writing_text), ("xb-presentation", presentation_text)):
@@ -2795,6 +2836,8 @@ def main() -> int:
             "分开产物与现实状态", "现实完成门", "暂停签署", "未执行", "未验证",
             "检查材料可见性", "可见性偏差候选", "相同时间范围、相同标准的对照材料",
             "材料覆盖对照", "各角色材料位置、记录密度、缺失时段、拒绝访问",
+            "普通答复用一句自然语言说明是否参考了相关旧资料",
+            "不展示状态英文值或内部坐标",
         )), "xb-anti-blame misses interaction, responsibility partition, safe pushback, or completion boundaries")
         require(all(term in anti_blame_pack for term in (
             "归责主张卡", "事实—证据—控制账", "责任分区", "L0：现场短句",
@@ -2804,7 +2847,10 @@ def main() -> int:
             "异议已经发送或固定", "组织已经受理", "已准备暂停签署所需的低暴露书面异议草案",
             "材料覆盖对照", "可见性偏差候选", "同一时间范围、同一标准",
             "只引用最近经手人或单一系统的记录",
+            "不得向用户显示这些内部状态值",
         )), "xb-anti-blame response pack is incomplete")
+        require("没有合适的岗位知识时，用日常语言说明本轮按通用方法处理" in ai_native_text,
+                "xb-ai-native exposes an internal no_match status in ordinary feedback")
         routing_text = (receiver / "xbskill" / "references" / "routing.md").read_text(encoding="utf-8")
         guide_text = (receiver / "xbskill" / "references" / "user-guide.md").read_text(encoding="utf-8")
         require("被要求承担缺少依据的责任" in routing_text and "`xb-anti-blame`" in routing_text,
@@ -2882,15 +2928,72 @@ def main() -> int:
 
         target = sandbox / "installed" / "skills"
         copy_receiver(source, target)
+        for unsafe in ("../outside.txt", "xb-talk/../outside.txt", "xb-talk\\outside.txt", "C:/outside.txt", "/outside.txt"):
+            try:
+                sm.validate_manifest_relpath(target, unsafe)
+            except SystemExit:
+                pass
+            else:
+                require(False, f"unsafe manifest path was accepted: {unsafe!r}")
+        print("PASS manifest rejects traversal, absolute, and platform-specific paths")
+
+        absent_manifest = target / "xbskill" / "manifest.json"
+        held_manifest = absent_manifest.with_suffix(".json.held")
+        absent_manifest.rename(held_manifest)
+        missing_manifest_backup = sandbox / "missing-manifest-backup"
+        try:
+            try:
+                sm.copy_suite(source, target, missing_manifest_backup)
+            except SystemExit:
+                pass
+            else:
+                require(False, "apply accepted a target with no baseline manifest")
+            require(not missing_manifest_backup.exists(), "missing manifest created a backup or modified target")
+        finally:
+            held_manifest.rename(absent_manifest)
+        print("PASS missing target manifest fails before update")
+
+        with patch.object(sm, "is_link_or_reparse", side_effect=lambda path: path.name == "xb-talk"):
+            try:
+                sm.validate(target)
+            except SystemExit:
+                pass
+            else:
+                require(False, "managed symlink/reparse guard did not fail closed")
+        print("PASS managed symlink and reparse guard fails closed")
+
         local = target / "xb-goal" / "LOCAL-LESSONS.md"
         local.write_text("receiver-owned patch\n", encoding="utf-8")
         changed = target / "xb-goal" / "SKILL.md"
         changed.write_text(changed.read_text(encoding="utf-8") + "\nlocal drift\n", encoding="utf-8")
         backup = sandbox / "backup"
-        sm.copy_suite(source, target, backup)
+        changes = sm.diff(source, target)
+        require("modified\txb-goal/SKILL.md" in changes["local_drift"],
+                "compare did not expose modified managed target content")
+        try:
+            sm.copy_suite(source, target, backup)
+        except SystemExit:
+            pass
+        else:
+            require(False, "apply overwrote a modified managed file without explicit selection")
+        require(not backup.exists() and "local drift" in changed.read_text(encoding="utf-8"),
+                "blocked apply changed target content or created a backup")
+        unregistered = target / "xb-goal" / "custom-notes.md"
+        unregistered.write_text("receiver-owned unregistered file\n", encoding="utf-8")
+        changes = sm.diff(source, target)
+        require(any(item.endswith("\txb-goal/custom-notes.md") for item in changes["local_drift"]),
+                "compare did not expose an unregistered managed-root file")
+        try:
+            sm.copy_suite(source, target, backup, {"xb-goal/SKILL.md"})
+        except SystemExit:
+            pass
+        else:
+            require(False, "apply ignored an unregistered target file")
+        unregistered.unlink()
+        sm.copy_suite(source, target, backup, {"xb-goal/SKILL.md"})
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "LOCAL patch was overwritten")
-        require(sm.digest(changed) == sm.digest(source / "xb-goal" / "SKILL.md"), "managed drift was not updated")
-        print("PASS update preserves LOCAL files and repairs managed drift")
+        require(sm.digest(changed) == sm.digest(source / "xb-goal" / "SKILL.md"), "explicitly selected managed drift was not updated")
+        print("PASS compare reports local drift; apply blocks by default, requires per-file authorization, preserves LOCAL files, and backs up rollback state")
 
         changed.write_text("broken after update\n", encoding="utf-8")
         sm.restore_suite(backup, target)

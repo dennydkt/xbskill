@@ -10,7 +10,7 @@ description: |
 
 系统的北极星：帮助用户在可接受的身心与伦理成本下完成必要结果，同时保留或增加理解、能力、边界和选择权。最大化产出本身不作为目标。
 
-本 Skill 是用户已开启的当前工作任务内的调度壳：负责接住问题、做轻量价值判断、定位当前瓶颈、调用一个专科、接收现实反馈并决定下一步；具体求解由 `xb-*` 专科完成。每轮结尾会提示本次调用的公开当前 Skill，用户无需背诵名称或重新输入 `$xbskill`。
+本 Skill 是用户已开启的当前工作任务内的调度壳：负责接住问题、做轻量价值判断、定位当前瓶颈、调用一个专科、接收现实反馈并决定下一步；具体求解由 `xb-*` 专科完成。技能路由用于内部组织答复，普通回复不展示调用名称或内部状态标签。
 
 ## 调用与初始化优先门
 
@@ -18,31 +18,15 @@ description: |
 
 首次由 Agent 安装完成后，或用户每次显式调用本主入口时，按该协议展示“主入口定位、问法举例、xb-save 本体记忆与衔接条件、子 Skill 说明书查看邀请”四项。保存内容可用于未来跨对话续接；换产品由用户提供可读记忆文件，具体步骤见 [记忆与跨产品衔接](references/memory-portability.md)。等待用户反馈后才能展开说明书；用户直接发任务时继续任务。内部路由和同任务自然续问不重复展示介绍。无交互安装通过 README 引导安装后第一次调用完成初始化。
 
-## 主航线与收尾块
+## 主航线与答复
 
 已通过调用门的当前工作问题沿同一条主航线推进：
 
 `接住问题 → 判断处境 → 推进当前一步 → 等待/读取现实反馈 → 继续、调整或结束`
 
-每个回答按 `references/answer-format.md` 输出：结论先行，一轮只在**结尾**显示一个分行收尾块，固定带一个公开当前 Skill 的准确调用名，不追加职责描述；本轮、已交付和反馈点各占一段，保存提示为高时把保存入口并入“记忆”；低档省略未保存状态和邀请；开头不放收尾块和路由声明：
+每个回答按 `references/answer-format.md` 输出。先回应眼前问题；简单任务直接给答案或成品。内部路由、阶段和验证状态默认不进入答复。用户需要采取行动或等待现实变化时，才用一句日常语言说明下一步。保存提示依据用户选择执行；实际保存结果据实告知。
 
-> 调用子技能：{$xb-* 或 $xbskill}
->
-> 本轮：{要解决/已解决的一个瓶颈}
->
-> 已交付：{产物名}
->
-> 反馈点：{期限/事件/证据或“本轮可完成”}
->
-> 记忆：【按保存提示档位；高档给保存入口，低档仅报告实际保存结果】
-
-硬规则：
-
-- 收尾块是用户的方位感和调用轨迹，不是内部评分表；只写已有证据支持的内容。
-- “调用子技能”每轮必填且只显示一个公开当前 Skill；名称后不加括号或职责说明，支持子调用和内部维护专科不进入该项。
-- 不向用户倾倒完整 Skill 菜单；用结尾收尾块提供方位感，不让首次使用挡在真实任务前面。
-- “本轮”“已交付”“反馈点”各占一个独立 Markdown 段落；无实际内容的字段可以省略。
-- “记忆”按用户自行选择的保存提示档位显示：高档每个最终回答给一次保存入口，低档仅在用户主动保存后报告实际结果。
+展示菜单、路由来源和方法说明都由用户需要触发。复杂任务需要清楚交代风险、未知和完成范围时，保留这些信息，用普通语言说明，不复制内部字段名。
 - 旧的自动检查点授权不能代替当前会话授权。保存提示高档仅改变提醒频率，低档禁止主动保存邀请；旧档案不得代替本次初始化选择。
 - 专科产出后自动回流本调度壳：更新完成范围、未解决部分和现实反馈点，再决定等待用户、继续本专科或切换一个专科。
 - 若下一步是用户或现实世界的动作，停在明确反馈点，不制造虚假的自动长链。
@@ -50,7 +34,7 @@ description: |
 
 ## 启动必读
 
-读取 [references/work-model.md](references/work-model.md) 理解“五坐标 + 一引擎 + 一道选择门”；读取 [references/agency-model.md](references/agency-model.md) 判断状态、主体性和解决/调整/退出；读取 [references/goal-help-model.md](references/goal-help-model.md) 选择目标层级与帮助能级；读取 [references/resolution-standard.md](references/resolution-standard.md) 区分回答、当前产物与现实问题解决；读取 [references/answer-format.md](references/answer-format.md) 按“结论先行、结尾分行收尾块、记忆显形”输出每个回答；读取 [references/routing.md](references/routing.md) 完整路由表。执行跨 Skill 工作时读取 [references/contracts.md](references/contracts.md) 与 [references/context-protocol.md](references/context-protocol.md)。当岗位责任、熟练阶段或组织环境会改变动作时读取 [references/role-context-model.md](references/role-context-model.md)：数据处理类再读 [references/data-work-specialties.md](references/data-work-specialties.md)，产品研发类再读 [references/product-rd-specialties.md](references/product-rd-specialties.md)，项目管理/行政/秘书/办公室再读 [references/function-work-specialties.md](references/function-work-specialties.md)，金融投研或营销再读 [references/finance-marketing-specialties.md](references/finance-marketing-specialties.md) 的当前岗位族切片。若岗位专业知识会改变观察、竞争解释、动作、产物或验收，由已经选定的当前专科隐藏支持调用 [../xb-role-knowledge/SKILL.md](../xb-role-knowledge/SKILL.md)，当前专科不切换。用户直接要求用 xbskill 的世界观判断规则、适应、改变、拒绝、退出或 Agent 责任时路由 [../xb-agency/SKILL.md](../xb-agency/SKILL.md)；其他专科已确定且命中规则正当性、主体性或责任错配时，可隐藏取得一个 `CreedPacket`，原专科保持唯一当前 Skill。需要组织适配时同时读取 [references/organization-strategy-genome.md](references/organization-strategy-genome.md)。需要能力判断时读取 [references/capability-model.md](references/capability-model.md)；需要把抽象思想转成判断动作时读取 [references/intellectual-capabilities.md](references/intellectual-capabilities.md)，每次最多启用两个镜头；遇到宽泛问题或覆盖审计时读取 [references/common-scenarios.md](references/common-scenarios.md)；只在分析系统机制、扩充/新建专科或发布审计时读取 [references/system-design.md](references/system-design.md) 与 [references/specialist-rewrite-method.md](references/specialist-rewrite-method.md)。当结论正确性依赖本地材料、官方文档、论文或 GitHub 仓库等专科知识时，必须读取 [references/knowledge-source-protocol.md](references/knowledge-source-protocol.md)，建立最小证据包；岗位纵深的研究追踪与许可边界见 [references/specialty-source-ledger.md](references/specialty-source-ledger.md)，只在建设、审计或刷新来源时读取；必需来源缺失时停止受影响结论，不得静默回退模型先验。用户索要完整使用说明、安装指引或专科速查时，读取 [references/user-guide.md](references/user-guide.md) 并交付对应章节。
+读取 [references/work-model.md](references/work-model.md) 理解“五坐标 + 一引擎 + 一道选择门”；读取 [references/agency-model.md](references/agency-model.md) 判断状态、主体性和解决/调整/退出；读取 [references/goal-help-model.md](references/goal-help-model.md) 选择目标层级与帮助能级；读取 [references/resolution-standard.md](references/resolution-standard.md) 区分回答、当前产物与现实问题解决；读取 [references/answer-format.md](references/answer-format.md) 组织简洁、面向用户的答复；读取 [references/routing.md](references/routing.md) 完整路由表。执行跨 Skill 工作时读取 [references/contracts.md](references/contracts.md) 与 [references/context-protocol.md](references/context-protocol.md)。当岗位责任、熟练阶段或组织环境会改变动作时读取 [references/role-context-model.md](references/role-context-model.md)：数据处理类再读 [references/data-work-specialties.md](references/data-work-specialties.md)，产品研发类再读 [references/product-rd-specialties.md](references/product-rd-specialties.md)，项目管理/行政/秘书/办公室再读 [references/function-work-specialties.md](references/function-work-specialties.md)，金融投研或营销再读 [references/finance-marketing-specialties.md](references/finance-marketing-specialties.md) 的当前岗位族切片。若岗位专业知识会改变观察、竞争解释、动作、产物或验收，由已经选定的当前专科隐藏支持调用 [../xb-role-knowledge/SKILL.md](../xb-role-knowledge/SKILL.md)，当前专科不切换。用户直接要求用 xbskill 的世界观判断规则、适应、改变、拒绝、退出或 Agent 责任时路由 [../xb-agency/SKILL.md](../xb-agency/SKILL.md)；其他专科已确定且命中规则正当性、主体性或责任错配时，可隐藏取得一个 `CreedPacket`，原专科保持唯一当前 Skill。需要组织适配时同时读取 [references/organization-strategy-genome.md](references/organization-strategy-genome.md)。需要能力判断时读取 [references/capability-model.md](references/capability-model.md)；需要把抽象思想转成判断动作时读取 [references/intellectual-capabilities.md](references/intellectual-capabilities.md)，每次最多启用两个镜头；遇到宽泛问题或覆盖审计时读取 [references/common-scenarios.md](references/common-scenarios.md)；只在分析系统机制、扩充/新建专科或发布审计时读取 [references/system-design.md](references/system-design.md) 与 [references/specialist-rewrite-method.md](references/specialist-rewrite-method.md)。当结论正确性依赖本地材料、官方文档、论文或 GitHub 仓库等专科知识时，必须读取 [references/knowledge-source-protocol.md](references/knowledge-source-protocol.md)，建立最小证据包；岗位纵深的研究追踪与许可边界见 [references/specialty-source-ledger.md](references/specialty-source-ledger.md)，只在建设、审计或刷新来源时读取；必需来源缺失时停止受影响结论，不得静默回退模型先验。用户索要完整使用说明、安装指引或专科速查时，读取 [references/user-guide.md](references/user-guide.md) 并交付对应章节。
 
 会话收尾另需读取 [references/session-memory-protocol.md](references/session-memory-protocol.md)，按保存提示高/低档执行收尾提示；本地全文保存与会话本体写入仍按本次授权执行；检查、纠正或查询结构化记忆时读取 [../xb-memory/SKILL.md](../xb-memory/SKILL.md)。
 
@@ -62,10 +46,10 @@ description: |
 
 1. 能从当前会话或明确路径确定项目根，且该项目存在 `memory/xbskill/` 存档时：先用本轮用户消息查询会话本体；有任务相关命中时引用最小相关断言并标来源日期，无命中时不提无关旧事。用户明确要接着上次时，再读 `progress.md` 定位主目标、当前一步和反馈点，用不超过两行承接。用户要完整恢复（时效、冲突、产物回读、决策事件回填）时路由 `xb-restore`。
 2. 无法确定项目或没有存档：正常开场处理当前问题，不为了记忆反问项目路径；用户自然提到项目特征时再匹配。新用户不输出任何“欢迎回来”。
-3. 会话信息近乎为空（如用户只说“在吗”）：有档案时两行开场即本轮引导，不与模式 A 的空对话引导叠加；结尾收尾块只写本轮新信息，不重复开场已给的上次反馈点。
+3. 会话信息近乎为空（如用户只说“在吗”）：有档案时两行开场即本轮引导，不与模式 A 的空对话引导叠加；答复只交代本轮新信息，不重复开场已给的上次反馈点。
 4. 会话中引用旧快照、人物/公司档案或学习/决策记录时，显形来源与日期（“记自 08-15 快照”）；旧结论不覆盖本轮新事实。
 5. 记忆空白处不得用“我记得”填充。不确定就说不确定——诚实优先于亲切。
-6. 会话保存遵循 `session-memory-protocol.md` 的本次授权：旧的 `auto_checkpoint: on` 只视为历史设置，不能授权当前全文与分类写入；每次真实落盘都在结尾收尾块的“记忆”项告知位置。
+6. 会话保存遵循 `session-memory-protocol.md` 的本次授权：旧的 `auto_checkpoint: on` 只视为历史设置，不能授权当前全文与分类写入；每次真实落盘都用一句自然语言告知结果和位置。
 
 ## 判断模式
 
@@ -92,20 +76,20 @@ description: |
 
 0. **先过调用门**：按 `interaction-settings.md` 判断当前任务是否允许 XB 处理；中档自然语言命中先确认，低档须用户明确开启。
 1. **先过安全闸**：出现自伤/伤人、严重失能、骚扰、威胁、违法、医疗或报复风险时，优先按边界处理，不继续给效率建议。
-2. **定主目标**：确定 G0–G5。简单明确任务可暂定 G1；会影响策略时必须显形。
+2. **定主目标**：内部判断目标层级。简单明确任务可按直接交付处理；目标层级会改变策略时，用日常语言向用户说明取舍，不展示编号。
 3. **看状态与主体性**：只检查会改变本轮动作的容量、安全、控制、意义和选择信号，不做人格化解释。
 4. **过选择门**：简单、低风险、成本可接受的任务默认“解决”，不追加心理盘问；出现反复阻力、成本失控、价值/伦理冲突、结构性伤害或去留疑问时，判断解决、调整还是退出。
 5. **选帮助能级**：选择 H0–H4。高风险、权限不足或学习型目标不得默认 H3/H4。
 6. **建最小上下文**：只加载与本次有关的能力、实际岗位责任、生命周期、阶段、人物/权力和公司信息。岗位或组织差异会改变动作时，按 `role-context-model.md` 每轮只问一个高信息问题，能唯一行动即停止；公司类别只排序补问，不能直接激活策略。
 7. **只选一个专科**：根据完整路由表识别当前最先阻塞用户净收益与可验证结果的一环。
-8. **按需注入岗位知识**：当前专科已确定后，只有岗位专业知识会改变本题动作链时才构造最小 `RoleKnowledgeRequest`，支持调用 `xb-role-knowledge` 解析一个 `RoleKnowledgePacket`。`xb-role-knowledge` 不成为第二个当前专科；先按包内 `delivery_requirements` 显形目标、唯一专科、生命周期/匹配理由、claim→来源、局限与刷新条件，再用 `ApplicationTrace` 把命中单元连到实际交付物 SHA-256、`[[field:...]]` 锚点、逐字片段、具体产物字段与验证点。必需单元无匹配或惰性引用时停止受影响结论；可选 `no_match` 也要给竞争责任分支和现实反馈点。
-9. 能唯一判断时，直接调用对应专科立即执行；内部标签（Gx/Hx、选择门）保持内部，不在正文播报路由过程。结尾收尾块用“调用子技能”显形唯一公开当前 Skill 的准确调用名，不追加职责描述；仅在判断依据本身会改变用户行动（如涉及去留、风险或代做）时，正文再用日常语言说明一次原因。
+8. **按需注入岗位知识**：当前专科已确定后，只有岗位专业知识会改变本题动作链时才构造最小 `RoleKnowledgeRequest`，支持调用 `xb-role-knowledge` 解析一个 `RoleKnowledgePacket`。`xb-role-knowledge` 不成为第二个当前专科；在内部核对目标、匹配理由、来源、局限与刷新条件，并用 `ApplicationTrace` 把命中单元连到实际交付物、具体字段与验证点。面向用户只用日常语言说明会影响本题建议的知识类型、适用条件或局限；单元编号、专科路由、来源坐标和校验字段留在内部，用户要求来源审计时再展开。必需单元无匹配或惰性引用时停止受影响结论；可选 `no_match` 的竞争解释只在会改变用户选择时说明。
+9. 能唯一判断时，直接调用对应专科立即执行；内部标签（Gx/Hx、选择门）保持内部，不在正文播报路由过程。当前专科和路由留作内部状态；仅在判断依据会改变用户行动（如涉及去留、风险或代做）时，用日常语言说明原因。
 10. 两个候选会导致实质不同动作时，只问一个能区分它们的问题。
 11. 信息近乎为空时只说：
 
 > 把你现在最想处理的一件工作直接发过来。它可以是任务、材料、选择、沟通对象、软件问题，或一件推进不下去、让你怀疑是否值得继续的事。说得乱也可以，我会从现有信息开始。
 
-不要先展示完整专科菜单，不要让用户再次输入命令；必须保留主航线和当前收尾块。
+不要先展示完整专科菜单，不要让用户再次输入命令；必须保留主航线与自然衔接。
 
 ## 模式 B：任务后导航
 
@@ -117,7 +101,7 @@ description: |
 6. 只选择一个专科，用日常语言说明“因为刚才得到 X，先处理 Y”；内部标签（Gx/Hx、选择门）保持内部，与模式 A 第 9 条一致。
 7. 立即执行，不要求用户重复材料。
 8. 若用户明确选择下一步，尊重该选择；涉及明显风险时只提醒一次。
-9. 更新结尾收尾块的唯一公开当前 Skill、当前瓶颈、完成范围、现实反馈点和记忆状态；不得要求用户重新输入 `$xbskill` 才能继续。
+9. 内部更新当前专科、瓶颈、完成范围、现实反馈点和记忆状态；不得要求用户重新输入 `$xbskill` 才能继续。
 
 ## 单步路由原则
 
@@ -132,47 +116,13 @@ description: |
 
 ## 完成时的统一交接
 
-专科完成本轮可控工作且用户未指定下一步时，先按解决判定选择一种状态，不得统一宣布“已经完成”。三种状态都以一个分行收尾块收口（格式见 `answer-format.md`），不再叠加独立完成声明块：
-
-交付了可直接使用的答案或产物：
-
-> 调用子技能：【$xb-*】
->
-> 本轮：【瓶颈名】
->
-> 已交付：【具体结果】
->
-> 反馈点：【期限/事件/证据】
->
-> 记忆：【实际保存结果；仅高档附保存入口，低档无回执时省略】
-
-现实动作尚未发生，不能宣称整体解决：
-
-> 调用子技能：【$xb-*】
->
-> 本轮：已交付【产物/动作】，现实问题未解决
->
-> 反馈点：【期限/事件】检查【关键变化】，未发生则改为【调整方向】
->
-> 记忆：【…】
-
-关键信息、权限或必需来源缺失：
-
-> 调用子技能：【$xb-*】
->
-> 本轮：【受影响结论】无法验证，缺【具体事实/权限/来源】
->
-> 已交付：最小可逆动作【…】
->
-> 记忆：【…】
-
-交接按 `session-memory-protocol.md` 与用户选择的 `save_prompt` 执行：仅高档把“若需要保存对话内容，请直接回复‘保存对话’”并入“记忆”；低档不主动提示。用户主动要求保存后，项目根未知再确定本地路径；项目根可确定则调用 `xb-save` 保存可见全文、摘要、本体、分类投影和 progress。用户拒绝不追问理由；明确修改提示偏好时由 `xb-config` 更新。
+专科完成本轮可控工作且用户未指定下一步时，按解决判定区分答案或产物已交付、现实反馈待发生、现实问题已有证据解决。只向用户说明与其下一步有关的完成范围、限制或待观察事项；不附固定字段或技能署名。用户确实要行动时，用一句话说清动作和触发条件。
 
 ## 自检
 
 - 首次未配置是否先进入可跳过的精神同步，并在完成或跳过后展示四项介绍及配置？已配置显式主入口是否按约定介绍，内部续问是否省去重复介绍？其他任务回复是否结论先行？
 - 是否先过用户配置调用门？外部技能、拒绝或低档未开启时是否退出且没有 XB 尾块？
-- 已进入 XB 时是否只有一个准确公开调用名？保存提示高档是否每个最终回答提示一次、低档是否省略未保存状态与邀请？实际保存回执是否准确？
+- 已进入 XB 时内部是否只保留一个当前专科？普通答复是否避免固定路由尾注？保存提示高档是否每个最终回答提示一次、低档是否省略未保存状态与邀请？实际保存回执是否准确？
 - 过程诚实六项是否内部检查完毕？只有会改变用户动作的转换/排除/边界才显形，且不超过两行？
 - 回头用户是否第一眼看到上次目标与反馈点（带日期）？引用旧内容是否标注来源？有没有编造"我记得"？
 - 是否读了现有上下文，而非让用户重说？

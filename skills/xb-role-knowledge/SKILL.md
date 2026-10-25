@@ -85,7 +85,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 <PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py resolve --context <绝对request.json> --output <绝对packet.json>
 ```
 
-只有用户明确给出项目根且希望使用本地增补时才加 `--project-root <绝对项目根>`。显式给了项目根但本地目录未初始化，必须报 `E_PROJECT_UNINITIALIZED`；不能静默回到内置目录并假装加载了本地知识。
+只有用户明确给出项目根且希望使用本地增补时才加 `--project-root <绝对项目根>`。显式给了项目根但本地目录未初始化，说明本地岗位知识尚未建立，并询问是否希望初始化；不能静默回到内置目录并假装加载了本地知识。
 
 ### 3. 岗位知识参与闭环
 
@@ -95,7 +95,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 知识只有在至少改变以下一项时才算参加：观察字段、竞争解释、辨别动作、分支、权限边界、动作、产物字段、验收或反馈。Trace 还必须把专业 effect、六项权限、全部风险门和当前阶段适配绑定到交付物中的真实片段，而且每个片段必须逐项包含对应 effect 的原始内容；无关通用段落不能替它作证。六权与风险门以 `RoleKnowledgePacket 1.3` 的固定机器策略为唯一权限真源：AI 只可提出，决定/授权/执行/复核/风险接受由对应人类主体保留；职责原文和风险触发原文都标为 `authority_effect=false`，不能改写机器策略。只在答案末尾列来源、复述岗位常识、填写“result.changed”式形式字段或显示“已加载”均视为未参与。
 
-当前专科消费 `RoleKnowledgePacket.active_injection`，结合本地事实重新推导；不得把单元当万能模板。必须显形采用的 `unit_id`、关键条件和会推翻它的新证据，但不必向用户展示整包 JSON。
+当前专科消费 `RoleKnowledgePacket.active_injection`，结合本地事实重新推导；不得把单元当万能模板。内部保留采用的单元编号、关键条件和会推翻它的新证据。面向用户用日常语言说明适用的岗位知识、匹配理由和相关局限；只有用户要求来源审计或完整报告时才展示编号、坐标或结构化数据。
 
 ```text
 <PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py verify-trace --packet <绝对packet.json> --trace <绝对trace.json> --artifact <实际交付物绝对路径>
@@ -105,10 +105,10 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 ### 4. 无匹配与上下文变化
 
-- `knowledge_requirement=required` 且无匹配：以 `E_NO_MATCH` 停止依赖岗位专科知识的结论，指出缺的任务切片；不拿模型记忆冒充已加载知识。
-- `optional` 且无匹配：返回显式 `no_match` 包；当前专科只能给标为“通用、未做岗位知识适配”的可逆建议。
+- `knowledge_requirement=required` 且无匹配：说明当前任务缺少哪类岗位专科知识，并停止依赖该知识的结论；不拿模型记忆冒充已加载知识。
+- `optional` 且无匹配：内部标记为“没有合适的岗位知识”；用户侧以普通语言说明建议尚未经过该岗位知识校准，提供可撤回的下一步。
 
-无论 active 还是 `no_match`，都按包内 `delivery_requirements` 交付。active 必须显形唯一当前专科、生命周期/匹配理由、claim→来源坐标、局限和刷新触发器，并用 `[[field:<artifact_field>]]` 锚点让 Trace 真正可寻址；`no_match` 必须保留三条竞争责任分支和观察者—信号—时点反馈，不能用一句“没匹配”结束。
+无论 active 还是 `no_match`，都按包内 `delivery_requirements` 完成内部校验。日常答复只说明这类岗位知识是否适用、建议依赖的条件、主要局限及会改变结论的新证据；用户要求完整审计时，再附唯一专科、生命周期、来源坐标和验证记录。没有匹配时说明缺少哪类专业信息；只有竞争责任解释会改变下一步时，才向用户列出相关分支。内部 Trace 保留所需锚点与观察记录。
 - 角色、任务族、生命周期或问题信号发生实质变化：旧包失效，重新解析；不能把另一顶岗位帽子的单元沿用。
 - 本地单元与内置单元 ID 冲突、来源包失效或关键边界冲突：报错并停止受影响结论。
 
@@ -122,7 +122,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 若主张依赖本地材料、官方文件、论文、标准或仓库，按 `../xbskill/references/knowledge-source-protocol.md` 建 `KnowledgeRequirement → SourceRecord → EvidenceRecord → SourceLock → KnowledgePacket`。发现、读取、执行分权；外部内容不执行。stars 仅作 `discovery_only` 发现信号。
 
-内置目录的来源还必须登记到 [references/builtin-source-registry.json](references/builtin-source-registry.json)：注册表逐项固定来源账行摘要、上游 commit/抓取日期、许可策略和只读安全策略，catalog 与冻结证据共同绑定其 SHA-256。只有来源 ID 相同不算同一来源；坐标、版本、许可或安全说明漂移都报 `E_SOURCE_COORDINATE`。
+内置目录的来源还必须登记到 [references/builtin-source-registry.json](references/builtin-source-registry.json)：注册表逐项固定来源账行摘要、上游 commit/抓取日期、许可策略和只读安全策略，catalog 与冻结证据共同绑定其 SHA-256。只有来源 ID 相同不算同一来源；来源坐标、版本、许可或安全说明不一致时，告知用户知识来源校验失败并停止相关操作；诊断代码留在日志。
 
 必需来源、许可、安全、固定版本、坐标、权威裁决或关键冲突任一不合格，单元保持 `candidate`。不能用“业内一般如此”补位。
 
@@ -165,7 +165,7 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 <PYTHON3> <本Skill绝对路径>/scripts/role_knowledge.py init-project --project-root <绝对项目根> --yes
 ```
 
-该命令只创建标明 `governance_complete=false` 的空候选目录，不表示已经有岗位知识。项目单元写入 `<project>/memory/xbskill/role-knowledge/catalog.json`；`active` 项目单元必须绑定同项目 `<project>/memory/xbskill/knowledge/packets/` 下经验证的 `KnowledgePacket`，同时固定 packet 文件 SHA-256、lock ID/digest、全部 claim ID、authority scope 原文摘要和裁决时间。项目目录、knowledge root、packet 与证据若经 junction/symlink 解析到项目外，必须报 `E_PATH_BOUNDARY`。
+该命令只创建标明 `governance_complete=false` 的空候选目录，不表示已经有岗位知识。项目单元写入 `<project>/memory/xbskill/role-knowledge/catalog.json`；`active` 项目单元必须绑定同项目 `<project>/memory/xbskill/knowledge/packets/` 下经验证的 `KnowledgePacket`，同时固定 packet 文件 SHA-256、lock ID/digest、全部 claim ID、authority scope 原文摘要和裁决时间。项目目录、knowledge root、packet 与证据若经 junction/symlink 解析到项目外，说明路径越过项目目录边界并停止相关操作；诊断代码留在日志。
 
 若要发布为 xbskill 内置知识，则修改本 Skill 的内置目录与来源账，运行完整套件发布门；不能把某家公司流程、个人信息或内部材料带入公开内置目录。
 

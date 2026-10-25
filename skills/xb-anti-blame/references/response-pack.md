@@ -5,14 +5,14 @@
 ## 零、上下文命中说明
 
 ```text
-上下文状态：matched / no_match / not_initialized / not_checked
+内部状态：matched / no_match / not_initialized / not_checked
 实际读取的本地坐标、日期与有效期：
 与本轮材料的冲突：
 它改变的观察、动作或产物字段：
 明确排除的旧材料及原因：
 ```
 
-`no_match`、`not_initialized` 或 `not_checked` 时，用一行告知用户当前回复只使用其本轮材料和 xbskill 公开规则，随后直接交付当前可用内容。不得要求用户先初始化记忆或补齐人物、公司档案。`matched` 时只注入能改变当前动作的最小片段，并保留来源、日期和冲突。
+`no_match`、`not_initialized` 或 `not_checked` 时，用一行日常语言说明本轮依据哪些材料作答；不得向用户显示这些内部状态值，也不得要求用户先初始化记忆或补齐人物、公司档案。`matched` 时只注入能改变当前动作的最小片段，并保留来源、日期和冲突；普通答复只说明旧资料是否改变了当前建议，用户要求核对时再列来源与位置。
 
 ## 一、归责主张卡
 

@@ -19,9 +19,9 @@
 
 文档中的 `<PYTHON3>` 是经验证的 Python 3.10+ 启动命令占位符，禁止把它作为字面命令执行。
 
-1. macOS / Linux：只接受 `python3`；先运行 `python3 --version`，版本低于 3.10 时报告 `E_RUNTIME_PYTHON_VERSION`。
+1. macOS / Linux：只接受 `python3`；先运行 `python3 --version`，版本低于 3.10 时说明 Python 版本不够，并在日志中保留诊断代码 `E_RUNTIME_PYTHON_VERSION`。
 2. Windows：优先 `py -3`，其次 `python`；候选命令必须返回 Python 3.10+。
-3. 找不到合格解释器时报告 `E_RUNTIME_PYTHON_MISSING`，列出已检查的命令和当前平台。
+3. 找不到合格解释器时用日常语言说明需要安装或启用 Python 3.10 及以上版本；诊断代码 `E_RUNTIME_PYTHON_MISSING` 与已检查命令写入日志。用户要求排查细节时再展示。
 4. 已解析命令在当前任务内保持一致。禁止把脚本改写成手工写入流程，也禁止切换到来源不明的解释器。
 
 直接命令示例：
@@ -54,7 +54,7 @@ $env:DISABLE_TELEMETRY = "1"
 npx -y skills add dennydkt/xbskill -g --all
 ```
 
-安装前运行 `node --version`。低于 22.20.0 时报告 `E_RUNTIME_NODE_VERSION`；命令缺失时报告 `E_RUNTIME_NODE_MISSING`，同时给出手动复制路径。
+安装前运行 `node --version`。版本低于 22.20.0 或找不到 Node.js 时，先说明安装方式不能继续以及可选的手动安装路径；诊断代码 `E_RUNTIME_NODE_VERSION` 或 `E_RUNTIME_NODE_MISSING` 留在日志，用户要求排查细节时再展示。
 
 ## 路径与文本格式
 

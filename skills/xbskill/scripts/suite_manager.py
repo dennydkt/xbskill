@@ -16,7 +16,7 @@ import re
 import shutil
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 MANIFEST = "xbskill/manifest.json"
@@ -179,14 +179,87 @@ def root_path(raw: str, must_exist: bool = True) -> Path:
 
 
 def skill_dirs(root: Path) -> list[Path]:
-    return sorted(
-        [p for p in root.iterdir() if p.is_dir() and MANAGED_RE.fullmatch(p.name)],
-        key=lambda p: p.name,
-    )
+    managed = []
+    for path in root.iterdir():
+        if not MANAGED_RE.fullmatch(path.name):
+            continue
+        if is_link_or_reparse(path):
+            fail(f"managed skill root is a link or reparse point: {path}")
+        if not path.is_dir():
+            fail(f"managed skill root is not a directory: {path}")
+        managed.append(path)
+    return sorted(managed, key=lambda p: p.name)
 
 
 def is_local(rel: str) -> bool:
     return any(part.upper().startswith("LOCAL-") for part in Path(rel).parts)
+
+
+def is_link_or_reparse(path: Path) -> bool:
+    if path.is_symlink():
+        return True
+    try:
+        return bool(getattr(path.lstat(), "st_file_attributes", 0) & 0x400)
+    except OSError:
+        return False
+
+
+def assert_no_managed_symlinks(root: Path) -> None:
+    """Reject symlinks, junctions, and reparse points anywhere in managed skill trees."""
+    for entry in root.iterdir():
+        if not MANAGED_RE.fullmatch(entry.name):
+            continue
+        if is_link_or_reparse(entry):
+            fail(f"managed skill root is a link or reparse point: {entry}")
+        if not entry.is_dir():
+            fail(f"managed skill root is not a directory: {entry}")
+        pending = [entry]
+        while pending:
+            directory = pending.pop()
+            try:
+                children = list(directory.iterdir())
+            except OSError as exc:
+                fail(f"cannot inspect managed skill path {directory}: {exc}")
+            for child in children:
+                if is_link_or_reparse(child):
+                    fail(f"managed skill tree contains a link or reparse point: {child}")
+                if child.is_dir():
+                    pending.append(child)
+
+
+def validate_manifest_relpath(root: Path, rel: str) -> Path:
+    """Validate a manifest path and prove its resolved destination stays under root."""
+    if not isinstance(rel, str) or not rel or "\\" in rel or ":" in rel:
+        fail(f"invalid manifest path: {rel!r}")
+    parts = rel.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        fail(f"invalid manifest path: {rel!r}")
+    parsed = PurePosixPath(rel)
+    if parsed.is_absolute() or len(parts) < 2 or not MANAGED_RE.fullmatch(parts[0]):
+        fail(f"manifest path is outside managed skill roots: {rel!r}")
+    if rel == MANIFEST:
+        fail(f"manifest must not list itself: {rel!r}")
+    candidate = root.joinpath(*parts)
+    root_resolved = root.resolve()
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(root_resolved)
+    except ValueError:
+        fail(f"manifest path escapes skills root: {rel!r}")
+    return candidate
+
+
+def managed_path(root: Path, rel: str) -> Path:
+    """Resolve a validated managed path while refusing root escapes and link parents."""
+    candidate = validate_manifest_relpath(root, rel)
+    if is_link_or_reparse(candidate):
+        fail(f"managed destination is a link or reparse point: {candidate}")
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(root.resolve())
+    except ValueError:
+        fail(f"managed path escapes skills root: {rel!r}")
+    return candidate
 
 
 def digest(path: Path) -> str:
@@ -198,6 +271,7 @@ def digest(path: Path) -> str:
 
 
 def current_manifest(root: Path) -> dict:
+    assert_no_managed_symlinks(root)
     version_file = root / "xbskill" / "VERSION"
     if not version_file.is_file():
         fail(f"missing version file: {version_file}")
@@ -218,15 +292,22 @@ def current_manifest(root: Path) -> dict:
 
 
 def load_manifest(root: Path) -> dict:
+    assert_no_managed_symlinks(root)
     path = root / MANIFEST
+    if is_link_or_reparse(path):
+        fail(f"suite manifest must be a regular file, not a link or reparse point: {path}")
     if not path.is_file():
-        return current_manifest(root)
+        fail(f"required suite manifest is missing: {path}")
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         fail(f"invalid manifest {path}: {exc}")
-    if data.get("schema") != 1 or not isinstance(data.get("files"), dict):
+    if not isinstance(data, dict) or data.get("schema") != 1 or not isinstance(data.get("files"), dict):
         fail(f"unsupported manifest schema: {path}")
+    for rel, file_digest in data["files"].items():
+        validate_manifest_relpath(root, rel)
+        if not isinstance(file_digest, str) or not SHA256_RE.fullmatch(file_digest):
+            fail(f"invalid manifest digest for {rel!r}: {file_digest!r}")
     return data
 
 
@@ -465,6 +546,7 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
 
 
 def validate(root: Path) -> int:
+    assert_no_managed_symlinks(root)
     errors: list[str] = []
     warnings: list[str] = []
     dirs = skill_dirs(root)
@@ -686,6 +768,25 @@ def validate(root: Path) -> int:
     return 1 if errors else 0
 
 
+def worktree_drift(root: Path) -> dict[str, str]:
+    """Return managed files whose target contents differ from the target manifest."""
+    declared = load_manifest(root).get("files", {})
+    actual = current_manifest(root)["files"]
+    drift: dict[str, str] = {}
+    for rel in sorted(declared.keys() | actual.keys()):
+        expected = declared.get(rel)
+        observed = actual.get(rel)
+        if expected == observed:
+            continue
+        if expected is None:
+            drift[rel] = "unregistered"
+        elif observed is None:
+            drift[rel] = "missing"
+        else:
+            drift[rel] = "modified"
+    return drift
+
+
 def diff(source: Path, target: Path) -> dict[str, list[str]]:
     src = load_manifest(source)["files"]
     dst = load_manifest(target)["files"]
@@ -693,6 +794,7 @@ def diff(source: Path, target: Path) -> dict[str, list[str]]:
         "added": sorted(src.keys() - dst.keys()),
         "modified": sorted(k for k in src.keys() & dst.keys() if src[k] != dst[k]),
         "removed": sorted(dst.keys() - src.keys()),
+        "local_drift": [f"{status}\t{rel}" for rel, status in sorted(worktree_drift(target).items())],
     }
 
 
@@ -704,6 +806,10 @@ def print_diff(source: Path, target: Path) -> dict[str, list[str]]:
         print(f"{group.upper()} {len(changes[group])}")
         for rel in changes[group]:
             print(f"  {rel}")
+    print(f"LOCAL_DRIFT {len(changes['local_drift'])}")
+    for item in changes["local_drift"]:
+        status, rel = item.split("\t", 1)
+        print(f"  {status}: {rel}")
     local = []
     for directory in skill_dirs(target):
         local.extend(p.relative_to(target).as_posix() for p in directory.rglob("LOCAL-*") if p.is_file())
@@ -713,13 +819,42 @@ def print_diff(source: Path, target: Path) -> dict[str, list[str]]:
     return changes
 
 
-def copy_suite(source: Path, target: Path, backup: Path) -> None:
+def copy_suite(
+    source: Path,
+    target: Path,
+    backup: Path,
+    overwrite_drift: set[str] | None = None,
+) -> None:
+    source = source.resolve()
+    target = target.resolve()
+    backup = backup.resolve(strict=False)
+    if not source.is_dir() or not target.is_dir():
+        fail("source and target must be existing skills roots")
     if source == target:
         fail("source and target are the same directory")
+    if source in backup.parents or backup == source:
+        fail("backup must not be inside the source skills root")
     if backup == target or target in backup.parents:
         fail("backup must not be inside the target skills root")
     if backup.exists():
         fail(f"backup path already exists: {backup}")
+
+    assert_no_managed_symlinks(source)
+    assert_no_managed_symlinks(target)
+
+    drift = worktree_drift(target)
+    unregistered = sorted(rel for rel, status in drift.items() if status == "unregistered")
+    if unregistered:
+        fail("unregistered target files must be reviewed before update: " + ", ".join(unregistered))
+    overwrite_drift = overwrite_drift or set()
+    eligible = {rel for rel, status in drift.items() if status in {"modified", "missing"}}
+    unknown = sorted(overwrite_drift - eligible)
+    if unknown:
+        fail("--overwrite-drift does not match a modified or missing managed target file: " + ", ".join(unknown))
+    blocked = sorted(eligible - overwrite_drift)
+    if blocked:
+        fail("target files differ from their manifest; review and explicitly select each path with --overwrite-drift: " + ", ".join(blocked))
+
     backup.mkdir(parents=True)
     for directory in skill_dirs(target):
         shutil.copytree(directory, backup / directory.name)
@@ -728,15 +863,26 @@ def copy_suite(source: Path, target: Path, backup: Path) -> None:
     old = load_manifest(target)["files"]
     new = load_manifest(source)["files"]
     for rel in sorted(old.keys() - new.keys()):
-        path = target / rel
+        path = managed_path(target, rel)
+        if path.exists() and not path.is_file():
+            fail(f"managed target is not a regular file: {path}")
         if path.is_file() and not is_local(rel):
             path.unlink()
     for rel in sorted(new):
-        src = source / rel
-        dst = target / rel
+        src = managed_path(source, rel)
+        dst = managed_path(target, rel)
+        if not src.is_file():
+            fail(f"source manifest file is missing or not a regular file: {src}")
+        if dst.exists() and not dst.is_file():
+            fail(f"managed target is not a regular file: {dst}")
         dst.parent.mkdir(parents=True, exist_ok=True)
+        managed_path(target, rel)
         shutil.copy2(src, dst)
-    shutil.copy2(source / MANIFEST, target / MANIFEST)
+    source_manifest = source / MANIFEST
+    target_manifest = target / MANIFEST
+    if is_link_or_reparse(source_manifest) or is_link_or_reparse(target_manifest):
+        fail("suite manifest must be a regular file, not a link or reparse point")
+    shutil.copy2(source_manifest, target_manifest)
     if validate(target):
         restore_suite(backup, target)
         fail(f"validation failed; restored backup from {backup}", 1)
@@ -744,8 +890,14 @@ def copy_suite(source: Path, target: Path, backup: Path) -> None:
 
 
 def restore_suite(backup: Path, target: Path) -> None:
+    backup = backup.resolve()
+    target = target.resolve()
     if not backup.is_dir():
         fail(f"backup does not exist: {backup}")
+    if not target.is_dir():
+        fail(f"target skills root does not exist: {target}")
+    assert_no_managed_symlinks(backup)
+    assert_no_managed_symlinks(target)
     candidates = skill_dirs(backup)
     if not candidates or not (backup / "xbskill" / "SKILL.md").is_file():
         fail(f"backup is not an xbskill suite: {backup}")
@@ -769,6 +921,13 @@ def main() -> int:
     p.add_argument("--source", required=True)
     p.add_argument("--target", required=True)
     p.add_argument("--backup", required=True)
+    p.add_argument(
+        "--overwrite-drift",
+        action="append",
+        default=[],
+        metavar="RELATIVE_PATH",
+        help="explicitly authorize overwriting one modified or missing managed target file listed by compare",
+    )
     p.add_argument("--yes", action="store_true", help="confirm exact source/target/backup")
     p = sub.add_parser("restore")
     p.add_argument("--backup", required=True)
@@ -787,7 +946,12 @@ def main() -> int:
     if args.command == "apply":
         if not args.yes:
             fail("apply requires --yes after the user confirms the exact paths")
-        copy_suite(root_path(args.source), root_path(args.target), Path(args.backup).expanduser().resolve())
+        copy_suite(
+            root_path(args.source),
+            root_path(args.target),
+            Path(args.backup).expanduser().resolve(),
+            set(args.overwrite_drift),
+        )
         return 0
     if args.command == "restore":
         if not args.yes:
