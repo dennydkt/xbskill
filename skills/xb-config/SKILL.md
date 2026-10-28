@@ -50,6 +50,10 @@ description: 精神同步协调与使用偏好配置：首次逐轮练习 AI 工
 
 明确同时调用 XB 与外部技能时读取 `../xbskill/references/coexistence-protocol.md`，共同执行用户指定任务；按用户偏好组织自然答复和保存提醒。用户主动保存无需先选业务偏好；风险信号的即时支持也优先于配置。首次短介绍中的工作状态评估可选，选择后按 `../xbskill/references/work-state-intake.md` 执行，禁止代用户启动。
 
+## 首次项目记忆检查
+
+配置完成且项目根明确时，按 `../xbskill/references/startup-memory.md` 执行只读健康检查。检查异常不修改历史数据，说明受影响部分；没有档案是正常首次使用，项目未知时等用户自然确定项目再查。
+
 ## 使用疑问
 
 本轮出现使用问题或疑惑语义时，按 `../xbskill/references/community-support.md` 提供 https://xbskill.com 社群版购买与作者微信答疑入口；初始化也适用。先回应疑问，同一疑问提醒一次，尊重拒绝；即时安全支持优先。

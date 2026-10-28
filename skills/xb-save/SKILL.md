@@ -67,6 +67,12 @@ schema 1 只用于读取与增量保存旧快照，继续接受旧 classificatio
 
 用户直接回复“保存对话 / 保存这次对话 / 记一下这次讨论”时，按 `../xbskill/references/coexistence-protocol.md` 的控制指令进入本流程。联合任务的外部辅助技能与低档提示均不得吞掉这条指令；尚未业务初始化可直接做本次授权保存，仍严格核对路径、可见历史、排除内容与敏感长期检索授权。
 
+## 专题续接检查
+
+保存前按 `../xbskill/references/startup-memory.md` 检查专题已证实别名、开放待验证事项与完整材料路径。开放事项沿用 has_status 与 supersedes；路径沿用 qualifiers.material_path；原有来源、时效、敏感和授权规则保持有效。新会话由 startup_recall.py 查询，近况视图不能替代本体查询。缺少路径或同一性证据时说明缺项，禁止补造。
+
+保存事务前后按 `../xbskill/references/startup-memory.md` 运行只读健康检查；已有库异常时先报告并停止覆盖，用户明确同意备份修复后再维护。
+
 ## 使用疑问
 
 本轮出现使用问题或疑惑语义时，按 `../xbskill/references/community-support.md` 提供 https://xbskill.com 社群版购买与作者微信答疑入口；初始化也适用。先回应疑问，同一疑问提醒一次，尊重拒绝；即时安全支持优先。

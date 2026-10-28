@@ -1,0 +1,9 @@
+{
+  "version": "1.18.0",
+  "files": {
+    "xb-memory/scripts/startup_recall.py": "8b36baec753e814524de79637e0a9c8c9972c0e9dcf18cc96241972e8587f5a8",
+    "xb-memory/scripts/test_startup_recall.py": "64ed89808a5c796ce1cbaefd50d11a0b95361f050caea826e0c503e4530fa339",
+    "xb-memory/references/conversation-ontology.md": "6a71f797bb707ae7a9c725ad72215eb7b689898934c54014f64409a7c9c06273",
+    "xbskill/references/startup-memory.md": "b43b825fcf7d6b7aca95542933c21874111c28de0814861ad11eef228738fb12"
+  }
+}

@@ -679,7 +679,7 @@ def independent_regressions(source: Path):
     """Run fresh-temp-dir suites alongside core checks; require every exit code."""
     children = []
     try:
-        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py"):
+        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py", "xb-memory/scripts/test_startup_recall.py"):
             output = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
             process = subprocess.Popen(
                 [sys.executable, "-S", "-B", str(source / relative)],
@@ -1381,12 +1381,12 @@ def main() -> int:
         require(all(term in ontology_review for term in ("Verdict: PASS", "Release: ALLOW", "| V | 2 |", "| R | 2 |", "邻文")), "v1.8 ontology review loses the real-dialog failure, repair, or independent PASS")
         scope_preview_digests = {
             "Scope-Fixtures-SHA256": hashlib.sha256(scope_preview_fixtures_path.read_bytes()).hexdigest().upper(),
-            "Ontology-Reference-SHA256": hashlib.sha256((receiver / "xb-memory" / "references" / "conversation-ontology.md").read_bytes()).hexdigest().upper(),
             "Ontology-Script-SHA256": hashlib.sha256((receiver / "xb-memory" / "scripts" / "memory_ontology.py").read_bytes()).hexdigest().upper(),
         }
         require(all(f"{name}: {value}" in scope_preview_record for name, value in scope_preview_digests.items()), "v1.8.1 scope preview candidate record loses implementation or fixture hashes")
         # The old protocol/skill hashes identify a historical implementation, not the active files.
         scope_preview_historical_implementation = {
+            "Ontology-Reference-SHA256": "B90241545FE000F76B39835EA961F155CE1E035A6C738B0FA198D0166B7AB405",
             "Protocol-SHA256": "1FDA423EE2228FA9A772BE32A94E30FA1A5789C610F9DC26CFA79AE74745BB44",
             "Save-Skill-SHA256": "DACD7AB18A190F880DF1E571BF35476EB7B5E72CB25CDCF991C72985785C143D",
         }
@@ -1394,6 +1394,11 @@ def main() -> int:
                     for name, value in scope_preview_historical_implementation.items()),
                 "v1.8.1 scope preview record loses historical protocol or save-skill hashes")
         require(all(f"## {label}：" in scope_preview_fixtures for label in "ABC"), "v1.8.1 scope preview fixtures lose normal, counterexample, or boundary coverage")
+
+        startup_binding = json.loads((receiver / 'xbskill/references/startup-memory-binding.json').read_text(encoding='utf-8'))
+        for relative, expected in startup_binding['files'].items():
+            require(hashlib.sha256((receiver / relative).read_bytes()).hexdigest() == expected,
+                    f'startup recall binding drift: {relative}')
 
         session_project = sandbox / "session-project"
         session_project.mkdir()
