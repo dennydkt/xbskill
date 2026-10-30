@@ -589,6 +589,17 @@ def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
     require(any("same task three outcomes" in message for message in errors) and
             any("reminder versus actual write" in message for message in errors),
             "bare choice labels pass as an explanation of invocation and saving")
+    guide.write_text(full_guide.replace("保存很重要", "内容说明"), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("behavioral explanation" in message for message in errors),
+            "saving importance can be omitted from default initialization")
+    guide.write_text(full_guide.replace("容易错过", "按需选择"), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("behavioral explanation" in message for message in errors),
+            "invocation tradeoffs can be omitted from default initialization")
+    guide.write_text(full_guide, encoding="utf-8")
     print("PASS distinct menu identities, duplicate-entry rejection, and usable configuration explanations")
 
 
@@ -679,7 +690,7 @@ def independent_regressions(source: Path):
     """Run fresh-temp-dir suites alongside core checks; require every exit code."""
     children = []
     try:
-        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py", "xb-memory/scripts/test_startup_recall.py"):
+        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py", "xb-memory/scripts/test_startup_recall.py", "xbskill/scripts/test_manifest_recovery.py"):
             output = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
             process = subprocess.Popen(
                 [sys.executable, "-S", "-B", str(source / relative)],

@@ -511,9 +511,9 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
         errors.append(f"configuration guide misses concise default block: {path}")
     else:
         short = text.split(start, 1)[1].split(end, 1)[0].strip()
-        if len(short) > 320 or sum(line.startswith("- **") for line in short.splitlines()) != 5:
+        if len(short) > 520 or sum(line.startswith("- **") for line in short.splitlines()) != 5:
             errors.append(f"configuration default exceeds concise five-option budget: {path}")
-        if not all(term in short for term in ("直接使用 XB", "先征求你同意", "明确说用 XB", "要求保存后才写入", "平时不提醒")):
+        if not all(term in short for term in ("直接使用 XB", "先征求你同意", "明确说用 XB", "要求保存后才写入", "平时不提醒", "省去确认", "多一次确认", "容易错过", "保存很重要", "减少重述", "换聊天丢失", "敏感内容", "读取记录")):
             errors.append(f"configuration concise default loses behavioral explanation: {path}")
     groups = {
         "explain before choice": ("说明与选项一并出现", "无默认值", "无推荐预选"),
@@ -539,8 +539,8 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
         intro = intro_text.split(intro_start, 1)[1].split(intro_end, 1)[0].strip()
         options = text.split(start, 1)[1].split(end, 1)[0].strip()
         # Reserve scope, receipt and paragraph separators; file paths are excluded.
-        if len(intro) + len(options) + 40 > 450:
-            errors.append(f"complete initialization exceeds 450-character budget: {interaction}")
+        if len(intro) + len(options) + 40 > 750:
+            errors.append(f"complete initialization exceeds 750-character budget: {interaction}")
         if not all(term in intro for term in ("xb-save", "保存对话", "本体记忆", "换对话", "Kimi", "DeepSeek", "可读记忆文件")):
             errors.append(f"memory introduction loses value or handoff conditions: {interaction}")
 
@@ -787,26 +787,77 @@ def worktree_drift(root: Path) -> dict[str, str]:
     return drift
 
 
-def diff(source: Path, target: Path) -> dict[str, list[str]]:
+def verified_reference(root: Path) -> dict:
+    declared = load_manifest(root)
+    actual = current_manifest(root)
+    if declared != actual:
+        fail(f"reference files or version differ from their manifest: {root}")
+    return declared
+
+
+def recover_manifest(source: Path, target: Path, backup: Path) -> None:
+    """Restore only a missing manifest from a matching, pinned official reference.
+
+    The caller verifies official provenance; this local primitive verifies bytes.
+    It never invents a baseline for modified or incompletely installed files.
+    """
+    source, target, backup = source.resolve(), target.resolve(), backup.resolve()
+    if source == target or source in target.parents or target in source.parents:
+        fail("reference and target must be separate skills roots")
+    if any(backup == root or root in backup.parents or backup in root.parents
+           for root in (source, target)) or backup.exists():
+        fail("backup must be new and outside reference and target trees")
+    reference = verified_reference(source)
+    actual = current_manifest(target)
+    manifest = target / MANIFEST
+    if manifest.exists() or is_link_or_reparse(manifest):
+        fail(f"recovery only accepts a missing regular manifest: {manifest}")
+    if reference != actual:
+        fail("manifest recovery requires identical version and every managed file; "
+             "use compare to review differences; target was not changed")
+    backup.mkdir(parents=True)
+    for directory in skill_dirs(target):
+        shutil.copytree(directory, backup / directory.name)
+    # Detect changes while backup was being made before creating the only new file.
+    if current_manifest(target) != actual or current_manifest(backup) != actual:
+        fail(f"installation changed during backup; recovery stopped: {backup}")
+    if verified_reference(source) != reference:
+        fail("reference changed during backup; recovery stopped")
+    try:
+        with manifest.open("x", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(reference, ensure_ascii=False, indent=2) + "\n")
+    except OSError as exc:
+        fail(f"cannot restore manifest; backup retained at {backup}: {exc}")
+    print(f"RECOVERED_MANIFEST {manifest} BACKUP {backup}")
+
+
+def diff(source: Path, target: Path) -> dict:
     src = load_manifest(source)["files"]
-    dst = load_manifest(target)["files"]
+    target_manifest = target / MANIFEST
+    baseline_missing = not target_manifest.exists() and not is_link_or_reparse(target_manifest)
+    dst = current_manifest(target)["files"] if baseline_missing else load_manifest(target)["files"]
     return {
         "added": sorted(src.keys() - dst.keys()),
         "modified": sorted(k for k in src.keys() & dst.keys() if src[k] != dst[k]),
         "removed": sorted(dst.keys() - src.keys()),
-        "local_drift": [f"{status}\t{rel}" for rel, status in sorted(worktree_drift(target).items())],
+        "local_drift": ([] if baseline_missing else
+                        [f"{status}\t{rel}" for rel, status in sorted(worktree_drift(target).items())]),
+        "baseline_missing": baseline_missing,
     }
 
 
 def print_diff(source: Path, target: Path) -> dict[str, list[str]]:
     changes = diff(source, target)
     print(f"SOURCE version={load_manifest(source).get('version')} path={source}")
-    print(f"TARGET version={load_manifest(target).get('version')} path={target}")
+    version = (current_manifest(target) if changes["baseline_missing"] else load_manifest(target)).get("version")
+    print(f"TARGET version={version} path={target}")
+    if changes["baseline_missing"]:
+        print("BASELINE_MISSING: comparing actual files with reference; local modification history is unknown; apply blocked")
     for group in ("added", "modified", "removed"):
         print(f"{group.upper()} {len(changes[group])}")
         for rel in changes[group]:
             print(f"  {rel}")
-    print(f"LOCAL_DRIFT {len(changes['local_drift'])}")
+    print("LOCAL_DRIFT UNKNOWN" if changes["baseline_missing"] else f"LOCAL_DRIFT {len(changes['local_drift'])}")
     for item in changes["local_drift"]:
         status, rel = item.split("\t", 1)
         print(f"  {status}: {rel}")
@@ -929,6 +980,11 @@ def main() -> int:
         help="explicitly authorize overwriting one modified or missing managed target file listed by compare",
     )
     p.add_argument("--yes", action="store_true", help="confirm exact source/target/backup")
+    p = sub.add_parser("recover-manifest", help="restore a missing manifest from identical official-version files")
+    p.add_argument("--source", required=True)
+    p.add_argument("--target", required=True)
+    p.add_argument("--backup", required=True)
+    p.add_argument("--yes", action="store_true")
     p = sub.add_parser("restore")
     p.add_argument("--backup", required=True)
     p.add_argument("--target", required=True)
@@ -952,6 +1008,12 @@ def main() -> int:
             Path(args.backup).expanduser().resolve(),
             set(args.overwrite_drift),
         )
+        return 0
+    if args.command == "recover-manifest":
+        if not args.yes:
+            fail("recover-manifest requires --yes after the user confirms reference, target, and backup")
+        recover_manifest(root_path(args.source), root_path(args.target),
+                         Path(args.backup).expanduser().resolve())
         return 0
     if args.command == "restore":
         if not args.yes:
