@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.19.0",
+  "version": "1.19.1",
   "files": {
     "xb-action/agents/openai.yaml": "59ea42349e520bea7dbeaceb40a38d975d8d3f46721ea532021f4ab19b5b97a8",
     "xb-action/SKILL.md": "0a5d33eed751b7f7fda897de7b15980c90bf41530ea00e47a52775a438904ebd",
@@ -271,10 +271,10 @@
     "xbskill/scripts/forward_test.py": "bbc0b5fbe30793bafdf48d79cbbd594bb785e6508de8f8513999c984da5a6442",
     "xbskill/scripts/knowledge_manager.py": "386eaf5b55959eed1707ea72c3850d10fd425489791deb73db08676db9a9d959",
     "xbskill/scripts/suite_manager.py": "6ba667024cb732399d5ddfb914fe5d08dda34fcd8d6f4079610a5fe94d016c78",
-    "xbskill/scripts/test_manifest_recovery.py": "0892388929bd5428cd0e568cbdb2ad8042deb3002494b3ac5f003e0fff50a391",
+    "xbskill/scripts/test_manifest_recovery.py": "4d46692b8c9a99eba108b89e41f5d56a88b1195f8c3a0db03abc24402b26817e",
     "xbskill/scripts/test_workplace_evidence.py": "c891942ee2a7edea66e93efc2c2bc0a9ee72a7277ec0f1776ad574dc3685a250",
     "xbskill/scripts/workplace-evidence.py": "793cb9b4005f182af702d59f4814acf4e2f19d32a73dafc545e4eaecb92291d8",
     "xbskill/SKILL.md": "96f5d6930936ea480b7903414969caa1b8f05087baab8686cf25170f1b1209a0",
-    "xbskill/VERSION": "c55c898de5079ee498d5f051b29815688154292df4d72ab91f1edb5497ac4e6e"
+    "xbskill/VERSION": "61761c18e51e373107b2a243e5a1ca4e67ced75590639c8dedcb10995339e7b8"
   }
 }

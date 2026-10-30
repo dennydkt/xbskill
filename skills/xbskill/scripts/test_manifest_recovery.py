@@ -17,7 +17,7 @@ class RecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.source, self.target = self.root / 'reference', self.root / 'installed'
         (self.source / 'xbskill').mkdir(parents=True)
         (self.source / 'xbskill/VERSION').write_text('1.0.0\n', encoding='utf-8')
