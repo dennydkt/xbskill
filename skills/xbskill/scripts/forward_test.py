@@ -723,14 +723,21 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 40, "receiver did not discover all 40 skills")
+        require(len(sm.skill_dirs(receiver)) == 41, "receiver did not discover all 41 skills")
         require(not any(receiver.rglob("__pycache__")),
                 "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
+        lucky_static = subprocess.run(
+            [sys.executable, "-B", str(receiver / "xb-lucky" / "scripts" / "test_lucky.py")],
+            text=True, encoding="utf-8", errors="replace", capture_output=True, check=False,
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PYTHONIOENCODING": "utf-8"},
+        )
+        require(lucky_static.returncode == 0, f"xb-lucky static receiver checks failed:\n{lucky_static.stdout}{lucky_static.stderr}")
+        print("PASS xb-lucky clean-receiver consent, safety, dataset, and routing contracts")
         check_interaction_configuration(receiver, sandbox / "config-project")
         check_menu_and_configuration_guide(receiver, sandbox / "menu-guide-project")
         check_community_support_and_frozen_projection(receiver, sandbox / "community-projection")
-        print("PASS global support in 40 entries and strict projection body with mutation rejection")
+        print("PASS global support in 41 entries and strict projection body with mutation rejection")
 
         runtime_path = receiver / "xbskill" / "references" / "runtime-compatibility.md"
         runtime_text = runtime_path.read_text(encoding="utf-8")
@@ -2871,7 +2878,7 @@ def main() -> int:
         guide_text = (receiver / "xbskill" / "references" / "user-guide.md").read_text(encoding="utf-8")
         require("被要求承担缺少依据的责任" in routing_text and "`xb-anti-blame`" in routing_text,
                 "xb-anti-blame is missing from the main route")
-        require("39 个专科" in guide_text and "40 个公开 Skill" in guide_text,
+        require("40 个专科" in guide_text and "41 个公开 Skill" in guide_text,
                 "user guide public skill count is stale")
         print("PASS anti-blame interaction, evidence, responsibility partition, route, and safety boundaries")
         print("PASS white-box rewrite, three-part reuse argument, nineteen-case regression, and X13-X19 release evidence are wired")
@@ -3017,7 +3024,7 @@ def main() -> int:
         require(local.read_text(encoding="utf-8") == "receiver-owned patch\n", "rollback lost LOCAL patch")
         print("PASS backup rollback restores exact pre-update suite")
 
-    print(f"SUMMARY receiver tests passed (40 public skills) elapsed={time.perf_counter() - test_started:.1f}s")
+    print(f"SUMMARY receiver tests passed (41 public skills) elapsed={time.perf_counter() - test_started:.1f}s")
     return 0
 
 

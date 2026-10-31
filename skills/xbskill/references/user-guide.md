@@ -4,7 +4,7 @@
 
 ## 1. xbskill 是什么
 
-xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 39 个专科（`xb-*`）组成，共 40 个公开 Skill，整体发布、整体安装。
+xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工作生存与选择系统，由 1 个唯一入口（`xbskill`）和 40 个专科（`xb-*`）组成，共 41 个公开 Skill，整体发布、整体安装。
 
 它的北极星：帮助你在可接受的身心与伦理成本下完成必要结果，同时保留或增加理解、能力、边界和选择权。最大化产出本身没有作为目标。
 
@@ -19,9 +19,9 @@ xbskill（快点下班工作系统）是一套站在脑力工作者一侧的工�
 
 ## 2. 安装
 
-依赖按功能分层：通过 Skills CLI 安装需要 Node.js 22.20+；套件校验、`xb-save`、`xb-memory`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+；其余纯文本专科没有 Python 或 Node.js 依赖。完整平台规则见 `runtime-compatibility.md`。
+依赖按功能分层：通过 Skills CLI 安装需要 Node.js 22.20+；套件校验、`xb-save`、`xb-memory`、`xb-knowledge` 与 `xb-role-knowledge` 需要 Python 3.10+；其余纯文本专科没有 Python 或 Node.js 依赖。`xb-lucky` 只在实际排盘时需要 Node.js 和用户另行授权安装的 `iztro` 2.6.3；数据集不随包安装。完整平台规则见 `runtime-compatibility.md`。
 
-1. 将发布包里 `skills/` 下的 40 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
+1. 将发布包里 `skills/` 下的 41 个目录作为完整套件复制到目标工具的 Skill 发现根（如 `.agents/skills/`、`.claude/skills/` 等）；`xbskill` 与所有 `xb-*` 必须保持同级。
 2. 按平台解析 Python 3.10+，再在套件根目录运行校验：
 
    ```bash
@@ -115,6 +115,7 @@ $xbskill 领导PUA我，我该怎么办
 | AI 原生能力发展与多周期编排 | `xb-ai-native` |
 | 岗位专业知识的补充与修订 | `xb-role-knowledge` |
 | 用 xbskill 的世界观判断规则、改变、拒绝与 Agent 责任 | `xb-agency` |
+| 紫微择日、本命、运势、合盘与氛围建议（每次先授权） | `xb-lucky` |
 
 **人与组织专科：**
 

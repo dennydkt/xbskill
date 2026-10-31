@@ -1,0 +1,4 @@
+interface:
+  display_name: "xb-lucky 子技能｜紫微轻解读"
+  short_description: "经逐项授权后进行紫微排盘、择日与合盘文化解读；保留现实决定权并防止依赖"
+  default_prompt: "使用 $xb-lucky 做紫微文化解读；先给我看调起声明卡，等我同意后再使用所需信息。"

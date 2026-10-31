@@ -4,8 +4,8 @@ title: "xbskill"
 type: software
 authors:
   - family-names: "dennydkt"
-version: "1.19.1"
-date-released: "2026-10-30"
+version: "1.20.0"
+date-released: "2026-10-31"
 repository-code: "https://github.com/dennydkt/xbskill"
 url: "https://github.com/dennydkt/xbskill"
 abstract: "A work survival and choice system for knowledge workers, distributed as 35 Agent Skills."

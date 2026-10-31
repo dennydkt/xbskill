@@ -1,7 +1,7 @@
 {
   "project": "xbskill",
-  "version": "1.19.1",
-  "source_commit": "3d8e560a776e779335b179ccc90e91701bb727d8",
-  "built_at_utc": "2026-10-30T06:52:43+00:00",
+  "version": "1.20.0",
+  "source_commit": "cd179599e3a990137befca00523280b00ec05534",
+  "built_at_utc": "2026-10-31T06:37:25+00:00",
   "builder": "xbskill-public-release-builder"
 }
