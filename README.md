@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.20.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.21.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -12,7 +12,7 @@
 
 ## 安装
 
-通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 41 个 Skill：
+通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 42 个 Skill：
 
 ```bash
 DISABLE_TELEMETRY=1 npx -y skills add dennydkt/xbskill -g --all
@@ -77,7 +77,7 @@ $xbskill 领导PUA我，我该怎么办
 
 ## 子 Skill 说明书
 
-完整套件包含 41 个 Skill。用户明确要求查看时，Agent 从 [使用手册](skills/xbskill/references/user-guide.md) 的专科速查定位，再读取对应 `SKILL.md` 说明输入、产物和边界。用户只发任务或选择配置时，直接推进该任务或配置。
+完整套件包含 42 个 Skill。用户明确要求查看时，Agent 从 [使用手册](skills/xbskill/references/user-guide.md) 的专科速查定位，再读取对应 `SKILL.md` 说明输入、产物和边界。用户只发任务或选择配置时，直接推进该任务或配置。
 
 配置入口是 `$xb-config`，主入口是 `$xbskill`；完整目录按需展开。
 
@@ -137,3 +137,5 @@ npx -y skills add dennydkt/xbskill -g --all
 首次使用先聊 AI 工作思维、沟通提问、让 AI 了解你，每阶段约十轮，一次一个问题，包含小产物、纠错与迁移练习；可说“跳过”或随时暂停。也可主动说“精神同步协调”。之后根据回答给配置建议，两项偏好仍由你决定。安装器无对话回调时，请安装后调用主入口开始。
 
 有使用问题或疑惑，可到 [xbskill 官网购买社群版](https://xbskill.com)，加入微信社群直接向作者提问；免费使用可继续。想保留背景、纠正和进度时说“保存对话”，后续须提供或授权读取可读记录。
+
+职场环境变化后可说“更新我的职场环境”，由xb-context逐轮核对背景。保存对话后，下次读回有关记录可从上次进度继续。

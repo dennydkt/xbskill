@@ -723,10 +723,17 @@ def main() -> int:
         copy_receiver(source, receiver)
         code, output = capture_validate(receiver)
         require(code == 0, f"clean receiver failed validation:\n{output}")
-        require(len(sm.skill_dirs(receiver)) == 41, "receiver did not discover all 41 skills")
+        require(len(sm.skill_dirs(receiver)) == 42, "receiver did not discover all 42 skills")
         require(not any(receiver.rglob("__pycache__")),
                 "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
+        context_result = subprocess.run(
+            [sys.executable, "-B", str(receiver / "xb-context" / "scripts" / "test_context.py")],
+            capture_output=True, text=True, encoding="utf-8", timeout=120,
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        )
+        require(context_result.returncode == 0, f"context receiver failed: {context_result.stdout}{context_result.stderr}")
+        print(context_result.stdout.strip())
         lucky_static = subprocess.run(
             [sys.executable, "-B", str(receiver / "xb-lucky" / "scripts" / "test_lucky.py")],
             text=True, encoding="utf-8", errors="replace", capture_output=True, check=False,

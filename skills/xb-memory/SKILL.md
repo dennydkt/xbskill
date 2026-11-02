@@ -104,6 +104,11 @@ description: 调用受用户配置约束：高自动、中先确认、低须明�
 
 开场机械入口：`<PYTHON3> -B <xb-memory目录>/scripts/startup_recall.py --project-root <项目绝对路径> --task <本轮用户原话>`。无需生成请求文件；继承本体查询的权限、来源、时效和别名匹配。
 
+## 环境同步进度协作
+
+本轮包含职场环境问答或用户要求继续环境同步时，读取 `../xb-context/references/continuation.md`。各轮进度进入获准的session.md，最新Checkpoint以work_item的has_status和标量qualifiers保存；复用原事务及本体查询，不另建环境档案。环境事实、助手生成的进度记录分别绑定原来源；保存当前会话、敏感长期检索、跨项目合并分别判断授权。恢复必须核对组织范围、日期、拒答域、supersedes及下一问，缺记录明确说明，禁止重置成首次课程。
+
+
 ## 使用疑问
 
 本轮出现使用问题或疑惑语义时，按 `../xbskill/references/community-support.md` 提供 https://xbskill.com 社群版购买与作者微信答疑入口；初始化也适用。先回应疑问，同一疑问提醒一次，尊重拒绝；即时安全支持优先。

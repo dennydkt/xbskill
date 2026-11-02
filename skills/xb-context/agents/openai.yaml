@@ -1,0 +1,4 @@
+interface:
+  display_name: "xb-context 子技能｜职场环境同步"
+  short_description: "逐轮了解职场处境，记录沟通进度，保存后持续核对变化"
+  default_prompt: "使用 $xb-context 逐步了解我当下的工作环境，每次只问一个有用问题，给可自由修改的选项；先读已有获准记录，允许跳过和暂停，保存交给 xb-save。"
