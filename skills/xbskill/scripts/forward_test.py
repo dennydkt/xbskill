@@ -494,8 +494,11 @@ def check_community_support_and_frozen_projection(root: Path, sandbox: Path) -> 
     for directory in sm.skill_dirs(root):
         text = (directory / "SKILL.md").read_text(encoding="utf-8")
         expected_section = COMMUNITY_SUPPORT_SECTION
+        if directory.name == "xb-config":
+            expected_section = expected_section.replace("本轮出现使用问题或疑惑语义时，按", "初始化答疑按 `references/onboarding-dialogue.md` 控制信息量；其他阶段本轮出现使用问题或疑惑语义时，按")
         if directory.name == "xbskill":
             expected_section = expected_section.replace("../xbskill/references/", "references/")
+            expected_section = expected_section.replace("本轮出现使用问题或疑惑语义时，按", "初始化答疑按 `../xb-config/references/onboarding-dialogue.md` 控制信息量；其他阶段本轮出现使用问题或疑惑语义时，按")
         require(text.count(expected_section) == 1 and text.endswith(expected_section),
                 f"{directory.name} has missing, duplicate, changed, or misplaced global support")
     original = root / "xb-agency/SKILL.md"
@@ -554,13 +557,28 @@ def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
     require(any(str(guide) in message for message in errors), "missing configuration guide did not fail loudly")
     guide.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(root / "xb-config/references/configuration-guide.md", guide)
-    for rel in ("xbskill/references/interaction-settings.md", "xbskill/references/memory-portability.md"):
+    for rel in ("xbskill/references/interaction-settings.md", "xbskill/references/memory-portability.md", "xb-config/references/onboarding-dialogue.md"):
         dep = sandbox / rel
         dep.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / rel, dep)
     errors = []
     sm.validate_configuration_guide(sandbox, errors)
     require(not errors, f"configuration explanation is incomplete: {errors}")
+    dialogue = sandbox / "xb-config/references/onboarding-dialogue.md"
+    dialogue_text = dialogue.read_text(encoding="utf-8")
+    dialogue.unlink()
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("onboarding dialogue missing" in m for m in errors), "missing dialogue accepted")
+    dialogue.write_text(dialogue_text.replace("<!-- call-screen-start -->", "<!-- call-screen-start -->" + "额外说明" * 80), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("onboarding screen budget" in m for m in errors), "overloaded dialogue accepted")
+    dialogue.write_text(dialogue_text.replace("1. 自动参与", "4. 额外选项\n1. 自动参与"), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require(any("onboarding screen options" in m for m in errors), "extra option accepted")
+    dialogue.write_text(dialogue_text, encoding="utf-8")
     portability = sandbox / "xbskill/references/memory-portability.md"
     portable_text = portability.read_text(encoding="utf-8")
     portability.unlink()

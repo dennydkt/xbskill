@@ -503,6 +503,21 @@ def validate_display_name(name: str, display_name: str, ui: Path,
 
 
 def validate_configuration_guide(root: Path, errors: list[str]) -> None:
+    dialogue = root / "xb-config/references/onboarding-dialogue.md"
+    if not dialogue.is_file():
+        errors.append(f"onboarding dialogue missing: {dialogue}")
+    else:
+        body = dialogue.read_text(encoding="utf-8")
+        for screen, count in (("call", 3), ("save", 2)):
+            start_screen, end_screen = f"<!-- {screen}-screen-start -->", f"<!-- {screen}-screen-end -->"
+            if body.count(start_screen) != 1 or body.count(end_screen) != 1 or body.index(start_screen) >= body.index(end_screen):
+                errors.append(f"onboarding screen markers: {screen}")
+                continue
+            content = body.split(start_screen)[1].split(end_screen)[0].strip()
+            if len(content) > 220:
+                errors.append(f"onboarding screen budget: {screen}")
+            if len(re.findall(r"^\d+\.", content, re.M)) != count:
+                errors.append(f"onboarding screen options: {screen}")
     path = root / "xb-config" / "references" / "configuration-guide.md"
     if not path.is_file():
         errors.append(f"missing required configuration guide: {path}")

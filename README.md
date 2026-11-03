@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.21.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.21.1-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -60,7 +60,7 @@ $xbskill 领导PUA我，我该怎么办
 
 **子 Skill 说明书：** 想查看时回复“查看子 Skill 说明书”，也可以点名某个子 Skill。Agent 等用户明确反馈后才展示说明，默认不报完整菜单。
 
-首次由 Agent 安装完成后或每次明确调用主入口时，展示主入口定位、问法、xb-save 本体记忆与衔接条件、说明书查看邀请；内部回流不重复。无交互安装器只复制文件，安装后的首次主入口调用完成介绍与必选配置。调用强度约束 Agent 的派发与执行；宿主是否预先加载技能描述须另行验证。
+首次或重新初始化依次选择参与方式和保存提醒，每轮一问，最多三项，选齐后继续原任务；已有配置显示来源并可重选。主入口裸调用不展示旧工作事项，说明书与学习按需开启。调用强度约束Agent派发，宿主实际执行另行验证。
 
 ## 你会得到什么
 
@@ -134,7 +134,7 @@ npx -y skills add dennydkt/xbskill -g --all
 
 ## 精神同步协调与作者答疑
 
-首次使用先聊 AI 工作思维、沟通提问、让 AI 了解你，每阶段约十轮，一次一个问题，包含小产物、纠错与迁移练习；可说“跳过”或随时暂停。也可主动说“精神同步协调”。之后根据回答给配置建议，两项偏好仍由你决定。安装器无对话回调时，请安装后调用主入口开始。
+首次调用主入口，先选参与方式，再选保存提醒；一轮一问，每轮最多三项，选齐后继续原任务或选择开始方向。已有配置会说明来源，可重新选择。说明书、背景交流和协作学习按需开启。
 
 有使用问题或疑惑，可到 [xbskill 官网购买社群版](https://xbskill.com)，加入微信社群直接向作者提问；免费使用可继续。想保留背景、纠正和进度时说“保存对话”，后续须提供或授权读取可读记录。
 
