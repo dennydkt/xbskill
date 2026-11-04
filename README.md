@@ -2,7 +2,7 @@
 
 > 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
 
-[![Version](https://img.shields.io/badge/version-1.21.1-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.23.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -139,3 +139,7 @@ npx -y skills add dennydkt/xbskill -g --all
 有使用问题或疑惑，可到 [xbskill 官网购买社群版](https://xbskill.com)，加入微信社群直接向作者提问；免费使用可继续。想保留背景、纠正和进度时说“保存对话”，后续须提供或授权读取可读记录。
 
 职场环境变化后可说“更新我的职场环境”，由xb-context逐轮核对背景。保存对话后，下次读回有关记录可从上次进度继续。
+
+## 可选材料与主题交流
+
+说“让AI了解我的工作”后，可以提供简历、岗位说明、公司介绍或已有周报/纪要，任选或不上传。AI先整理实际可读内容与来源，只补关键缺口；无材料时用一组小表说明回答例子与用途，可只答部分或随意讲。信息够用后即可办事。说“不想回答”时停止背景交流，可选择保存后转到工作，或直接开始；保存需本次明确指令。

@@ -751,6 +751,8 @@ def main() -> int:
             env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         )
         require(context_result.returncode == 0, f"context receiver failed: {context_result.stdout}{context_result.stderr}")
+        context_intake = subprocess.run([sys.executable, '-B', str(receiver / 'xb-context/scripts/test_context_intake.py')], capture_output=True, text=True, encoding='utf-8', timeout=30)
+        require(context_intake.returncode == 0, f'context intake contract failed: {context_intake.stdout}{context_intake.stderr}')
         print(context_result.stdout.strip())
         lucky_static = subprocess.run(
             [sys.executable, "-B", str(receiver / "xb-lucky" / "scripts" / "test_lucky.py")],

@@ -562,6 +562,30 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
             errors.append(f"memory introduction loses value or handoff conditions: {interaction}")
 
 
+def validate_context_intake(root: Path, errors: list[str]) -> None:
+    if not (root / 'xb-context').is_dir():
+        return
+    for name in ('environment-dialogue.md', 'document-intake.md', 'continuation.md', 'company-research.md', 'recruiter-interview-method.md'):
+        if not (root / 'xb-context/references' / name).is_file():
+            errors.append(f'context intake dependency missing: {name}')
+    path = root / 'xb-context/references/environment-dialogue.md'
+    if not path.is_file():
+        return
+    body = path.read_text('utf-8')
+    begin, end = '<!-- context-group-start -->', '<!-- context-group-end -->'
+    if body.count(begin) != 1 or body.count(end) != 1 or body.index(begin) >= body.index(end):
+        errors.append('context intake group markers invalid')
+        return
+    group = body.split(begin)[1].split(end)[0].strip()
+    rows = [line for line in group.splitlines() if line.startswith('|')]
+    if not 1 <= len(rows) - 2 <= 6 or len(group) > 600:
+        errors.append('context intake group overload')
+    if not all(word in group for word in ('公司名称', '所在行业', '所在部门', '岗位名称', '上下级关系', '日常工作产出')):
+        errors.append('context intake basic fields missing')
+    if not rows or not all(word in rows[0] for word in ('想了解什么', '回答例子', '以后怎么用')):
+        errors.append('context intake group loses examples or use')
+
+
 def validate(root: Path) -> int:
     assert_no_managed_symlinks(root)
     errors: list[str] = []
@@ -570,6 +594,7 @@ def validate(root: Path) -> int:
     names = {p.name for p in dirs}
     display_names: dict[str, Path] = {}
     validate_configuration_guide(root, errors)
+    validate_context_intake(root, errors)
     if "xbskill" not in names:
         errors.append(f"missing root skill: {root / 'xbskill'}")
     for rel in (

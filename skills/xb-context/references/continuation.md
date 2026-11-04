@@ -13,7 +13,7 @@
 - transcript保存获准的可见原话，session.md保存本次环境说明、各轮进度和最终Checkpoint，progress.md仅保留最新摘要、sync_id、来源会话和下一问。
 - 为当前项目和当前组织的同步任务创建或复用work_item，ID须符合现有单冒号格式（如work_item:context-org-a），名称“职场环境同步”，别名可含“环境同步进度”；不能只凭同名跨组织合并。has_status断言的literal值为当前status。
 - has_status使用epistemic_status=artifact_evidence、lifecycle=active，仅证明助手实际生成的沟通记录；source_refs指向包含逐字Checkpoint小结的assistant轮次。用户环境事实必须另外建断言，source_refs指向用户轮次，禁止用助手小结作用户确认。
-- qualifiers只使用现有协议允许的标量：tracker="workplace_context"，sync_id、organization_scope、current_domain、next_question、excluded_domains（仅存拒答域名称或“不谈私人情况”等脱敏边界）、domain_location、domain_role、domain_people、domain_company、domain_changes。五域状态按问题指南取值。status与限定字段必须逐项对应当前会话实际记录，不把未回答写为covered。next_question仅保留最小、脱敏的问题。
+- qualifiers只使用现有协议允许的标量：tracker="workplace_context"，sync_id、organization_scope、current_domain、next_question、excluded_domains（仅存拒答域名称或“不谈私人情况”等脱敏边界）、domain_location、domain_role、domain_people、domain_company、domain_changes。五域状态按问题指南取值。status与限定字段必须逐项对应当前会话实际记录，不把未回答写为covered。next_question可为下一主题或必要核对项的脱敏描述，禁止把整张表格塞入字段。
 - 下一次保存用新has_status断言并以supersedes引用旧进度断言，旧会话和旧断言保留；不能用修改旧transcript实现更新。环境事实复用has_role、reports_to、member_of、constrained_by、prefers等现有谓词；地理/作息限制可建constraint再通过constrained_by连接，禁止增加未注册谓词。
 - 所有记录带来源、观察日期、作用域与翻转条件。普通有来源事实可按既有门保存；推断、人格、公司文化概括保持candidate。敏感内容默认session_only，跨会话检索需另行逐项明确同意；凭据一律拒绝。
 
@@ -26,3 +26,10 @@
 限定字段缺失时回到来源会话核对，禁止默认全域未答；存在多个组织或并列进度且不能消歧时先问用户要继续哪段。没有可读记录就说无法确认上次进度，让用户选一方面继续，不重走初始化课程。只剩摘要时明确恢复范围，不能声称各轮完整。
 
 用户纠正后追加新断言并连supersedes。调岗、换公司、领导变动时仅使有关旧信息待复核，当前任务停止依赖相应旧建议；拒答域继续保留。用户要求删除或跨项目搬迁走独立维护授权，保存指令不包含这些动作。
+
+
+## 主题交流与材料来源兼容
+
+本次采用材料或主题表格时，已有五域状态和schema 2保持不变；next_question记录下次主题/关键缺口，current_domain取相关主域。材料来源索引及已读/未读范围放在获授权的session.md，保留文件名、日期与定位片段；不增加第二份环境真源、不增加JSON字段。部分回答只记录实际涉及项，declined内容不复制入下一主题。
+
+退出时status=paused，保留pending_task和下次可聊的位置。用户明确“保存后处理X”后按xb-save保存本次获准范围，并回到X；不重复征求已明确的普通保存授权。缺路径或保存失败时，报告未保存并暂存会话，立即继续可安全执行的X。用户选择不保存时不写任何进度文件，允许直接做事。保存成功后提供位置，失败不能被写成已完成。
