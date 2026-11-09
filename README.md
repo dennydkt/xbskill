@@ -1,8 +1,8 @@
 # xbskill
 
-> XBSKILL 帮你拆任务、写汇报、回消息。说「保存对话」就能把背景、结论和进度留在本地项目，换对话可读回继续。也能问紫微运势、择日、幸运色和朝向，供传统文化娱乐参考。
+> XBSKILL 帮你拆任务、写汇报、回消息。说「保存对话」，换对话时可读回本地工作进度。也可问择日、紫微运势、幸运色和朝向，供传统文化娱乐参考。
 
-[![Version](https://img.shields.io/badge/version-1.23.1-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.23.2-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
