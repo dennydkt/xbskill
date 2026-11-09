@@ -2,7 +2,7 @@
 
 唯一项目路径：`<项目根>/.xbskill/config.json`。项目根由宿主从当前明确任务取得；无法确定时只保留会话状态，并告知未跨会话保存。配置独立于 `memory/`，禁止写入工具环境配置。运行脚本依赖 Python 3.10+ 标准库，按 `../../xbskill/references/runtime-compatibility.md` 解析解释器；缺少 Python 或脚本时报精确依赖缺口，不谎报写入。
 
-文件字段：`schema_version` 必须为整数 `1`；`call_intensity` 取 `high` / `medium` / `low`；`save_prompt` 取 `high` / `low`。示例只作结构说明，禁止安装时复制成用户配置：
+文件字段：`schema_version` 必须为整数 `1`；`call_intensity` 取 `high` / `medium` / `low`；`save_prompt` 取 `high` / `low`。可选 topic_index 仅在单独确认后写入，包含本地绝对 JSON 路径 path 与配置锚点 anchor。普通偏好设置保留该字段，迁移锚点后先确认新位置。示例只作结构说明，安装时请从空配置开始。
 
 ```json
 {"schema_version": 1, "call_intensity": null, "save_prompt": null}

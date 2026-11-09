@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Any
 from memory_ontology import (OntologyError, project_memory_root, query_memory, require,
                              pretty_json, assertion_relevance, load_store, validate_store,
-                             validate_entity, validate_assertion, validate_source_ref, load_registry)
+                             validate_entity, validate_assertion, validate_source_ref, load_registry, load_json)
+import topic_coordinates as topics
 
 
 def check_memory(project_root: Path) -> dict[str, Any]:
@@ -132,6 +133,75 @@ def recall_memory(project_root: Path, task: str) -> dict[str, Any]:
     return packet
 
 
+def locate_topic(project_root, task, navigation=None, workspace_root=None):
+    """Resolve only evidenced coordinates, in local → navigation → index order."""
+    project_root = topics.path_of(str(project_root))
+    if workspace_root is not None:
+        workspace_root = topics.path_of(str(workspace_root))
+    local = recall_memory(project_root, task)
+    trace = [{"step": "project_memory", "status": local["status"]}]
+    root = project_memory_root(project_root)
+    rows = []
+    if local["status"] in {"matched", "no_match"}:
+        entities, assertions = load_store(root)
+        index = load_json(root / "ontology/index.json")
+        rows = topics.ontology_rows(entities["entities"], assertions["assertions"], index["effective_assertion_ids"])
+    vetoes = {topics.identity(row) for row in topics.latest(rows) if topics.excluded(row, task)}
+    matches = topics.match(rows, task)
+    if not matches and local["material_paths"]:
+        # Older archives can also carry exact topic names and paths. Relevance
+        # scores by themselves are insufficient to identify a project.
+        entities = {e["entity_id"]: e for e in local.get("entities", [])}
+        paths = {p["assertion_id"]: p for p in local["material_paths"]}
+        legacy = []
+        for assertion in local.get("assertions", []):
+            entity = entities.get(assertion["subject_id"], {})
+            path = paths.get(assertion["assertion_id"])
+            if (path and entity.get("status") == "active" and entity.get("sensitivity") == "normal"
+                    and assertion["lifecycle"] == "active" and assertion["retention"] == "long_term"
+                    and assertion["qualifiers"].get("memory_kind") != "topic_coordinates"
+                    and entity.get("entity_type") in {"project", "artifact", "work_item"}):
+                legacy.append(dict(canonical_name=entity["canonical_name"], aliases=entity["aliases"],
+                                   material_path=path["path"], status=None, exclusions=[],
+                                   registered_on=path["observed_at"][:10],
+                                   source_session=path["source_refs"][0]["session_id"]))
+        matches = topics.match([row for row in legacy if topics.identity(row) not in vetoes], task)
+    if matches and all(row["material_path"] is None for row in matches):
+        # An incomplete local registration should not hide a later coordinate.
+        incomplete, matches = matches, []
+    else:
+        incomplete = []
+    anchor = workspace_root or project_root
+    if not matches:
+        if navigation is None:
+            trace.append({"step": "navigation", "status": "not_configured"})
+        else:
+            navigation = topics.path_of(str(navigation))
+            topics.require(navigation.suffix.lower() == ".md", "E_TOPIC_NAVIGATION: expected .md file")
+            _, rows = topics.read_navigation(navigation)
+            vetoes.update(topics.identity(row) for row in topics.latest(rows) if topics.excluded(row, task))
+            matches = topics.match([row for row in rows if topics.identity(row) not in vetoes], task)
+            trace.append({"step": "navigation", "status": "matched" if matches else "no_match",
+                          "path": str(navigation)})
+    if not matches:
+        index = topics.configured_index(anchor)
+        if index is None:
+            trace.append({"step": "topic_index", "status": "not_configured"})
+        else:
+            matches = topics.match([row for row in topics.read_index(index) if topics.identity(row) not in vetoes], task)
+            trace.append({"step": "topic_index", "status": "matched" if matches else "no_match",
+                          "path": str(index)})
+    matches = topics.describe(matches or incomplete)
+    if len(matches) != 1:
+        status = "ambiguous" if matches else "ask_location"
+    elif not matches[0]["material_exists"]:
+        status = "material_missing" if matches[0]["material_path"] else "material_unrecorded"
+    else:
+        status = "matched"
+    return {"status": status, "query_executed": True, "project_root": str(project_root.resolve()),
+            "task": task, "steps": trace, "topics": matches}
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding='utf-8')
     sys.stderr.reconfigure(encoding='utf-8')
@@ -139,11 +209,25 @@ def main() -> int:
     parser.add_argument('--project-root', required=True)
     parser.add_argument('--task')
     parser.add_argument('--check', action='store_true', help='Read-only first-use archive health check')
+    parser.add_argument('--locate', action='store_true', help='Locate a topic before file exploration')
+    parser.add_argument('--workspace-root', help='Authorized anchor holding the topic index setting')
+    parser.add_argument('--navigation', help='Absolute path of an existing authorized Markdown navigation')
     args = parser.parse_args()
     try:
         require(args.check or bool(args.task), 'E_QUERY_SCHEMA: --task or --check required')
-        result = check_memory(Path(args.project_root)) if args.check else recall_memory(Path(args.project_root), args.task)
-    except (OntologyError, OSError) as exc:
+        require(not (args.check and args.locate), 'E_QUERY_SCHEMA: choose --check or --locate')
+        require(args.locate or not (args.navigation or args.workspace_root),
+                'E_QUERY_SCHEMA: topic locations require --locate')
+        project = Path(args.project_root)
+        if args.check:
+            result = check_memory(project)
+        elif args.locate:
+            workspace = topics.path_of(args.workspace_root) if args.workspace_root else None
+            result = locate_topic(project, args.task, args.navigation, workspace)
+        else:
+            result = recall_memory(project, args.task)
+            result['project_root'] = str(project.resolve())
+    except (ValueError, OSError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(pretty_json(result), end='')

@@ -708,7 +708,7 @@ def independent_regressions(source: Path):
     """Run fresh-temp-dir suites alongside core checks; require every exit code."""
     children = []
     try:
-        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py", "xb-memory/scripts/test_startup_recall.py", "xbskill/scripts/test_manifest_recovery.py"):
+        for relative in ("xb-sync/scripts/test_sync.py", "xbskill/scripts/test_workplace_evidence.py", "xb-config/scripts/test_config.py", "xb-memory/scripts/test_startup_recall.py", "xb-memory/scripts/test_topic_coordinates.py", "xbskill/scripts/test_manifest_recovery.py"):
             output = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
             process = subprocess.Popen(
                 [sys.executable, "-S", "-B", str(source / relative)],

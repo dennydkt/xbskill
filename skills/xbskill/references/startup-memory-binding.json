@@ -1,9 +1,12 @@
 {
-  "version": "1.18.0",
+  "version": "1.24.0",
   "files": {
-    "xb-memory/scripts/startup_recall.py": "8b36baec753e814524de79637e0a9c8c9972c0e9dcf18cc96241972e8587f5a8",
+    "xb-memory/scripts/startup_recall.py": "5cf7b0ec5c68e3c5c7763179d1f7fd78e9aa11847d68d5f30c1b084548574c3a",
     "xb-memory/scripts/test_startup_recall.py": "64ed89808a5c796ce1cbaefd50d11a0b95361f050caea826e0c503e4530fa339",
     "xb-memory/references/conversation-ontology.md": "6a71f797bb707ae7a9c725ad72215eb7b689898934c54014f64409a7c9c06273",
-    "xbskill/references/startup-memory.md": "b43b825fcf7d6b7aca95542933c21874111c28de0814861ad11eef228738fb12"
+    "xbskill/references/startup-memory.md": "306efbe64389c06eaad16dcfe2701ecbfc60a3f1856f32ed28642dad428141ef",
+    "xb-memory/scripts/topic_coordinates.py": "c9976ca56192e1207a008d233d908ef74d8d8deadbb489f452fe15c14d550adc",
+    "xb-memory/scripts/test_topic_coordinates.py": "568cff3550534226cb0b366c3ee45096070c6e42ac6edf855d2980a7ce2d88bb",
+    "xbskill/references/topic-coordinates.md": "9ea953f2259f146184e026a50490c534ccafd8b9946fe714c46b7c9860b76fa4"
   }
 }

@@ -20,7 +20,7 @@ def empty_config():
 def validate_config(data, require_complete=False):
     if not isinstance(data, dict):
         raise ConfigError("E_CONFIG_TYPE", "Configuration must be an object")
-    unknown = set(data) - {"schema_version", "call_intensity", "save_prompt"}
+    unknown = set(data) - {"schema_version", "call_intensity", "save_prompt", "topic_index"}
     if unknown:
         raise ConfigError("E_CONFIG_FIELDS", "Unknown fields: " + ", ".join(sorted(map(str, unknown))))
     if type(data.get("schema_version")) is not int or data["schema_version"] != 1:
@@ -33,6 +33,13 @@ def validate_config(data, require_complete=False):
         if require_complete and value is None:
             raise ConfigError("E_CONFIG_INCOMPLETE", "User must select " + key)
         result[key] = value
+    if "topic_index" in data:
+        index = data["topic_index"]
+        if (not isinstance(index, dict) or set(index) != {"path", "anchor"}
+                or any(not isinstance(index[key], str) or not Path(index[key]).is_absolute() for key in index)
+                or Path(index["path"]).suffix.lower() != ".json"):
+            raise ConfigError("E_TOPIC_CONFIG", "Topic index requires an absolute JSON path and configuration anchor")
+        result["topic_index"] = index
     return result
 
 
@@ -85,13 +92,22 @@ def load_config(project):
     return validate_config(data)
 
 
-def write_config(project, data, *, user_confirmed=False):
+def write_config(project, data, *, user_confirmed=False, topic_only=False):
     if user_confirmed is not True:
-        raise ConfigError("E_CONFIG_AUTH", "Both preferences require explicit user selection")
-    checked = validate_config(data, require_complete=True)
+        raise ConfigError("E_CONFIG_AUTH", "Configuration changes require explicit user selection")
     path = _config_path(project)
     # Refuse to silently replace corrupt or unsupported existing configuration.
-    load_config(project)
+    existing = load_config(project)
+    if topic_only:
+        if set(data) != {"topic_index"}:
+            raise ConfigError("E_TOPIC_CONFIG", "Only the topic index may be changed here")
+        checked = validate_config({**existing, **data})
+    else:
+        checked = validate_config(data, require_complete=True)
+        if checked.get("topic_index", existing.get("topic_index")) != existing.get("topic_index"):
+            raise ConfigError("E_TOPIC_CONFIG", "Use set-topic-index with separate confirmation")
+        if "topic_index" in existing:
+            checked["topic_index"] = existing["topic_index"]
     temporary = None
     try:
         path.parent.mkdir(exist_ok=True)
@@ -161,7 +177,7 @@ def should_prompt_save(config, *, final_response=True, xb_active=True):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("read", "set", "gate", "prompt"):
+    for name in ("read", "set", "gate", "prompt", "set-topic-index"):
         command = commands.add_parser(name)
         command.add_argument("--project", required=True)
         if name == "set":
@@ -175,6 +191,9 @@ def main(argv=None):
                 command.add_argument("--" + flag, action="store_true")
             command.add_argument("--authorized-task")
             command.add_argument("--authorized-specialist")
+        if name == "set-topic-index":
+            command.add_argument("--path", required=True)
+            command.add_argument("--user-confirmed", action="store_true")
         if name == "prompt":
             command.add_argument("--intermediate", action="store_true")
             command.add_argument("--inactive", action="store_true")
@@ -184,6 +203,16 @@ def main(argv=None):
             path = write_config(args.project, {"schema_version": 1, "call_intensity": args.call_intensity,
                                 "save_prompt": args.save_prompt}, user_confirmed=args.user_confirmed)
             result = {"status": "configured", "path": path, "config": load_config(args.project)}
+        elif args.command == "set-topic-index":
+            if any(value.replace("\\", "/").startswith("//") for value in (args.project, args.path)):
+                raise ConfigError("E_TOPIC_CONFIG", "Use local paths for the configuration anchor and index")
+            anchor = _config_path(args.project).parents[1]
+            index = Path(args.path)
+            if not index.is_absolute() or index.resolve() != index or index.name == "config.json":
+                raise ConfigError("E_TOPIC_CONFIG", "Use a distinct, canonical absolute index path")
+            path = write_config(args.project, {"topic_index": {"path": str(index), "anchor": str(anchor)}},
+                                user_confirmed=args.user_confirmed, topic_only=True)
+            result = {"status": "topic_index_configured", "path": path, "topic_index": args.path}
         elif args.command == "read":
             config = load_config(args.project)
             result = {"status": "unconfigured" if None in config.values() else "configured",

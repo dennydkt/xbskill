@@ -2,7 +2,7 @@
 
 > XBSKILL 帮你搞定难搞的同事、拆解复杂的问题，用 IT 手段解决重复劳动。说「保存对话」，下次可以接着本地工作进度做。还有个日常工作中可能会用到的运势小助手。
 
-[![Version](https://img.shields.io/badge/version-1.23.3-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.24.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -71,6 +71,10 @@ $xbskill 读回我上次保存的工作进度，继续处理这个问题。
 **子 Skill 说明书：** 想查看时回复“查看子 Skill 说明书”，也可以点名某个子 Skill。Agent 等用户明确反馈后才展示说明，默认不报完整菜单。
 
 首次或重新初始化依次选择参与方式和保存提醒，每轮一问，最多三项，选齐后继续原任务；已有配置显示来源并可重选。主入口裸调用不展示旧工作事项，说明书与学习按需开启。调用强度约束Agent派发，宿主实际执行另行验证。
+
+## 继续已有专题
+
+说「补登这个专题，以后也用这个叫法找」，并提供旧留档。确认名称、别名和原文路径后，xb-save 将坐标保存在当前项目。需要换项目查找时，用 xb-config 约定本地索引的位置，再单独确认登记。具体步骤见 [专题坐标登记与查找](skills/xbskill/references/topic-coordinates.md)。
 
 ## 你会得到什么
 

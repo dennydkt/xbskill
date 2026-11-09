@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import importlib.util
 import json
 import os
@@ -48,6 +49,15 @@ def load_ontology_module():
     return module
 
 
+def load_topics():
+    path = Path(__file__).resolve().parents[2] / "xb-memory/scripts/topic_coordinates.py"
+    require(path.is_file(), f"E_DEPENDENCY: missing topic support: {path}")
+    spec = importlib.util.spec_from_file_location("xb_topic_coordinates", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def load_bundle(path: Path) -> dict:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -69,7 +79,7 @@ def safe_target(root: Path, relative: str) -> Path:
     return target
 
 
-def validate_bundle(bundle: dict) -> None:
+def validate_bundle(bundle: dict, *, attached_topic=False) -> None:
     schema_version = bundle.get("schema_version")
     require(schema_version in {1, 2}, "E_BUNDLE_SCHEMA: schema_version must be 1 or 2")
     session_id = bundle.get("session_id")
@@ -139,6 +149,9 @@ def validate_bundle(bundle: dict) -> None:
         transcript_by_turn = {item["turn"]: item for item in transcript}
         for group_name in ("entities", "assertions"):
             for item in delta[group_name]:
+                if group_name == "assertions" and not attached_topic:
+                    require(item["qualifiers"].get("memory_kind") != "topic_coordinates",
+                            "E_TOPIC_SCHEMA: use topic_registration for topic assertions")
                 for ref in item["source_refs"]:
                     message = transcript_by_turn.get(ref["turn"])
                     require(message is not None, f"E_ONTOLOGY_SOURCE: missing transcript turn {ref['turn']}")
@@ -176,18 +189,48 @@ def atomic_store(project_root: Path, bundle: dict) -> dict:
     project = project_root.resolve()
     require(project.is_dir(), f"E_PROJECT_ROOT: project root does not exist: {project}")
     memory_root = (project / "memory" / "xbskill").resolve()
-    require(memory_root == (project / "memory" / "xbskill").resolve(), "E_PATH: memory root resolution failed")
+    require(memory_root.is_relative_to(project), "E_PATH: memory root escapes project")
+    topics = load_topics()
+    row = None
+    if "topic_registration" in bundle:
+        validate_bundle(bundle)
+        bundle = copy.deepcopy(bundle)
+        row = topics.attach(bundle)
+        validate_bundle(bundle, attached_topic=True)
+    startup = bundle.get("startup_check")
+    if startup is not None:
+        require(isinstance(startup, dict) and startup.get("query_executed") is True
+                and startup.get("project_root") == str(project)
+                and startup.get("status") in {"matched", "no_match", "no_archive", "legacy_review_required",
+                                              "ask_location", "ambiguous", "material_missing", "material_unrecorded"}
+                and isinstance(startup.get("task"), str)
+                and any(m["role"] == "user" and m["content"] == startup["task"] for m in bundle["transcript"]),
+                "E_STARTUP_RECEIPT: query receipt must match the current project and user task")
+    memory_root.mkdir(parents=True, exist_ok=True)
+    with topics.update_lock(memory_root / "progress.md"):
+        return store_session(memory_root, bundle, topics, row)
+
+
+def store_session(memory_root, bundle, topics, row):
     session_id = bundle["session_id"]
     session_rel = Path("sessions") / session_id
 
     classification_markdown = bundle.get("classification_markdown", "")
     ontology_summary: dict[str, object] = {}
     ontology_writes: dict[Path, str] = {}
+    assertions = []
+    progress = bundle["progress_markdown"]
     if bundle["schema_version"] == 2:
         ontology = load_ontology_module()
         try:
             ontology_writes, ontology_summary = ontology.plan_ontology_writes(memory_root, bundle["ontology_delta"])
             classification_markdown = ontology.render_classification(bundle["ontology_delta"])
+            entities = json.loads(ontology_writes[memory_root / "ontology/entities.json"])["entities"]
+            assertions = json.loads(ontology_writes[memory_root / "ontology/assertions.json"])["assertions"]
+            index = json.loads(ontology_writes[memory_root / "ontology/index.json"])
+            candidates = topics.ontology_rows(entities, assertions, index["effective_assertion_ids"])
+            if candidates:
+                progress = topics.card(candidates[0], progress, bundle.get("startup_check") is not None)
         except (ValueError, OSError) as exc:
             raise StoreError(f"E_ONTOLOGY: {exc}") from exc
 
@@ -197,7 +240,7 @@ def atomic_store(project_root: Path, bundle: dict) -> dict:
         ),
         safe_target(memory_root, str(session_rel / "session.md")): bundle["session_markdown"].rstrip() + "\n",
         safe_target(memory_root, str(session_rel / "classification.md")): classification_markdown.rstrip() + "\n",
-        safe_target(memory_root, "progress.md"): bundle["progress_markdown"].rstrip() + "\n",
+        safe_target(memory_root, "progress.md"): progress.rstrip() + "\n",
     }
     for update in bundle.get("context_updates", []):
         target = safe_target(memory_root, update["target"])
@@ -243,8 +286,13 @@ def atomic_store(project_root: Path, bundle: dict) -> dict:
     finally:
         shutil.rmtree(stage, ignore_errors=True)
 
+    effects = topics.apply_effects(bundle["topic_registration"], row, session_id,
+                                   bundle["ontology_delta"]["generated_at"], assertions, memory_root) if row else {}
+    errors = any(effect["status"] == "error" for effect in effects.values())
     return {
-        "status": "saved",
+        "status": "saved_with_topic_errors" if errors else "saved",
+        "startup_query": "recorded" if bundle.get("startup_check") is not None else "not_recorded",
+        "topic_effects": effects,
         "session_id": session_id,
         "session_directory": str((memory_root / session_rel).resolve()),
         "completeness": bundle["completeness"],
@@ -268,11 +316,11 @@ def main(argv: list[str] | None = None) -> int:
         bundle = load_bundle(Path(args.bundle).resolve())
         validate_bundle(bundle)
         result = atomic_store(Path(args.project_root), bundle)
-    except (StoreError, OSError) as exc:
+    except (ValueError, OSError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0
+    return 2 if result["status"] == "saved_with_topic_errors" else 0
 
 
 if __name__ == "__main__":
