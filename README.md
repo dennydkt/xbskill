@@ -1,8 +1,8 @@
 # xbskill
 
-> XBSKILL 帮你拆任务、写汇报、回消息。说「保存对话」，换对话时可读回本地工作进度。也可问择日、紫微运势、幸运色和朝向，供传统文化娱乐参考。
+> XBSKILL 帮你搞定难搞的同事、拆解复杂的问题，用 IT 手段解决重复劳动。说「保存对话」，下次可以接着本地工作进度做。还有个日常工作中可能会用到的运势小助手。
 
-[![Version](https://img.shields.io/badge/version-1.23.2-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.23.3-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -62,9 +62,10 @@ cp -r xbskill/skills/* ~/.agents/skills/
 问法举例：
 
 ```text
-$xbskill 领导让我这周出方案，帮我列出要问的问题和任务清单。
-$xbskill 我上次保存了周报进度，读回这个项目的记录，继续写本周汇报。
-$xbskill 想从两个可用日期里挑一个开工日，做一次传统择日解读。
+$xbskill 同事总在会后改口，帮我整理证据和下一次沟通方式。
+$xbskill 几个部门对库存异常各有说法，帮我拆开问题，列出先查什么。
+$xbskill 我每天手动合并同样的表格，帮我判断能否用脚本自动处理。
+$xbskill 读回我上次保存的工作进度，继续处理这个问题。
 ```
 
 **子 Skill 说明书：** 想查看时回复“查看子 Skill 说明书”，也可以点名某个子 Skill。Agent 等用户明确反馈后才展示说明，默认不报完整菜单。

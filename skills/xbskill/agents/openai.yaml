@@ -1,4 +1,4 @@
 interface:
   display_name: "xbskill 主入口｜从这里开始"
-  short_description: "拆任务、写汇报、回消息。工作进度主动存，换对话接着做。也可问择日和运势。"
+  short_description: "搞定难搞的同事、拆解复杂的问题，用 IT 手段解决重复劳动。进度可保存，还有运势小助手。"
   default_prompt: "使用 $xbskill 接住我当前的工作问题；按我的实际岗位责任、熟练阶段和组织环境适配解法，一次只推进当前瓶颈并导航到现实反馈。"

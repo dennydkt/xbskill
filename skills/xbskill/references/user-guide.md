@@ -115,7 +115,7 @@ $xbskill 领导PUA我，我该怎么办
 | AI 原生能力发展与多周期编排 | `xb-ai-native` |
 | 岗位专业知识的补充与修订 | `xb-role-knowledge` |
 | 用 xbskill 的世界观判断规则、改变、拒绝与 Agent 责任 | `xb-agency` |
-| 紫微择日、本命、运势、合盘与氛围建议（每次先授权） | `xb-lucky` |
+| 运势小助手（每次先授权） | `xb-lucky` |
 
 **人与组织专科：**
 
