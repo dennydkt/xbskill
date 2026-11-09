@@ -1,8 +1,8 @@
 # xbskill
 
-> 面向脑力工作者的“快点下班”工作生存与选择系统。把任务、沟通、卡点、领导和选择交给 Agent，获得清晰判断、可直接使用的产物，以及解决、调整或退出的行动方向。
+> XBSKILL 帮你拆任务、写汇报、回消息。说「保存对话」就能把背景、结论和进度留在本地项目，换对话可读回继续。也能问紫微运势、择日、幸运色和朝向，供传统文化娱乐参考。
 
-[![Version](https://img.shields.io/badge/version-1.23.0-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.23.1-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
@@ -11,6 +11,14 @@
 完整能力范围与本次增强见 [能力谱图](CAPABILITIES.md)。可选的工作记录精确检索需要 Python 3.10+；相关专科仍可对用户直接提供的材料执行文本核对。
 
 ## 安装
+
+### WorkBuddy
+
+在 WorkBuddy 电脑端打开「专家·技能·连接器」→「技能」→「SkillHub」，搜索 **XBSKILL**，选择快点下班的安装入口，按提示完成完整套件安装。
+
+如果搜不到或无法完成安装，可在 WorkBuddy 技能页上传已有的 XBSKILL 安装 ZIP。 已领取配套资料的用户可解压外层服务包，保留里面的 `xbskill-workbuddy.zip` 原样上传。安装说明见 [XBSKILL 官网](https://xbskill.com/open-source#workbuddy)。
+
+### 支持 Skills 的其他工具
 
 通过 Skills CLI 安装需要 Node.js 22.20 或更高版本。macOS / Linux 推荐安装全部 42 个 Skill：
 
@@ -54,8 +62,9 @@ cp -r xbskill/skills/* ~/.agents/skills/
 问法举例：
 
 ```text
-$xbskill 同事栽赃我，帮我反击！
-$xbskill 领导PUA我，我该怎么办
+$xbskill 领导让我这周出方案，帮我列出要问的问题和任务清单。
+$xbskill 我上次保存了周报进度，读回这个项目的记录，继续写本周汇报。
+$xbskill 想从两个可用日期里挑一个开工日，做一次传统择日解读。
 ```
 
 **子 Skill 说明书：** 想查看时回复“查看子 Skill 说明书”，也可以点名某个子 Skill。Agent 等用户明确反馈后才展示说明，默认不报完整菜单。

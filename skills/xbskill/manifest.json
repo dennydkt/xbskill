@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.23.0",
+  "version": "1.23.1",
   "files": {
     "xb-action/agents/openai.yaml": "59ea42349e520bea7dbeaceb40a38d975d8d3f46721ea532021f4ab19b5b97a8",
     "xb-action/SKILL.md": "0a5d33eed751b7f7fda897de7b15980c90bf41530ea00e47a52775a438904ebd",
@@ -155,7 +155,7 @@
     "xb-writing/agents/openai.yaml": "30577b725ceddb74df1f31e42a5b298c4cbd03193f5b25208ee400dc62802fa3",
     "xb-writing/SKILL.md": "745430061edf202f4b25191204e443a78b5e01dfb4e9b80ba529b2dac3f7a5d1",
     "xbskill/.gitignore": "df739b063be489b8076b444db3ece24a5602eed0fde7062dbd0cd55bdba1792b",
-    "xbskill/agents/openai.yaml": "9741e158fb4d9d9cf540100b2f164d8bce8746f7ff0d10aa98d24d7dd6d8a17d",
+    "xbskill/agents/openai.yaml": "58902a40930b6a8b3f2aec9f57981667cedd070f4d411d3769485adf311c742c",
     "xbskill/references/agency-model.md": "5e6745d2dc9f5a18890e8bdfb726534ef85658b8eb92700e000ae34b1432a53c",
     "xbskill/references/answer-format.md": "dede9cfc4f5804699e373e3cbc735cfbec3070e9298f7b85e5fb32f75ccc6c8d",
     "xbskill/references/capability-model.md": "7f21877c0212df50e5f6aa9b067c0041cccdd37c3e53d790e3b2e4d58f23dd32",
@@ -295,7 +295,7 @@
     "xbskill/scripts/test_manifest_recovery.py": "4d46692b8c9a99eba108b89e41f5d56a88b1195f8c3a0db03abc24402b26817e",
     "xbskill/scripts/test_workplace_evidence.py": "c891942ee2a7edea66e93efc2c2bc0a9ee72a7277ec0f1776ad574dc3685a250",
     "xbskill/scripts/workplace-evidence.py": "793cb9b4005f182af702d59f4814acf4e2f19d32a73dafc545e4eaecb92291d8",
-    "xbskill/SKILL.md": "e0065446d646920e9afac526159a054070cab1a7bbde41e88f7a0c2e1e8260f5",
-    "xbskill/VERSION": "8fc21140add9202a29f2eec0793eaa9dcf4065a756d9d91775190096d44a62aa"
+    "xbskill/SKILL.md": "93efb54e72ff3a658169159e16e0e520bd4c47e54660c42b3a325def442f1f3f",
+    "xbskill/VERSION": "f24986f850ee6e66a4c7fdbe8ea5f72f94bee5434a3bcd1892799e3bc46f3d12"
   }
 }
