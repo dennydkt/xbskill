@@ -518,6 +518,10 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
                 errors.append(f"onboarding screen budget: {screen}")
             if len(re.findall(r"^\d+\.", content, re.M)) != count:
                 errors.append(f"onboarding screen options: {screen}")
+            if screen == "context" and not all(
+                benefit in content for benefit in ("按实际分工给建议", "沿用你的格式")
+            ):
+                errors.append("onboarding context screen missing user benefits")
     path = root / "xb-config" / "references" / "configuration-guide.md"
     if not path.is_file():
         errors.append(f"missing required configuration guide: {path}")

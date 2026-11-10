@@ -578,6 +578,10 @@ def check_menu_and_configuration_guide(root: Path, sandbox: Path) -> None:
     errors = []
     sm.validate_configuration_guide(sandbox, errors)
     require(any("onboarding screen options" in m for m in errors), "extra option accepted")
+    dialogue.write_text(dialogue_text.replace("，写材料时也能沿用你的格式", ""), encoding="utf-8")
+    errors = []
+    sm.validate_configuration_guide(sandbox, errors)
+    require("onboarding context screen missing user benefits" in errors, "invitation without a benefit accepted")
     dialogue.write_text(dialogue_text, encoding="utf-8")
     portability = sandbox / "xbskill/references/memory-portability.md"
     portable_text = portability.read_text(encoding="utf-8")

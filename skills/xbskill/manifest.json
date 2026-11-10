@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.25.0",
+  "version": "1.25.1",
   "files": {
     "xb-action/agents/openai.yaml": "59ea42349e520bea7dbeaceb40a38d975d8d3f46721ea532021f4ab19b5b97a8",
     "xb-action/SKILL.md": "0a5d33eed751b7f7fda897de7b15980c90bf41530ea00e47a52775a438904ebd",
@@ -36,7 +36,7 @@
     "xb-config/agents/openai.yaml": "d72535e4a69fec7fc909e576f19d0b512cb4e0cd1c4b9d86e970d17731dee5bc",
     "xb-config/references/config-contract.md": "badc56f024a35cc91f870e9b3ced657f280a455aa24f8765ffed91b920f2a16c",
     "xb-config/references/configuration-guide.md": "1c7a22cd16a4f9c4db80a209da844027d701f897d4e129be2dffeb28fe5e9f89",
-    "xb-config/references/onboarding-dialogue.md": "10fbabaaa6f13417030a4aa9ad1d0e3e1d22fe3418516bcd703c101dfcba947a",
+    "xb-config/references/onboarding-dialogue.md": "7aba71d7542ee6a29e82d95a58cc043056e189390384e2d8681587b76f851170",
     "xb-config/references/spirit-communication.md": "af3a6cdd4e8101c5a20a72d9e3e326d4666aed12291affbda1c9c386db4d4689",
     "xb-config/references/spirit-context.md": "dfb262e75827527516f8c50dc155446cd3d1ff75fd98c94073bb8ef58f961c74",
     "xb-config/references/spirit-mindset.md": "6147dc2cf90f0c7c386f0aaf0b4fb448486bfe57101ecb82aed232da94db910e",
@@ -291,13 +291,13 @@
     "xbskill/references/work-state-intake.md": "375bd8e2e50ce322bbcf4a8009259e4192eabf3b9d3634a2fd119323e7c4bd49",
     "xbskill/references/workplace-evidence-review.md": "855682a074be4de55ee0dbe1f89ca4676fc41d22d0eae9ffb01e1c80d94bbc37",
     "xbskill/references/workplace-regression.md": "8e686ff576d282e8c8a08eed94cdbd096dff631777557e576230ebde6483b73b",
-    "xbskill/scripts/forward_test.py": "f14be91c36f3adc0041f18a8f5fa1fed05a8ec1455bd92e324a739a629b9f540",
+    "xbskill/scripts/forward_test.py": "bbca183834288c9984bdeae89f61a1d13bd3a16efabd3fee1fa9d6bd54a209d7",
     "xbskill/scripts/knowledge_manager.py": "386eaf5b55959eed1707ea72c3850d10fd425489791deb73db08676db9a9d959",
-    "xbskill/scripts/suite_manager.py": "54e4348713021ebce6e1e087c1b6dac6d72ee4f404a9b503c0d0098f484cfa51",
+    "xbskill/scripts/suite_manager.py": "8d4970fdeea7a86ee548a4dfb02e8730388f3264fb78da0dd12e1f30cba69d69",
     "xbskill/scripts/test_manifest_recovery.py": "4d46692b8c9a99eba108b89e41f5d56a88b1195f8c3a0db03abc24402b26817e",
     "xbskill/scripts/test_workplace_evidence.py": "c891942ee2a7edea66e93efc2c2bc0a9ee72a7277ec0f1776ad574dc3685a250",
     "xbskill/scripts/workplace-evidence.py": "793cb9b4005f182af702d59f4814acf4e2f19d32a73dafc545e4eaecb92291d8",
     "xbskill/SKILL.md": "910d55b0a58e784fdc14f5e8a57e1fa1ebce65491bb761804ee4c07345ea508a",
-    "xbskill/VERSION": "32112436a82effc1d958644a972f2a81e829e5ff08beb71305473cf6d41ca956"
+    "xbskill/VERSION": "2dc30a5c0f4087900d4a0780f6bc627b83300594dd020fb566313aaa4577e9c7"
   }
 }
