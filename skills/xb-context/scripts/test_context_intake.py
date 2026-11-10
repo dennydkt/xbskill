@@ -1,28 +1,64 @@
-"""Reject missing intake dependencies, overloaded opening groups and missing value examples."""
+"""Reject missing dependencies or an inconsistent background form."""
+
+import importlib.util
 from pathlib import Path
-import importlib.util,tempfile,shutil,unittest
-ROOT=Path(__file__).resolve().parents[2]
-spec=importlib.util.spec_from_file_location('suite',ROOT/'xbskill/scripts/suite_manager.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+import shutil
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+spec = importlib.util.spec_from_file_location('suite', ROOT / 'xbskill/scripts/suite_manager.py')
+suite = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(suite)
+
+
 class IntakeTests(unittest.TestCase):
- def setUp(self):
-  self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name)
-  target=self.root/'xb-context/references';target.mkdir(parents=True)
-  for name in ('environment-dialogue.md','document-intake.md','continuation.md','company-research.md','recruiter-interview-method.md'):shutil.copy2(ROOT/'xb-context/references'/name,target/name)
-  self.path=target/'environment-dialogue.md'
- def errors(self):
-  errors=[];m.validate_context_intake(self.root,errors);return errors
- def test_shipped_group_fits_reading_budget(self):self.assertEqual([],self.errors())
- def test_missing_reading_contract_fails_loudly(self):
-  (self.root/'xb-context/references/document-intake.md').unlink();self.assertTrue(any('dependency missing' in x for x in self.errors()))
- def test_seventh_row_rejected(self):
-  self.path.write_text(self.path.read_text('utf-8').replace('<!-- context-group-end -->','| 额外信息 | 例子 | 用处 |\n<!-- context-group-end -->'),encoding='utf-8')
-  self.assertIn('context intake group overload',self.errors())
- def test_missing_examples_rejected(self):
-  self.path.write_text(self.path.read_text('utf-8').replace('回答例子','必填项'),encoding='utf-8');self.assertIn('context intake group loses examples or use',self.errors())
- def test_oversized_preamble_rejected(self):
-  self.path.write_text(self.path.read_text('utf-8').replace('<!-- context-group-start -->','<!-- context-group-start -->'+'额外说明'*200),encoding='utf-8');self.assertIn('context intake group overload',self.errors())
- def test_missing_company_research_fails_loudly(self):
-  (self.root/'xb-context/references/company-research.md').unlink();self.assertTrue(any('dependency missing' in x for x in self.errors()))
- def test_missing_basic_field_rejected(self):
-  self.path.write_text(self.path.read_text('utf-8').replace('上下级关系','关系'),encoding='utf-8');self.assertIn('context intake basic fields missing',self.errors())
-if __name__=='__main__':unittest.main()
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name)
+        self.references = self.root / 'xb-context/references'
+        shutil.copytree(ROOT / 'xb-context/references', self.references)
+        self.form = self.references / 'environment-dialogue.md'
+
+    def errors(self):
+        errors = []
+        suite.validate_context_intake(self.root, errors)
+        return errors
+
+    def change_form(self, original, replacement):
+        self.form.write_text(self.form.read_text('utf-8').replace(original, replacement), encoding='utf-8')
+
+    def test_shipped_form(self):
+        self.assertEqual([], self.errors())
+
+    def test_missing_dependencies(self):
+        for name in ('document-intake.md', 'company-research.md', 'continuation.md'):
+            with self.subTest(name=name):
+                (self.references / name).unlink()
+                self.assertIn(f'context intake dependency missing: {name}', self.errors())
+
+    def test_extra_row(self):
+        end = '<!-- context-group-end -->'
+        self.change_form(end, '| 额外信息 | 例子 | 用处 |\n' + end)
+        self.assertIn('context intake group size invalid: context', self.errors())
+
+    def test_missing_examples(self):
+        self.change_form('回答例子', '必填项')
+        self.assertIn('context intake group loses examples or use: context', self.errors())
+
+    def test_oversized_group(self):
+        self.change_form('<!-- context-group-start -->', '<!-- context-group-start -->\n' + '额外说明' * 200)
+        self.assertIn('context intake group size invalid: context', self.errors())
+
+    def test_missing_field(self):
+        self.change_form('| 称呼 |', '| 姓名 |')
+        self.assertIn('context intake fields invalid: context', self.errors())
+
+    def test_missing_document_group(self):
+        self.change_form('documents-group-start', 'missing-group-start')
+        self.assertIn('context intake group markers invalid: documents', self.errors())
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,4 +1,4 @@
 interface:
-  display_name: "xb-context 子技能｜职场环境同步"
-  short_description: "从公司岗位基础信息开始，查公开公司资料接话，再分层了解工作"
-  default_prompt: "使用 $xb-context 逐步了解我当下的工作环境，先用公司、行业、部门、岗位、上下级和产出六项基础信息交流，明确公司后查公开资料接话，再按需深入；也可读取我提供的材料，允许只答部分或直接办事；先读已有获准记录，允许跳过和暂停，保存交给 xb-save。"
+  display_name: "xb-context 子技能｜工作背景表单"
+  short_description: "用文字或附件补充本人、公司、环境和文档信息，查看进度并随时续填"
+  default_prompt: "使用 $xb-context 初始化或继续我的工作背景表单。先用已有记录，再展示当前组问题和完成度。我可以用文字或附件回答，也可以跳过或暂停。"

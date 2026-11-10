@@ -508,7 +508,7 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
         errors.append(f"onboarding dialogue missing: {dialogue}")
     else:
         body = dialogue.read_text(encoding="utf-8")
-        for screen, count in (("call", 3), ("save", 2)):
+        for screen, count in (("call", 3), ("save", 2), ("context", 2)):
             start_screen, end_screen = f"<!-- {screen}-screen-start -->", f"<!-- {screen}-screen-end -->"
             if body.count(start_screen) != 1 or body.count(end_screen) != 1 or body.index(start_screen) >= body.index(end_screen):
                 errors.append(f"onboarding screen markers: {screen}")
@@ -565,25 +565,32 @@ def validate_configuration_guide(root: Path, errors: list[str]) -> None:
 def validate_context_intake(root: Path, errors: list[str]) -> None:
     if not (root / 'xb-context').is_dir():
         return
-    for name in ('environment-dialogue.md', 'document-intake.md', 'continuation.md', 'company-research.md', 'recruiter-interview-method.md'):
+    for name in ('environment-dialogue.md', 'document-intake.md', 'continuation.md', 'company-research.md'):
         if not (root / 'xb-context/references' / name).is_file():
             errors.append(f'context intake dependency missing: {name}')
     path = root / 'xb-context/references/environment-dialogue.md'
     if not path.is_file():
         return
     body = path.read_text('utf-8')
-    begin, end = '<!-- context-group-start -->', '<!-- context-group-end -->'
-    if body.count(begin) != 1 or body.count(end) != 1 or body.index(begin) >= body.index(end):
-        errors.append('context intake group markers invalid')
-        return
-    group = body.split(begin)[1].split(end)[0].strip()
-    rows = [line for line in group.splitlines() if line.startswith('|')]
-    if not 1 <= len(rows) - 2 <= 6 or len(group) > 600:
-        errors.append('context intake group overload')
-    if not all(word in group for word in ('公司名称', '所在行业', '所在部门', '岗位名称', '上下级关系', '日常工作产出')):
-        errors.append('context intake basic fields missing')
-    if not rows or not all(word in rows[0] for word in ('想了解什么', '回答例子', '以后怎么用')):
-        errors.append('context intake group loses examples or use')
+    groups = {
+        'context': ('称呼', '部门与岗位', '职责与日常产出'),
+        'company': ('公司或机构', '行业与主要业务', '公司流程与规则'),
+        'environment': ('汇报、协作与权限', '办公方式、工具与节奏', '当前重点或变化'),
+        'documents': ('常用文档或模板', '资料来源与版本', '文档要求与共享范围'),
+    }
+    for name, fields in groups.items():
+        begin, end = f'<!-- {name}-group-start -->', f'<!-- {name}-group-end -->'
+        if body.count(begin) != 1 or body.count(end) != 1 or body.index(begin) >= body.index(end):
+            errors.append(f'context intake group markers invalid: {name}')
+            continue
+        group = body.split(begin, 1)[1].split(end, 1)[0].strip()
+        rows = [line.strip('|').split('|') for line in group.splitlines() if line.startswith('|')]
+        if len(rows) != 5 or len(group) > 600:
+            errors.append(f'context intake group size invalid: {name}')
+        if tuple(row[0].strip() for row in rows[2:]) != fields:
+            errors.append(f'context intake fields invalid: {name}')
+        if not rows or tuple(cell.strip() for cell in rows[0]) != ('想了解什么', '回答例子', '以后怎么用'):
+            errors.append(f'context intake group loses examples or use: {name}')
 
 
 def validate(root: Path) -> int:

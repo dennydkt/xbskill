@@ -9,7 +9,7 @@ description: 精神同步协调与使用偏好配置：首次用两轮单问选�
 
 首次或重新初始化先读取 `references/onboarding-dialogue.md`，严格按两步逐轮选择，完成后才提供可选背景交流。`references/spirit-sync.md` 仅在用户明确要求学习协作时读取；已有配置不强制学习。安全与主动保存保持优先。
 
-直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md` 与 `../xbskill/references/specialist-rewrite-method.md`；缺文件时报精确路径并停止受影响步骤。配置字段、状态机与脚本接口见 `references/config-contract.md`，缺失时停止配置。用户明确进入配置可越过尚未初始化的调用门。用户仅请求配置时只完成配置；由已明确调用的 XB 任务因缺配置转入时，记录原任务和授权，选齐后立即恢复该任务，无需用户重新输入。用户同时撤销或更换任务时按新指令处理。
+直调时先读取 `../xbskill/references/contracts.md`、`../xbskill/references/resolution-standard.md` 与 `../xbskill/references/specialist-rewrite-method.md`；缺文件时报精确路径并停止受影响步骤。配置字段、状态机与脚本接口见 `references/config-contract.md`，缺失时停止配置。用户明确进入配置可越过尚未初始化的调用门。用户仅请求配置时只完成配置；首次工作调用因缺配置转入时，保留原任务和授权，按逐轮协议邀请工作背景初始化。跳过或退出表单后恢复该任务，用户更换任务时按新指令处理。
 
 ## 目标与边界
 
