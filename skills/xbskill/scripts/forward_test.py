@@ -1564,6 +1564,70 @@ def main() -> int:
         code, output = run_session_store(receiver, session_project, ontology_bundle_path)
         require(code == 0 and len(json.loads((ontology_root / "assertions.json").read_text(encoding="utf-8"))["assertions"]) == assertion_count, "same-session ontology save was not idempotent")
 
+        reused = json.loads(json.dumps(ontology_bundle, ensure_ascii=False))
+        reused["session_id"] = "2026-08-25-1002-reuse-entities"
+        delta = reused["ontology_delta"]
+        delta["session_id"] = reused["session_id"]
+        delta["entities"] = []
+        delta["assertions"] = delta["assertions"][:1]
+        reference = delta["assertions"][0]
+        reference["assertion_id"] = "a:reuse-entities:001"
+        reference["source_refs"][0]["session_id"] = reused["session_id"]
+        reused["transcript"].extend([
+            {"turn": 3, "role": "assistant", "content": "时间窗？\n1. 本月\n2. 上月"},
+            {"turn": 4, "role": "user", "content": "上月"},
+        ])
+        entities_path = ontology_root / "entities.json"
+        original_entities = entities_path.read_bytes()
+        progress_path = ontology_root.parent / "progress.md"
+        recent = ["周一", "周二", "周三", "周四", "周五"]
+        original_progress = "# 当前进度\n\n## 近况（新在前）\n\n" + "\n".join(f"{i}. {entry}" for i, entry in enumerate(recent, 1)) + "\n"
+        progress_path.write_text(original_progress, encoding="utf-8")
+        write_json(ontology_bundle_path, reused)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        reused_path = ontology_root.parent / "sessions" / reused["session_id"] / "ontology.json"
+        require(code != 0 and "E_PROGRESS_RECENT" in output and not reused_path.exists()
+                and progress_path.read_text(encoding="utf-8") == original_progress,
+                f"progress history loss did not stop the session transaction:\n{output}")
+
+        reused["progress_markdown"] = "# 当前进度\n\n## 近况\n\n" + "\n".join(
+            f"- {entry}" for entry in ["本次", *recent[:4]])
+        write_json(ontology_bundle_path, reused)
+        code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+        require(code == 0 and entities_path.read_bytes() == original_entities
+                and json.loads(reused_path.read_text(encoding="utf-8"))["assertions"] == [reference],
+                f"existing-entity reference changed metadata or failed to save:\n{output}")
+        saved_transcript = reused_path.with_name("transcript.md").read_text(encoding="utf-8")
+        require("时间窗？\n1. 本月\n2. 上月\n\n## 第 4 轮 · 用户\n\n上月" in saved_transcript,
+                "structured question choices or user response changed during transcript rendering")
+        require("周五" not in progress_path.read_text(encoding="utf-8"), "rolling progress did not drop the oldest entry")
+
+        saved_progress = progress_path.read_bytes()
+        saved_assertions = (ontology_root / "assertions.json").read_bytes()
+        for rejected in ("unknown", "collision", "excerpt"):
+            bad = json.loads(json.dumps(reused, ensure_ascii=False))
+            bad_delta = bad["ontology_delta"]
+            if rejected == "unknown":
+                bad_delta["assertions"][0]["object"]["entity_id"] = "project:missing"
+                expected_error = "unknown object entity"
+            elif rejected == "collision":
+                bad_entity = json.loads(original_entities)["entities"][0]
+                bad_entity["entity_type"] = "organization"
+                bad_entity["source_refs"] = reference["source_refs"]
+                bad_delta["entities"] = [bad_entity]
+                expected_error = "E_ENTITY_ID_COLLISION"
+            else:
+                bad_delta["assertions"][0]["assertion_id"] = "a:reuse-entities:002"
+                bad_delta["assertions"][0]["source_refs"][0]["excerpt"] = "本轮未出现的原话"
+                expected_error = "E_ONTOLOGY_SOURCE"
+            write_json(ontology_bundle_path, bad)
+            code, output = run_session_store(receiver, session_project, ontology_bundle_path)
+            require(code != 0 and expected_error in output and entities_path.read_bytes() == original_entities
+                    and progress_path.read_bytes() == saved_progress
+                    and (ontology_root / "assertions.json").read_bytes() == saved_assertions,
+                    f"invalid existing-entity reference was accepted or modified the archive:\n{output}")
+        progress_path.write_text("# 当前进度\n", encoding="utf-8")
+
         request_path = sandbox / "ontology-request.json"
         request = {
             "schema_version": 1, "request_id": "apollo-weekly-report", "task": "继续阿波罗项目周报",

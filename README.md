@@ -2,7 +2,7 @@
 
 > XBSKILL 帮你搞定难搞的同事、拆解复杂的问题，用 IT 手段解决重复劳动。说「保存对话」，下次可以接着本地工作进度做。还有个日常工作中可能会用到的运势小助手。
 
-[![Version](https://img.shields.io/badge/version-1.25.1-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.25.2-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 

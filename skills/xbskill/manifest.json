@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.25.1",
+  "version": "1.25.2",
   "files": {
     "xb-action/agents/openai.yaml": "59ea42349e520bea7dbeaceb40a38d975d8d3f46721ea532021f4ab19b5b97a8",
     "xb-action/SKILL.md": "0a5d33eed751b7f7fda897de7b15980c90bf41530ea00e47a52775a438904ebd",
@@ -133,8 +133,8 @@
     "xb-role-knowledge/scripts/upstream_sync.py": "eddc86f83f846d68f03e2c8005fb9869dea1937f62f867fd6e4835c1c86b9676",
     "xb-role-knowledge/SKILL.md": "e9c60f7b702fd9b2f8e367de0d997fc9b3a2393292f3cd1727d8bf90bc593458",
     "xb-save/agents/openai.yaml": "5ba1e01a6f9484605e87b03f6981de10e89e26988809fc460d0c88a14f73258b",
-    "xb-save/scripts/session_store.py": "d9bb4cdb81899b11fbfab021366ee47aa9bf0b0d3f55bf0b31f6b06319a18de6",
-    "xb-save/SKILL.md": "10a9c2f137fb81a674af89e2263e8b0cbd98b4daa84536c87b84529f8661c203",
+    "xb-save/scripts/session_store.py": "aae8da7571bc951bd651f7446fcded2d06a8cd5a27e43045f1838f710d0ddc0f",
+    "xb-save/SKILL.md": "642fd685637ba3a05ce07f24a71e1e298004f1e1e85ba41b047a24a3747415a0",
     "xb-stakeholder/agents/openai.yaml": "53f2cc5fb8f90acb26b9f8b1f7af1d2779fbaf1b4ff7cbae6d333eb11eaeb2f0",
     "xb-stakeholder/references/window-handoff.md": "c9860e4112f0f07afb196c1ce2366f738797d43660303113b0cd05a0701ead4a",
     "xb-stakeholder/SKILL.md": "15e84a4a48b1c09b01e798d32df218e7b3275d9bb2e22af298908298198bb0bb",
@@ -185,7 +185,7 @@
     "xbskill/references/role-specialty-regression.md": "2679beabb401c4ed44cbbcd5b153c224ac0f44292e41405e96caf872914af65a",
     "xbskill/references/routing.md": "3d280ad902bf177e8621a54a9d18d47f9af88d36375f08a772fc59ec58f03b6c",
     "xbskill/references/runtime-compatibility.md": "bef88b99f143d903ea37fbc14ff6e79d4b3e818fe91ed30e50f44174cc7e73a0",
-    "xbskill/references/session-memory-protocol.md": "7836f4b68cd303d83c0fe057519028be661c6d9812c088966399dffbae4f4afb",
+    "xbskill/references/session-memory-protocol.md": "b611c1ce65b50c9f96c07765a54095c0dc2b1f54932db3d01763f3afd1f5bed9",
     "xbskill/references/specialist-regression.md": "22f1cb84de3bd882a2e6b64b7b21632182a4dfca6ba2160b957d81d516ae1fc7",
     "xbskill/references/specialist-rewrite-method.md": "a5d65b86a080933c3175240ef511bd5729b674ccd7d601dcbb1384bbf13eab4d",
     "xbskill/references/specialty-source-ledger.md": "c3ae45f80aac5a2811821a2d492e359cbe2fda8b8b5f260c461b3c94dbe131bf",
@@ -291,13 +291,13 @@
     "xbskill/references/work-state-intake.md": "375bd8e2e50ce322bbcf4a8009259e4192eabf3b9d3634a2fd119323e7c4bd49",
     "xbskill/references/workplace-evidence-review.md": "855682a074be4de55ee0dbe1f89ca4676fc41d22d0eae9ffb01e1c80d94bbc37",
     "xbskill/references/workplace-regression.md": "8e686ff576d282e8c8a08eed94cdbd096dff631777557e576230ebde6483b73b",
-    "xbskill/scripts/forward_test.py": "bbca183834288c9984bdeae89f61a1d13bd3a16efabd3fee1fa9d6bd54a209d7",
+    "xbskill/scripts/forward_test.py": "fb687f9011569071084ae2340c656c1b0bbecc3a992808ddd974f4510f29d04e",
     "xbskill/scripts/knowledge_manager.py": "386eaf5b55959eed1707ea72c3850d10fd425489791deb73db08676db9a9d959",
     "xbskill/scripts/suite_manager.py": "8d4970fdeea7a86ee548a4dfb02e8730388f3264fb78da0dd12e1f30cba69d69",
     "xbskill/scripts/test_manifest_recovery.py": "4d46692b8c9a99eba108b89e41f5d56a88b1195f8c3a0db03abc24402b26817e",
     "xbskill/scripts/test_workplace_evidence.py": "c891942ee2a7edea66e93efc2c2bc0a9ee72a7277ec0f1776ad574dc3685a250",
     "xbskill/scripts/workplace-evidence.py": "793cb9b4005f182af702d59f4814acf4e2f19d32a73dafc545e4eaecb92291d8",
     "xbskill/SKILL.md": "910d55b0a58e784fdc14f5e8a57e1fa1ebce65491bb761804ee4c07345ea508a",
-    "xbskill/VERSION": "2dc30a5c0f4087900d4a0780f6bc627b83300594dd020fb566313aaa4577e9c7"
+    "xbskill/VERSION": "a135520d7d0f0592acd25a7dadc5e3c37023020d0d2712122df93e21c9805906"
   }
 }

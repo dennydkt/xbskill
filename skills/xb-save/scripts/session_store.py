@@ -24,6 +24,9 @@ EVIDENCE_LEVELS = {"user_statement", "observable_event", "assistant_inference", 
 ACTIONS = {"appended", "candidate_only", "excluded", "needs_identity"}
 COMPLETENESS = {"complete", "partial", "user_excluded"}
 ROLE_VALUES = {"user", "assistant"}
+RECENT_HEADING = re.compile(r"^## 近况(?:（新在前）)?[ \t]*$", re.MULTILINE)
+RECENT_ITEM = re.compile(r"^(?:[0-9]+[.)]|[-*+])[ \t]+")
+RECENT_LIMIT = 5
 SECRET_PATTERNS = (
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     re.compile(r"\b(?:sk|ghp|github_pat)_[A-Za-z0-9_\-]{20,}\b"),
@@ -79,7 +82,7 @@ def safe_target(root: Path, relative: str) -> Path:
     return target
 
 
-def validate_bundle(bundle: dict, *, attached_topic=False) -> None:
+def validate_bundle(bundle: dict) -> None:
     schema_version = bundle.get("schema_version")
     require(schema_version in {1, 2}, "E_BUNDLE_SCHEMA: schema_version must be 1 or 2")
     session_id = bundle.get("session_id")
@@ -141,22 +144,21 @@ def validate_bundle(bundle: dict, *, attached_topic=False) -> None:
         require(isinstance(delta, dict), "E_ONTOLOGY: ontology_delta missing")
         require(delta.get("session_id") == session_id, "E_ONTOLOGY: ontology session_id differs from bundle")
         require(delta.get("authorized_current_session") is True, "E_ONTOLOGY: ontology authorization missing")
-        try:
-            ontology = load_ontology_module()
-            ontology.validate_delta(delta, allow_unknown_supersedes=True)
-        except (ValueError, OSError) as exc:
-            raise StoreError(f"E_ONTOLOGY: {exc}") from exc
-        transcript_by_turn = {item["turn"]: item for item in transcript}
-        for group_name in ("entities", "assertions"):
-            for item in delta[group_name]:
-                if group_name == "assertions" and not attached_topic:
-                    require(item["qualifiers"].get("memory_kind") != "topic_coordinates",
-                            "E_TOPIC_SCHEMA: use topic_registration for topic assertions")
-                for ref in item["source_refs"]:
-                    message = transcript_by_turn.get(ref["turn"])
-                    require(message is not None, f"E_ONTOLOGY_SOURCE: missing transcript turn {ref['turn']}")
-                    require(message["role"] == ref["role"], f"E_ONTOLOGY_SOURCE: role differs at turn {ref['turn']}")
-                    require(ref["excerpt"] in message["content"], f"E_ONTOLOGY_SOURCE: excerpt is not present at turn {ref['turn']}")
+
+
+def validate_ontology_sources(bundle: dict, attached_assertion: dict | None) -> None:
+    delta = bundle["ontology_delta"]
+    transcript_by_turn = {item["turn"]: item for item in bundle["transcript"]}
+    for group_name in ("entities", "assertions"):
+        for item in delta[group_name]:
+            if group_name == "assertions" and item is not attached_assertion:
+                require(item["qualifiers"].get("memory_kind") != "topic_coordinates",
+                        "E_TOPIC_SCHEMA: use topic_registration for topic assertions")
+            for ref in item["source_refs"]:
+                message = transcript_by_turn.get(ref["turn"])
+                require(message is not None, f"E_ONTOLOGY_SOURCE: missing transcript turn {ref['turn']}")
+                require(message["role"] == ref["role"], f"E_ONTOLOGY_SOURCE: role differs at turn {ref['turn']}")
+                require(ref["excerpt"] in message["content"], f"E_ONTOLOGY_SOURCE: excerpt is not present at turn {ref['turn']}")
 
 
 def render_transcript(messages: list[dict], session_id: str, completeness: str, gaps: list[str]) -> str:
@@ -185,18 +187,53 @@ def append_update(existing: str, session_id: str, content: str) -> str:
     return f"{prefix}\n\n{marker}\n\n{content.strip()}\n" if prefix else f"# xbskill 上下文档案\n\n{marker}\n\n{content.strip()}\n"
 
 
+def recent_entries(markdown: str) -> list[str]:
+    headings = list(RECENT_HEADING.finditer(markdown))
+    require(len(headings) <= 1, "E_PROGRESS_RECENT: duplicate recent section")
+    if not headings:
+        return []
+    body = re.split(r"^#{1,2}[ \t]+", markdown[headings[0].end():], maxsplit=1, flags=re.MULTILINE)[0]
+    entries = []
+    for line in body.splitlines():
+        if RECENT_ITEM.match(line):
+            entries.append(RECENT_ITEM.sub("", line, count=1))
+        elif line.strip():
+            require(entries and line.startswith((" ", "\t")),
+                    "E_PROGRESS_RECENT: expected a list of recent entries")
+            entries[-1] += "\n" + line
+    require(all(entry.strip() for entry in entries) and len(entries) <= RECENT_LIMIT,
+            "E_PROGRESS_RECENT: expected up to five nonempty recent entries")
+    return entries
+
+
+def validate_recent_replacement(path: Path, proposed: str) -> None:
+    new = recent_entries(proposed)
+    if not path.exists():
+        return
+    old = recent_entries(path.read_text(encoding="utf-8"))
+    if not old or new == old:
+        return
+    require(new and new[1:] == old[:RECENT_LIMIT - 1] and new[0] not in old,
+            f"E_PROGRESS_RECENT: preserve existing entries in order and only drop the oldest when adding a sixth: {path}")
+
+
 def atomic_store(project_root: Path, bundle: dict) -> dict:
+    validate_bundle(bundle)
     project = project_root.resolve()
     require(project.is_dir(), f"E_PROJECT_ROOT: project root does not exist: {project}")
     memory_root = (project / "memory" / "xbskill").resolve()
     require(memory_root.is_relative_to(project), "E_PATH: memory root escapes project")
     topics = load_topics()
     row = None
+    attached_assertion = None
     if "topic_registration" in bundle:
-        validate_bundle(bundle)
+        require(bundle["schema_version"] == 2, "E_TOPIC_SCHEMA: topic registration requires schema 2")
         bundle = copy.deepcopy(bundle)
+        delta = bundle["ontology_delta"]
+        require(isinstance(delta.get("entities"), list) and isinstance(delta.get("assertions"), list)
+                and isinstance(delta.get("generated_at"), str), "E_ONTOLOGY: invalid ontology delta")
         row = topics.attach(bundle)
-        validate_bundle(bundle, attached_topic=True)
+        attached_assertion = delta["assertions"][-1]
     startup = bundle.get("startup_check")
     if startup is not None:
         require(isinstance(startup, dict) and startup.get("query_executed") is True
@@ -207,11 +244,11 @@ def atomic_store(project_root: Path, bundle: dict) -> dict:
                 and any(m["role"] == "user" and m["content"] == startup["task"] for m in bundle["transcript"]),
                 "E_STARTUP_RECEIPT: query receipt must match the current project and user task")
     memory_root.mkdir(parents=True, exist_ok=True)
-    with topics.update_lock(memory_root / "progress.md"):
-        return store_session(memory_root, bundle, topics, row)
+    with topics.update_lock(safe_target(memory_root, "progress.md")):
+        return store_session(memory_root, bundle, topics, row, attached_assertion)
 
 
-def store_session(memory_root, bundle, topics, row):
+def store_session(memory_root, bundle, topics, row, attached_assertion):
     session_id = bundle["session_id"]
     session_rel = Path("sessions") / session_id
 
@@ -220,10 +257,15 @@ def store_session(memory_root, bundle, topics, row):
     ontology_writes: dict[Path, str] = {}
     assertions = []
     progress = bundle["progress_markdown"]
+    progress_path = safe_target(memory_root, "progress.md")
+    validate_recent_replacement(progress_path, progress)
     if bundle["schema_version"] == 2:
         ontology = load_ontology_module()
         try:
+            for name in ("entities.json", "assertions.json"):
+                safe_target(memory_root, f"ontology/{name}")
             ontology_writes, ontology_summary = ontology.plan_ontology_writes(memory_root, bundle["ontology_delta"])
+            validate_ontology_sources(bundle, attached_assertion)
             classification_markdown = ontology.render_classification(bundle["ontology_delta"])
             entities = json.loads(ontology_writes[memory_root / "ontology/entities.json"])["entities"]
             assertions = json.loads(ontology_writes[memory_root / "ontology/assertions.json"])["assertions"]
@@ -240,7 +282,7 @@ def store_session(memory_root, bundle, topics, row):
         ),
         safe_target(memory_root, str(session_rel / "session.md")): bundle["session_markdown"].rstrip() + "\n",
         safe_target(memory_root, str(session_rel / "classification.md")): classification_markdown.rstrip() + "\n",
-        safe_target(memory_root, "progress.md"): progress.rstrip() + "\n",
+        progress_path: progress.rstrip() + "\n",
     }
     for update in bundle.get("context_updates", []):
         target = safe_target(memory_root, update["target"])
@@ -314,7 +356,6 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         bundle = load_bundle(Path(args.bundle).resolve())
-        validate_bundle(bundle)
         result = atomic_store(Path(args.project_root), bundle)
     except (ValueError, OSError) as exc:
         print(str(exc), file=sys.stderr)
