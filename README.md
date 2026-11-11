@@ -2,13 +2,15 @@
 
 > XBSKILL 帮你搞定难搞的同事、拆解复杂的问题，用 IT 手段解决重复劳动。说「保存对话」，下次可以接着本地工作进度做。还有个日常工作中可能会用到的运势小助手。
 
-[![Version](https://img.shields.io/badge/version-1.25.2-2563EB.svg?style=flat-square)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.26.0-2563EB.svg?style=flat-square)](VERSION)
 [![skills.sh](https://skills.sh/b/dennydkt/xbskill)](https://skills.sh/b/dennydkt/xbskill)
 [![License](https://img.shields.io/badge/license-AGPL%20%2B%20CC%20BY--NC--SA-16A34A.svg?style=flat-square)](LICENSE)
 
 支持 Claude Code、Codex、ZCode、Kimi-CLI，以及其他支持 Skills 的 Agent。
 
 完整能力范围与本次增强见 [能力谱图](CAPABILITIES.md)。可选的工作记录精确检索需要 Python 3.10+；相关专科仍可对用户直接提供的材料执行文本核对。
+
+想把重复工作做成小软件，可以说“帮我做一个能在这台电脑上运行的 Excel 处理工具”。xb-it 会引导确认需求、界面样式和运行方式，确认后开发、测试并打包。实际制作需要宿主具有文件与执行工具；交付说明会列明已验证的电脑环境和待验证项。
 
 ## 安装
 

@@ -19,6 +19,13 @@
 
 ## 其他来源
 
+### PRD Master、Design Master、TDD Master 方法研究
+
+- 仓库：https://github.com/mozhou580-lgtm/vibe-coding-standardized-operation
+- 固定提交：`b1361aa917349c9516dd65bd4aa05afe824b6e82`；核查日期：2026-11-11。
+- 许可状态：未知，固定目录树未发现许可证文件。本包没有复制其 Skill、模板、脚本或安装器；xb-it 独立实现需求确认、状态设计、验收定义及运行交付流程。
+- 采用范围与精确坐标：`skills/xb-it/references/method-sources.md`。TDD 在该来源中指测试定义驱动开发；xb-it 另外执行开发、测试与打包验证。
+
 套件引用官方文档、论文、标准和 GitHub 仓库时，来源账记录 URL、版本或 commit、坐标、许可、安全与使用边界：
 
 - `skills/xbskill/references/specialty-source-ledger.md`

@@ -1,16 +1,16 @@
 # xbskill 能力谱图
 
-版本：1.25.2。41个公开Skill，按当前入口文件归类；一个任务保持一个当前专科，按需调用支持能力。本图描述已提供的方法与工具，现实结果依赖事实、权限、采用和反馈。
+版本：1.26.0。42个公开Skill，按当前入口文件归类；一个任务保持一个当前专科，按需调用支持能力。本图描述已提供的方法与工具，现实结果依赖事实、权限、采用和反馈。
 
 | 能力域 | Skill | 可处理的工作 |
 |---|---|---|
 | 入口与主体选择 | xbskill、xb-triage、xb-agency | 接住问题、综合分诊；判断解决、调整或退出，辨别规则、主体性与Agent责任 |
 | 分析与推进 | xb-analysis、xb-goal、xb-decision、xb-plan、xb-review | 问题归因、目标澄清、方案取舍、项目计划、交付审查与复盘 |
-| 办公与知识 | xb-it、xb-data、xb-automation、xb-knowledge | 工具故障、Excel/SQL/指标、重复流程、文件知识检索 |
+| 办公与知识 | xb-it、xb-data、xb-automation、xb-knowledge | 工具故障、小软件需求/设计/开发/测试/运行交付、Excel/SQL/指标、重复流程、文件知识检索 |
 | 文档与表达 | xb-writing、xb-report、xb-presentation、xb-meeting | 邮件方案通知、进展汇报、PPT与呈现、会议全流程 |
 | 协作与争议 | xb-talk、xb-upward、xb-stakeholder、xb-conflict、xb-decode、xb-anti-blame、xb-boundary | 沟通回应、向上请示、多方协调、冲突处理、话语解读、归责核对、工作与安全边界 |
 | 状态与成长 | xb-wellbeing、xb-action、xb-learning、xb-capability、xb-career、xb-ai-native | 工作压力与启动困难、任务学习、能力证据、绩效晋升与职业选择、AI原生工作方式 |
-| 人物与环境 | xb-people、xb-company | 可验证人物工作档案、公司规则与环境；假设和已证事实分开 |
+| 人物与环境 | xb-people、xb-company、xb-context | 可验证人物工作档案、公司规则与环境、工作背景初始化；假设和已证事实分开 |
 | 记忆与协同 | xb-save、xb-restore、xb-memory、xb-sync | 经授权的会话保存、恢复、本体治理和多根归集查询 |
 | 能力建设与更新 | xb-role-knowledge、xb-builder、xb-audit、xb-update | 岗位知识补充、专科建设、系统审计与安全更新 |
 | 运势小助手 | xb-lucky | 用户确认后可问工作中的运势、开工日子、幸运色与朝向 |

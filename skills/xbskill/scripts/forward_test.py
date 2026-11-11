@@ -749,6 +749,13 @@ def main() -> int:
         require(not any(receiver.rglob("__pycache__")),
                 "suite validation wrote bytecode caches with receiver-local paths")
         print("PASS clean install and discovery")
+        environment_probe = subprocess.run(
+            [sys.executable, "-B", str(receiver / "xb-it" / "scripts" / "test_probe_environment.py")],
+            capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+        require(environment_probe.returncode == 0,
+                f"environment probe receiver checks failed: {environment_probe.stdout}{environment_probe.stderr}")
+        print("PASS xb-it environment scope, missing tools, privacy and unverified-runtime boundaries")
         context_result = subprocess.run(
             [sys.executable, "-B", str(receiver / "xb-context" / "scripts" / "test_context.py")],
             capture_output=True, text=True, encoding="utf-8", timeout=120,

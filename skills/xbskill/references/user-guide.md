@@ -107,7 +107,7 @@ $xbskill 领导PUA我，我该怎么办
 | PPT、述职、提案、答辩 | `xb-presentation` |
 | 会前准备、主持、纪要 | `xb-meeting` |
 | Excel/SQL/指标/图表/口径 | `xb-data` |
-| 软件报错、权限、办公工具 | `xb-it` |
+| 软件报错、权限、办公工具；按电脑环境制作可运行的小软件 | `xb-it` |
 | 重复劳动、流程自动化、AI 工作流 | `xb-automation` |
 | 周报、月报、阶段汇总 | `xb-report` |
 | 审查交付物与项目复盘 | [xb-review 说明书](../../xb-review/SKILL.md) |
